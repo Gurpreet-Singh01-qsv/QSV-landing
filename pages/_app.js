@@ -1,4 +1,4 @@
-import "@/styles/globals.css";
+import "../styles/globals.css";
 import { Inter, Orbitron } from "next/font/google";
 
 const inter = Inter({ subsets: ["latin"], variable: "--font-inter" });
