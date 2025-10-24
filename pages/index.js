@@ -7,14 +7,45 @@ import React from "react";
 // - Replace images / SVGs with your assets if available.
 
 const WAITLIST_FORM_ACTION = "#"; // <- replace with your form endpoint
+<style jsx global>{`
+  @keyframes text {
+    0%, 100% {
+      background-size: 200% 200%;
+      background-position: left center;
+    }
+    50% {
+      background-position: right center;
+    }
+  }
+  .animate-text {
+    animation: text 6s ease-in-out infinite;
+  }
+
+  @keyframes float {
+    0%, 100% { transform: translateY(0px); }
+    50% { transform: translateY(-12px); }
+  }
+  .float-slow { animation: float 4s ease-in-out infinite; }
+  .float-medium { animation: float 3s ease-in-out infinite; }
+  .float-fast { animation: float 2.5s ease-in-out infinite; }
+
+  /* subtle starfield background using radial gradients */
+  .qsv-star-bg {
+    background-image:
+      radial-gradient(2px 2px at 10% 20%, rgba(255,255,255,0.06), transparent),
+      radial-gradient(1.5px 1.5px at 80% 40%, rgba(255,255,255,0.04), transparent),
+      radial-gradient(1.5px 1.5px at 40% 70%, rgba(255,255,255,0.03), transparent);
+    background-repeat: no-repeat;
+  }
+`}</style>
 
 export default function QSVLanding() {
   return (
-    <div className="min-h-screen bg-gradient-to-b from-black via-slate-900 to-slate-800 text-slate-100">
+    <div className="min-h-screen bg-gradient-to-br from-blue-950/90 via-purple-900/80 to-black text-white qsv-star-bg">
       {/* Navbar */}
       <header className="max-w-6xl mx-auto px-6 sm:px-8 py-6 flex items-center justify-between">
         <div className="flex items-center gap-3">
-          <div className="w-10 h-10 rounded-full bg-gradient-to-br from-indigo-500 via-sky-400 to-violet-600 flex items-center justify-center shadow-lg">
+          <div className="min-h-screen bg-gradient-to-br from-blue-950/90 via-purple-900/80 to-black text-white">
             <svg width="26" height="26" viewBox="0 0 24 24" fill="none" xmlns="http://www.w3.org/2000/svg">
               <path d="M12 2C7 2 4 6 4 10c0 4 3 8 8 12s8-4 8-8c0-3-3-8-8-12z" fill="white" opacity="0.95"/>
               <path d="M12 6c-2 1-4 3-4 6 0 3 1.5 5.5 4 8 2.5-2.5 4-5 4-8 0-3-2-5-4-6z" fill="#0ea5e9" opacity="0.85"/>
@@ -33,7 +64,13 @@ export default function QSVLanding() {
       {/* Hero */}
       <main className="max-w-6xl mx-auto px-6 sm:px-8 py-12 grid grid-cols-1 lg:grid-cols-12 gap-8 items-center">
         <section className="lg:col-span-7">
-          <h1 className="text-4xl sm:text-5xl font-extrabold leading-tight">Shop in Worlds Beyond Reality.</h1>
+          <h1 className="text-5xl sm:text-6xl font-extrabold bg-clip-text text-transparent bg-gradient-to-r from-sky-400 via-violet-500 to-fuchsia-600 animate-text">
+  Shop the Multiverse
+</h1>
+
+<p className="mt-4 text-lg text-slate-300 max-w-2xl">
+  Experience shopping like never before — explore immersive 3D worlds, interact with products in real-time, and feel presence beyond the screen.
+</p>
           <p className="mt-6 text-slate-300 max-w-2xl">QSV brings shopping to the multiverse — explore immersive worlds, interact with products, and buy as if you’re really there. From luxury streets to gadget planets, discovery becomes the experience.</p>
 
           <div className="mt-8 flex flex-wrap gap-4">
@@ -60,7 +97,12 @@ export default function QSVLanding() {
         <aside className="lg:col-span-5 relative">
           <div className="w-full rounded-2xl bg-gradient-to-br from-indigo-800 via-slate-900 to-black shadow-2xl p-6 border border-slate-800">
             {/* Mock VR Scene Card */}
-            <div className="relative h-96 rounded-xl overflow-hidden bg-gradient-to-b from-slate-700/30 to-black">
+            <div className="backdrop-blur-xl bg-white/5 border border-white/10 rounded-3xl p-8 shadow-2xl">
+              <div className="absolute top-8 left-6 w-12 h-6 bg-white/20 rounded-lg float-slow"></div>
+<div className="absolute top-20 right-10 w-16 h-8 bg-white/25 rounded-lg float-medium"></div>
+<div className="absolute bottom-16 left-12 w-20 h-10 bg-white/15 rounded-lg float-fast"></div>
+  {/* existing card contents */}
+</div>
               <svg className="absolute inset-0 w-full h-full" viewBox="0 0 800 500" preserveAspectRatio="none" xmlns="http://www.w3.org/2000/svg">
                 <defs>
                   <linearGradient id="g1" x1="0" x2="1">
@@ -155,7 +197,11 @@ export default function QSVLanding() {
 
             <form action={WAITLIST_FORM_ACTION} method="POST" className="flex gap-3">
               <input name="email" type="email" required placeholder="you@domain.com" className="flex-1 px-4 py-3 rounded-xl bg-slate-900 border border-slate-700 placeholder-slate-500" />
-              <button type="submit" className="px-5 py-3 rounded-xl bg-gradient-to-r from-sky-500 to-violet-600 text-black font-semibold">Join Waitlist</button>
+              <button
+  className="px-6 py-3 rounded-xl font-semibold bg-gradient-to-r from-sky-500 to-violet-600 hover:from-fuchsia-500 hover:to-sky-600 transform hover:scale-105 transition-all duration-300 shadow-lg"
+>
+  Join Waitlist
+</button>
             </form>
           </div>
 
