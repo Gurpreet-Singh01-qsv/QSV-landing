@@ -99,10 +99,27 @@ export default function Home() {
               }`}
               style={{ animationDelay: "0.5s" }}
             >
-              <button className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 px-10 py-4 text-base font-semibold uppercase tracking-wide text-white shadow-[0_0_35px_rgba(103,232,249,0.45)] transition-transform duration-300 hover:scale-105 focus:outline-none">
-                <span className="absolute inset-0 animate-glow bg-gradient-to-r from-cyan-300/30 via-transparent to-fuchsia-400/30" />
-                <span className="relative">Join Waitlist</span>
-              </button>
+              <form
+  action="https://formspree.io/f/mnnoapdz"
+  method="POST"
+  className="flex flex-col sm:flex-row gap-4 items-center justify-center"
+>
+  <input
+    type="email"
+    name="email"
+    required
+    placeholder="Enter your email"
+    className="px-4 py-3 rounded-full text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 w-64 sm:w-72"
+  />
+  <button
+    type="submit"
+    className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 px-8 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-[0_0_35px_rgba(103,232,249,0.45)] transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
+  >
+    <span className="absolute inset-0 animate-glow bg-gradient-to-r from-cyan-300/30 via-transparent to-fuchsia-400/30" />
+    <span className="relative">Join Waitlist</span>
+  </button>
+</form>
+
             </div>
           </div>
 
@@ -170,7 +187,7 @@ export default function Home() {
         </main>
 
         <footer className="relative z-10 border-t border-white/10 bg-black/20 py-8 text-center text-xs uppercase tracking-[0.4em] text-slate-300/60">
-          © 2025 QSV Multiverse
+          © 2025 QSV Multiverse All rights reserved
         </footer>
       </div>
 
