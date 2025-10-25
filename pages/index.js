@@ -113,7 +113,7 @@ const [error, setError] = useState("");
 
     try {
       // ✅ Replace URL below ONLY if you redeploy your Google Script
-      const res = await fetch(`https://corsproxy.io/?https://script.google.com/macros/s/AKfycbx2PEfjyEbu1NITYq8BWUfO-4cAovwEiXUa35lxHwS_RyF64hY5tWoypSN9MqtXPX9F/exec`, {
+      const res = await fetch(`https://corsproxy.io/?https://script.google.com/macros/s/AKfycbyP81NFK-tB4ihPzX8LRCEaqg-PSxKauPWinufbdITTkhC2KeejqJzPg_JWeXw5IEm4/exec`, {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ email }),
