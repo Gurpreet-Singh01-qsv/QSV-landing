@@ -117,24 +117,27 @@ const [error, setError] = useState("");
       // formData.append("email", email);
 
       const res = await fetch("https://formspree.io/f/mnnoapdz", {
-        method: "POST",
-        headers: {
-  Accept: "application/json",
-  "Content-Type": "application/x-www-form-urlencoded"
-},
+  method: "POST",
+  headers: {
+    Accept: "application/json",
+    "Content-Type": "application/x-www-form-urlencoded"
+  },
+  body: new URLSearchParams({ email }),
+});
 
-       body: new URLSearchParams({ email }),
-      });
+const data = await res.json();
 
-      if (res.ok) {
-        setSubmitted(true);
-        setEmail("");
-        e.currentTarget.reset();
-      } else {
-        setError("Something went wrong. Please try again.");
-      }
+if (res.ok && data.ok) {
+  setSubmitted(true);
+  setEmail("");
+  e.currentTarget.reset();
+  setError("");
+} else {
+  throw new Error(data.error || "Unexpected error");
+}
+
     } catch (err) {
-      setError("Network error. Please try again.");
+      setError("Something went wrong. Please try again.");
     } finally {
       setLoading(false);
     }
