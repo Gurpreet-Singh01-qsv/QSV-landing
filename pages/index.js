@@ -111,25 +111,41 @@ const [error, setError] = useState("");
     setError("");
     setSubmitted(false);
 
-    try {
-      // ✅ Replace URL below ONLY if you redeploy your Google Script
-      const res = await fetch(`https://corsproxy.io/?https://script.google.com/macros/s/AKfycbyP81NFK-tB4ihPzX8LRCEaqg-PSxKauPWinufbdITTkhC2KeejqJzPg_JWeXw5IEm4/exec`, {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
+   try {
+  const res = await fetch(
+    `https://corsproxy.io/?https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec`,
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    }
+  );
 
-      const result = await res.json();
+  // ✅ Safely parse JSON — even if Google adds noise
+  const text = await res.text();
+  let result = {};
+  try {
+    result = JSON.parse(text);
+  } catch {
+    result = { success: false, error: "Invalid JSON response" };
+  }
 
-      if (result.success) {
-        setSubmitted(true);
-        setEmail("");
-        e.currentTarget.reset();
-        setError("");
-      } else {
-        setError("Submission failed. Please try again.");
-      }
+  // ✅ Handle result logic
+  if (result.success) {
+    setSubmitted(true);
+    setEmail("");
+    e.currentTarget.reset();
+    setError("");
+  } else {
+    console.error(result.error || "Unknown error");
+    setError("Submission failed. Please try again.");
+  }
+} catch (err) {
+  console.error("Network Error:", err);
+  setError("Network error. Please try again later.");
+} finally {
+  setLoading(false);
+}
     } catch (err) {
       console.error(err);
       setError("Network error. Please try again later.");
