@@ -113,7 +113,7 @@ const [error, setError] = useState("");
 
     try {
       const res = await fetch(
-        "https://script.google.com/macros/s/AKfycbydWxRyzc7fHGvRCNSzuVydl1-FaDY-SQhilovI9oYoZZtyOoTE0Khe7Z-6aicol0yC/exec",
+        "https://script.google.com/macros/s/AKfycbzHAWMziefvdQjDl0L-mZVsbx15UrO-5zGp8wupgLhO81hNY33bGal2Ab2iloB7K30I/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
