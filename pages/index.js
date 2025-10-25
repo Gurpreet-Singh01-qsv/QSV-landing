@@ -123,6 +123,7 @@ const [error, setError] = useState("");
 
       const text = await res.text();
       let result = {};
+
       try {
         result = JSON.parse(text);
       } catch {
@@ -147,7 +148,6 @@ const [error, setError] = useState("");
   }}
   className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6"
 >
-
   <input
     type="email"
     name="email"
@@ -168,18 +168,15 @@ const [error, setError] = useState("");
   </button>
 </form>
 
-{/* ✅ Success Message */}
 {submitted && !error && (
   <p className="mt-4 text-sky-300 text-sm fade-up">
     🎉 You’re on the waitlist! We’ll be in touch soon.
   </p>
 )}
 
-{/* ✅ Error Message */}
 {error && (
   <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
 )}
-
             </div>
           </div>
 
