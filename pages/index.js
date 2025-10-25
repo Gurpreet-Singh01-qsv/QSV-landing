@@ -112,8 +112,9 @@ const [error, setError] = useState("");
     setSubmitted(false);
 
     try {
+      // ✅ Replace URL below ONLY if you redeploy your Google Script
       const res = await fetch(
-        "https://script.google.com/macros/s/AKfycbzHAWMziefvdQjDl0L-mZVsbx15UrO-5zGp8wupgLhO81hNY33bGal2Ab2iloB7K30I/exec",
+        "https://script.google.com/macros/s/AKfycbz1k6GAEGMveMF7hiznQiFHuGlkEAMnWEImc6neT_Ot8cmFyTIzB-OJoW0aQIZC98g/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
@@ -129,16 +130,16 @@ const [error, setError] = useState("");
         e.currentTarget.reset();
         setError("");
       } else {
-        setError("Submission failed");
+        setError("Submission failed. Please try again.");
       }
     } catch (err) {
       console.error(err);
-      setError("Network error");
+      setError("Network error. Please try again later.");
     } finally {
       setLoading(false);
     }
   }}
-  className="flex flex-col sm:flex-row gap-4 items-center justify-center"
+  className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6"
 >
   <input
     type="email"
@@ -160,15 +161,18 @@ const [error, setError] = useState("");
   </button>
 </form>
 
+{/* ✅ Success Message */}
 {submitted && !error && (
-  <p className="mt-3 text-sky-300 text-sm fade-up">
+  <p className="mt-4 text-sky-300 text-sm fade-up">
     🎉 You’re on the waitlist! We’ll be in touch soon.
   </p>
 )}
 
+{/* ✅ Error Message */}
 {error && (
-  <p className="mt-3 text-rose-300 text-sm fade-up">{error}</p>
+  <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
 )}
+
             </div>
           </div>
 
