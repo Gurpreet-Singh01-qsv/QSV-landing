@@ -111,28 +111,26 @@ const [error, setError] = useState("");
   setError("");
   setSubmitted(false);
 
-  try {
-    const res = await fetch("https://formspree.io/f/mnnoapdz", {
-      method: "POST",
-      headers: { "Content-Type": "application/x-www-form-urlencoded" },
-      body: new URLSearchParams({ email }),
-    });
+try {
+  const res = await fetch("https://script.google.com/macros/s/AKfycbwM9Nm35Hm0YCzWjRYISlujBL17jKs7Xcb-XL0gmLhYWi2JZ4m3bJ8R9lSvIR0xRaQ/exec", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ email }),
+  });
 
-    if (res.status >= 200 && res.status < 300) {
-      setSubmitted(true);
-      setEmail("");
-      e.currentTarget.reset();
-      setError("");
-    } else {
-      setError("Error submitting form");
-    }
-  } catch {
-    // even if network or CORS error, assume submission worked since Formspree accepted it
+  if (res.ok) {
     setSubmitted(true);
+    setEmail("");
+    e.currentTarget.reset();
     setError("");
-  } finally {
-    setLoading(false);
+  } else {
+    setError("Error submitting form");
   }
+} catch {
+  setError("Network error");
+} finally {
+  setLoading(false);
+}
 }}
 
   className="flex flex-col sm:flex-row gap-4 items-center justify-center"
