@@ -114,7 +114,7 @@ const [error, setError] = useState("");
     try {
       // ✅ Replace URL below ONLY if you redeploy your Google Script
       const res = await fetch(
-        "https://script.google.com/macros/s/AKfycbx2PEfjyEbu1NITYq8BWUfO-4cAovwEiXUa35lxHwS_RyF64hY5tWoypSN9MqtXPX9F/exec",
+        "https://script.google.com/macros/s/AKfycbw2Hbbmli-RLqieqQTWFCoZtnp3Xs1dMeg0QN_RZIQmSYAjtEbqIfFVOu2JfzoLg3xH/exec",
         {
           method: "POST",
           headers: { "Content-Type": "application/json" },
