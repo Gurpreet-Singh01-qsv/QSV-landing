@@ -112,36 +112,40 @@ const [error, setError] = useState("");
     setSubmitted(false);
 
     try {
-      const formData = new FormData(e.currentTarget);
-      // If you prefer, you can append email manually:
-      // formData.append("email", email);
+  const res = await fetch("https://formspree.io/f/mnnoapdz", {
+    method: "POST",
+    headers: {
+      Accept: "application/json",
+      "Content-Type": "application/x-www-form-urlencoded",
+    },
+    body: new URLSearchParams({ email }),
+  });
 
-      const res = await fetch("https://formspree.io/f/mnnoapdz", {
-  method: "POST",
-  headers: {
-    Accept: "application/json",
-    "Content-Type": "application/x-www-form-urlencoded"
-  },
-  body: new URLSearchParams({ email }),
-});
+  // Try parsing JSON safely
+  let data = null;
+  try {
+    data = await res.json();
+  } catch {
+    data = {};
+  }
 
-const data = await res.json();
-
-if (res.ok && data.ok) {
-  setSubmitted(true);
-  setEmail("");
-  e.currentTarget.reset();
-  setError("");
-} else {
-  throw new Error(data.error || "Unexpected error");
+  // ✅ Success if HTTP status 200–299
+  if (res.ok) {
+    setSubmitted(true);
+    setEmail("");
+    e.currentTarget.reset();
+    setError("");
+  } else {
+    console.error("Formspree error:", data);
+    setError("Something went wrong. Please try again.");
+  }
+} catch (err) {
+  console.error("Network error:", err);
+  setError("Network error. Please try again.");
+} finally {
+  setLoading(false);
 }
-
-    } catch (err) {
-      setError("Something went wrong. Please try again.");
-    } finally {
-      setLoading(false);
-    }
-  }}
+}}
   className="flex flex-col sm:flex-row gap-4 items-center justify-center"
 >
   <input
