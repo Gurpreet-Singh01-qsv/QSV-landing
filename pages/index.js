@@ -17,6 +17,11 @@ const particleConfig = [
 export default function Home() {
   const [scrollIntensity, setScrollIntensity] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
+  // Waitlist form state
+const [email, setEmail] = useState("");
+const [submitted, setSubmitted] = useState(false);
+const [loading, setLoading] = useState(false);
+const [error, setError] = useState("");
 
   useEffect(() => setIsMounted(true), []);
 
@@ -100,8 +105,36 @@ export default function Home() {
               style={{ animationDelay: "0.5s" }}
             >
               <form
-  action="https://formspree.io/f/mnnoapdz"
-  method="POST"
+  onSubmit={async (e) => {
+    e.preventDefault();                 // stop page navigation
+    setLoading(true);
+    setError("");
+    setSubmitted(false);
+
+    try {
+      const formData = new FormData(e.currentTarget);
+      // If you prefer, you can append email manually:
+      // formData.append("email", email);
+
+      const res = await fetch("https://formspree.io/f/mnnoapdz", {
+        method: "POST",
+        headers: { Accept: "application/json" },
+        body: formData,
+      });
+
+      if (res.ok) {
+        setSubmitted(true);
+        setEmail("");
+        e.currentTarget.reset();
+      } else {
+        setError("Something went wrong. Please try again.");
+      }
+    } catch (err) {
+      setError("Network error. Please try again.");
+    } finally {
+      setLoading(false);
+    }
+  }}
   className="flex flex-col sm:flex-row gap-4 items-center justify-center"
 >
   <input
@@ -109,16 +142,30 @@ export default function Home() {
     name="email"
     required
     placeholder="Enter your email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
     className="px-4 py-3 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 w-64 sm:w-72 shadow-md"
   />
+
   <button
     type="submit"
-    className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 px-8 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-[0_0_35px_rgba(103,232,249,0.45)] transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200"
+    disabled={loading}
+    className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 px-8 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-[0_0_35px_rgba(103,232,249,0.45)] transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed"
   >
     <span className="absolute inset-0 animate-glow bg-gradient-to-r from-cyan-300/30 via-transparent to-fuchsia-400/30" />
-    <span className="relative">Join Waitlist</span>
+    <span className="relative">{loading ? "Sending…" : "Join Waitlist"}</span>
   </button>
 </form>
+{submitted && (
+  <p className="mt-3 text-sky-300 text-sm fade-up">
+    🎉 You’re on the waitlist! We’ll be in touch soon.
+  </p>
+)}
+{error && (
+  <p className="mt-3 text-rose-300 text-sm fade-up">
+    {error}
+  </p>
+)}
 
             </div>
           </div>
