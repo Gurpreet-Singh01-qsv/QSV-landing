@@ -118,8 +118,12 @@ const [error, setError] = useState("");
 
       const res = await fetch("https://formspree.io/f/mnnoapdz", {
         method: "POST",
-        headers: { Accept: "application/json" },
-        body: formData,
+        headers: {
+  Accept: "application/json",
+  "Content-Type": "application/x-www-form-urlencoded"
+},
+
+       body: new URLSearchParams({ email }),
       });
 
       if (res.ok) {
@@ -156,11 +160,12 @@ const [error, setError] = useState("");
     <span className="relative">{loading ? "Sending…" : "Join Waitlist"}</span>
   </button>
 </form>
-{submitted && (
+{submitted && !error && (
   <p className="mt-3 text-sky-300 text-sm fade-up">
     🎉 You’re on the waitlist! We’ll be in touch soon.
   </p>
 )}
+
 {error && (
   <p className="mt-3 text-rose-300 text-sm fade-up">
     {error}
