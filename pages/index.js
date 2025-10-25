@@ -112,7 +112,7 @@ const [error, setError] = useState("");
   setSubmitted(false);
 
 try {
-  const res = await fetch("https://script.google.com/macros/s/AKfycbwM9Nm35Hm0YCzWjRYISlujBL17jKs7Xcb-XL0gmLhYWi2JZ4m3bJ8R9lSvIR0xRaQ/exec", {
+  const res = await fetch("https://script.google.com/macros/s/AKfycbwmlIY8dLikaNUtaz3Zm-NmwRdxcDPxvVmUBNOdCL6gF1pK3TSmeSkifXB9NJ-ZWD99/exec", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
@@ -126,11 +126,12 @@ try {
   } else {
     setError("Error submitting form");
   }
-} catch {
-  setError("Network error");
+} catch (err) {
+    setError("Network error");
 } finally {
   setLoading(false);
 }
+
 }}
 
   className="flex flex-col sm:flex-row gap-4 items-center justify-center"
