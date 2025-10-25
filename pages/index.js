@@ -134,7 +134,7 @@ try {
 } finally {
   setLoading(false);
 }
-
+)}
   className="flex flex-col sm:flex-row gap-4 items-center justify-center"
 >
   <input
