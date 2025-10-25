@@ -112,27 +112,28 @@ const [error, setError] = useState("");
   setSubmitted(false);
 
 try {
-  const res = await fetch("https://script.google.com/macros/s/AKfycbwmlIY8dLikaNUtaz3Zm-NmwRdxcDPxvVmUBNOdCL6gF1pK3TSmeSkifXB9NJ-ZWD99/exec", {
+  const res = await fetch("https://script.google.com/macros/s/AKfycbydWxRyzc7fHGvRCNSzuVydl1-FaDY-SQhilovI9oYoZZtyOoTE0Khe7Z-6aicol0yC/exec", {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify({ email }),
   });
 
-  if (res.ok) {
+  const result = await res.json();
+
+  if (result.success) {
     setSubmitted(true);
     setEmail("");
     e.currentTarget.reset();
     setError("");
   } else {
-    setError("Error submitting form");
+    setError("Submission failed");
   }
 } catch (err) {
-    setError("Network error");
+  console.error(err);
+  setError("Network error");
 } finally {
   setLoading(false);
 }
-
-}}
 
   className="flex flex-col sm:flex-row gap-4 items-center justify-center"
 >
