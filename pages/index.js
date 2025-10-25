@@ -106,35 +106,38 @@ const [error, setError] = useState("");
             >
               <form
   onSubmit={async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
-  setSubmitted(false);
-
-try {
-  const res = await fetch("https://script.google.com/macros/s/AKfycbydWxRyzc7fHGvRCNSzuVydl1-FaDY-SQhilovI9oYoZZtyOoTE0Khe7Z-6aicol0yC/exec", {
-    method: "POST",
-    headers: { "Content-Type": "application/json" },
-    body: JSON.stringify({ email }),
-  });
-
-  const result = await res.json();
-
-  if (result.success) {
-    setSubmitted(true);
-    setEmail("");
-    e.currentTarget.reset();
+    e.preventDefault();
+    setLoading(true);
     setError("");
-  } else {
-    setError("Submission failed");
-  }
-} catch (err) {
-  console.error(err);
-  setError("Network error");
-} finally {
-  setLoading(false);
-}
-}}
+    setSubmitted(false);
+
+    try {
+      const res = await fetch(
+        "https://script.google.com/macros/s/AKfycbydWxRyzc7fHGvRCNSzuVydl1-FaDY-SQhilovI9oYoZZtyOoTE0Khe7Z-6aicol0yC/exec",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const result = await res.json();
+
+      if (result.success) {
+        setSubmitted(true);
+        setEmail("");
+        e.currentTarget.reset();
+        setError("");
+      } else {
+        setError("Submission failed");
+      }
+    } catch (err) {
+      console.error(err);
+      setError("Network error");
+    } finally {
+      setLoading(false);
+    }
+  }}
   className="flex flex-col sm:flex-row gap-4 items-center justify-center"
 >
   <input
@@ -156,6 +159,7 @@ try {
     <span className="relative">{loading ? "Sending…" : "Join Waitlist"}</span>
   </button>
 </form>
+
 {submitted && !error && (
   <p className="mt-3 text-sky-300 text-sm fade-up">
     🎉 You’re on the waitlist! We’ll be in touch soon.
@@ -163,11 +167,8 @@ try {
 )}
 
 {error && (
-  <p className="mt-3 text-rose-300 text-sm fade-up">
-    {error}
-  </p>
+  <p className="mt-3 text-rose-300 text-sm fade-up">{error}</p>
 )}
-
             </div>
           </div>
 
