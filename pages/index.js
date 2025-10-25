@@ -109,7 +109,7 @@ export default function Home() {
     name="email"
     required
     placeholder="Enter your email"
-    className="px-4 py-3 rounded-full text-black placeholder-white-500 focus:outline-none focus:ring-2 focus:ring-sky-400 w-64 sm:w-72"
+    className="px-4 py-3 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 w-64 sm:w-72 shadow-md"
   />
   <button
     type="submit"
