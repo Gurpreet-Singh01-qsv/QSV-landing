@@ -78,13 +78,6 @@ const handleSubmit = async (e) => {
 
   return (
     <>
-    <div className="flex justify-center mb-6">
-  <img
-    src="/images/qsv-logo.png"
-    alt="QSV Logo"
-    className="w-32 sm:w-40 md:w-48 animate-pulse-slow drop-shadow-[0_0_25px_rgba(103,232,249,0.5)]"
-  />
-</div>
       <Head>
         <title>QSV – Shop the Multiverse</title>
         <meta
@@ -118,16 +111,18 @@ const handleSubmit = async (e) => {
           
 
           <div className="max-w-2xl space-y-8">
-            <p
-              className={`uppercase tracking-[0.4em] text-xs text-cyan-200/70 fade-up ${
-                isMounted ? "fade-up--animate" : ""
-              }`}
-              style={{ animationDelay: "0.05s" }}
-            >
-              FUTURISTIC VR SHOPPING PLATFORM
+           <p
+  className={`uppercase tracking-[0.4em] text-xs text-cyan-200/70 fade-up ${
+    isMounted ? "fade-up--animate" : ""
+  }`}
+  style={{ animationDelay: "0.05s" }}
+>
+  FUTURISTIC VR SHOPPING PLATFORM
+</p>
 
-          {/* ✅ QSV Logo Section (Premium Floating Glow Version) */}
+{/* ✅ QSV Logo Section ... */}
 <div className="flex flex-col items-center justify-center mb-10 relative fade-up">
+
   {/* Animated glow halo behind logo */}
   <div className="absolute inset-0 flex items-center justify-center">
     <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-tr from-cyan-400/25 via-violet-500/20 to-fuchsia-500/25 blur-3xl animate-pulse-slow" />
