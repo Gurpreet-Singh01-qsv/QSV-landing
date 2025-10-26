@@ -122,7 +122,6 @@ const handleSubmit = async (e) => {
 
 {/* ✅ QSV Logo Section ... */}
 <div className="flex flex-col items-center justify-center mb-10 relative fade-up">
-
   {/* Animated glow halo behind logo */}
   <div className="absolute inset-0 flex items-center justify-center">
     <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-tr from-cyan-400/25 via-violet-500/20 to-fuchsia-500/25 blur-3xl animate-pulse-slow" />
@@ -139,9 +138,9 @@ const handleSubmit = async (e) => {
   <h2 className="relative mt-5 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-violet-500 text-2xl sm:text-3xl font-extrabold tracking-wide uppercase drop-shadow-[0_0_20px_rgba(139,92,246,0.4)]">
     Step Into the Multiverse
   </h2>
-</div>
+</div>  {/* ✅ closes the logo section correctly */}
 
-         <h1
+<h1
   className={`bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-500 bg-clip-text text-5xl font-extrabold uppercase text-transparent drop-shadow-[0_10px_35px_rgba(114,106,255,0.35)] sm:text-6xl xl:text-7xl fade-up ${
     isMounted ? "fade-up--animate" : ""
   }`}
@@ -149,7 +148,6 @@ const handleSubmit = async (e) => {
 >
   Step into the Multiverse
 </h1>
-
             <p
               className={`text-base text-slate-200/90 sm:text-lg fade-up ${
                 isMounted ? "fade-up--animate" : ""
