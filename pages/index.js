@@ -78,6 +78,13 @@ const handleSubmit = async (e) => {
 
   return (
     <>
+    <div className="flex justify-center mb-6">
+  <img
+    src="/images/qsv-logo.png"
+    alt="QSV Logo"
+    className="w-32 sm:w-40 md:w-48 animate-pulse-slow drop-shadow-[0_0_25px_rgba(103,232,249,0.5)]"
+  />
+</div>
       <Head>
         <title>QSV – Shop the Multiverse</title>
         <meta
