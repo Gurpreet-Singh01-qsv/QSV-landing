@@ -1,5 +1,6 @@
 export default async function handler(req, res) {
-  if (req.method !== "POST") return res.status(405).json({ error: "Method not allowed" });
+  if (req.method !== "POST")
+    return res.status(405).json({ success: false, error: "Method not allowed" });
 
   try {
     const scriptURL =
@@ -12,16 +13,23 @@ export default async function handler(req, res) {
     });
 
     const text = await response.text();
-    let result = {};
+
+    // Try parsing response
+    let result;
     try {
       result = JSON.parse(text);
     } catch {
-      result = {};
+      result = { success: true, raw: text }; // assume success if script returned text
     }
 
-    return res.status(200).json({ success: true, raw: result });
-  } catch (error) {
-    console.error("Server error:", error);
-    return res.status(500).json({ success: false, error: error.message });
+    // ✅ Force success if HTTP status is 200
+    if (response.ok) {
+      return res.status(200).json({ success: true, message: "Added to sheet", data: result });
+    } else {
+      return res.status(400).json({ success: false, error: "Bad response from script" });
+    }
+  } catch (err) {
+    console.error("Server error:", err);
+    return res.status(500).json({ success: false, error: err.message });
   }
 }
