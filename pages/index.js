@@ -108,6 +108,18 @@ const handleSubmit = async (e) => {
         {/* HERO SECTION */}
         <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center lg:flex-row lg:text-left lg:px-16 lg:py-32">
           {/* TEXT SECTION */}
+          {/* ✅ QSV Logo Section */}
+<div className="flex flex-col items-center justify-center mb-8 fade-up">
+  <img
+    src="/images/qsv-logo.png"
+    alt="QSV Logo"
+    className="w-40 h-40 sm:w-52 sm:h-52 animate-pulse-slow"
+  />
+  <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-violet-500 text-2xl sm:text-3xl font-bold tracking-wide uppercase">
+    Step Into the Multiverse
+  </h2>
+</div>
+
           <div className="max-w-2xl space-y-8">
             <p
               className={`uppercase tracking-[0.4em] text-xs text-cyan-200/70 fade-up ${
@@ -305,6 +317,13 @@ const handleSubmit = async (e) => {
       `}</style>
     </>
   );
+}
+@keyframes pulseSlow {
+  0%, 100% { opacity: 0.9; transform: scale(1); }
+  50% { opacity: 1; transform: scale(1.05); }
+}
+.animate-pulse-slow {
+  animation: pulseSlow 5s ease-in-out infinite;
 }
 
 
