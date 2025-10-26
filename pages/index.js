@@ -54,16 +54,17 @@ const handleSubmit = async (e) => {
 
     const result = await res.json();
 
-    if (result.success) {
+    if (res.ok && result.success) {
       setSubmitted(true);
       setEmail("");
       e.currentTarget.reset();
       setError("");
     } else {
+      console.error("Backend error:", result.error || "Unknown error");
       setError("Submission failed. Please try again.");
     }
   } catch (err) {
-    console.error("Network Error:", err);
+    console.error("Frontend error:", err);
     setError("Network error. Please try again later.");
   } finally {
     setLoading(false);
