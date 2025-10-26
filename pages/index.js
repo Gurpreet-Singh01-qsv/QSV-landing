@@ -179,9 +179,6 @@ const handleSubmit = async (e) => {
   <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
 )}
 
-{error && (
-  <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
-)}
             </div>
           </div>
 
