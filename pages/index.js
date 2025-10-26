@@ -140,7 +140,7 @@ const handleSubmit = async (e) => {
     Step Into the Multiverse
   </h2>
 </div>
-  </p>
+
           <h1
   className={`bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-500
               bg-clip-text text-5xl font-extrabold uppercase text-transparent
