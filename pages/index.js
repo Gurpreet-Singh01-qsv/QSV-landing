@@ -141,10 +141,13 @@ const handleSubmit = async (e) => {
   </h2>
 </div>
   </p>
-           <h1
-  className={`bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-500 bg-clip-text text-5xl font-extrabold uppercase text-transparent drop-shadow-[0_10px_35px_rgba(114,106,255,0.35)] sm:text-6xl xl:text-7xl fade-up ${
-    isMounted ? "fade-up--animate" : ""
-  }`}
+          <h1
+  className={`bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-500
+              bg-clip-text text-5xl font-extrabold uppercase text-transparent
+              drop-shadow-[0_10px_35px_rgba(114,106,255,0.35)]
+              sm:text-6xl xl:text-7xl fade-up ${
+                isMounted ? "fade-up--animate" : ""
+              }`}
   style={{ animationDelay: "0.2s" }}
 >
   Step into the Multiverse
