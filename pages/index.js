@@ -17,11 +17,10 @@ const particleConfig = [
 export default function Home() {
   const [scrollIntensity, setScrollIntensity] = useState(0);
   const [isMounted, setIsMounted] = useState(false);
-  // Waitlist form state
-const [email, setEmail] = useState("");
-const [submitted, setSubmitted] = useState(false);
-const [loading, setLoading] = useState(false);
-const [error, setError] = useState("");
+  const [email, setEmail] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState("");
 
   useEffect(() => setIsMounted(true), []);
 
@@ -39,6 +38,48 @@ const [error, setError] = useState("");
     return `translateY(${n}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   }, [scrollIntensity]);
 
+  // ✅ FORM HANDLER
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSubmitted(false);
+
+    try {
+      const res = await fetch(
+        "https://corsproxy.io/?https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec",
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ email }),
+        }
+      );
+
+      const text = await res.text();
+      let result = {};
+      try {
+        result = JSON.parse(text);
+      } catch {
+        result = { success: false, error: "Invalid JSON response" };
+      }
+
+      if (result.success) {
+        setSubmitted(true);
+        setEmail("");
+        e.currentTarget.reset();
+        setError("");
+      } else {
+        console.error(result.error || "Unknown error");
+        setError("Submission failed. Please try again.");
+      }
+    } catch (err) {
+      console.error("Network Error:", err);
+      setError("Network error. Please try again later.");
+    } finally {
+      setLoading(false);
+    }
+  };
+
   return (
     <>
       <Head>
@@ -50,10 +91,6 @@ const [error, setError] = useState("");
       </Head>
 
       <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#040824] via-[#120538] to-[#01010f] text-white">
-        {/* Gradient glow background */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(68,215,255,0.25),transparent_55%),radial-gradient(circle_at_80%_10%,rgba(155,108,255,0.35),transparent_50%),radial-gradient(circle_at_50%_80%,rgba(0,102,255,0.2),transparent_55%)]" />
-
-        {/* Floating particles */}
         {particleConfig.map((p, i) => (
           <span
             key={i}
@@ -68,288 +105,56 @@ const [error, setError] = useState("");
           />
         ))}
 
-        {/* HERO + CARD */}
-        <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center lg:flex-row lg:text-left lg:px-16 lg:py-32">
-          <div className="max-w-2xl space-y-8">
-            <p
-              className={`uppercase tracking-[0.4em] text-xs text-cyan-200/70 fade-up ${
-                isMounted ? "fade-up--animate" : ""
-              }`}
-              style={{ animationDelay: "0.05s" }}
+        <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center">
+          <h1 className="text-5xl font-extrabold text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-500">
+            Shop the Multiverse
+          </h1>
+          <p className="mt-4 text-slate-300 max-w-xl">
+            Experience immersive shopping like never before.
+          </p>
+
+          {/* ✅ FORM */}
+          <form
+            onSubmit={handleSubmit}
+            className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6"
+          >
+            <input
+              type="email"
+              name="email"
+              required
+              placeholder="Enter your email"
+              value={email}
+              onChange={(e) => setEmail(e.target.value)}
+              className="px-4 py-3 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 w-64 sm:w-72 shadow-md"
+            />
+            <button
+              type="submit"
+              disabled={loading}
+              className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 px-8 py-3 text-base font-semibold uppercase tracking-wide text-white shadow transition-transform duration-300 hover:scale-105 disabled:opacity-60"
             >
-              FUTURISTIC VR SHOPPING PLATFORM
+              <span className="relative">
+                {loading ? "Sending…" : "Join Waitlist"}
+              </span>
+            </button>
+          </form>
+
+          {submitted && !error && (
+            <p className="mt-4 text-sky-300 text-sm fade-up">
+              🎉 You’re on the waitlist! We’ll be in touch soon.
             </p>
-            <h1
-              className={`bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-500 bg-clip-text text-5xl font-extrabold uppercase text-transparent drop-shadow-[0_10px_35px_rgba(114,106,255,0.35)] sm:text-6xl xl:text-7xl fade-up ${
-                isMounted ? "fade-up--animate" : ""
-              }`}
-              style={{ animationDelay: "0.2s" }}
-            >
-              Shop the Multiverse
-            </h1>
-            <p
-              className={`text-base text-slate-200/90 sm:text-lg fade-up ${
-                isMounted ? "fade-up--animate" : ""
-              }`}
-              style={{ animationDelay: "0.35s" }}
-            >
-              Experience shopping like never before — traverse immersive virtual
-              realms, touch lifelike holograms, and customize your dream spaces
-              with quantum precision.
-            </p>
-
-            <div
-              className={`flex flex-col items-center gap-6 sm:flex-row fade-up ${
-                isMounted ? "fade-up--animate" : ""
-              }`}
-              style={{ animationDelay: "0.5s" }}
-            >
-// form handler
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
-  setSubmitted(false);
-
-  try {
-    const res = await fetch(
-      "https://corsproxy.io/?https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      }
-    );
-
-    const text = await res.text();
-    let result = {};
-    try {
-      result = JSON.parse(text);
-    } catch {
-      result = { success: false, error: "Invalid JSON response" };
-    }
-
-    if (result.success) {
-      setSubmitted(true);
-      setEmail("");
-      e.currentTarget.reset();
-      setError("");
-    } else {
-      console.error(result.error || "Unknown error");
-      setError("Submission failed. Please try again.");
-    }
-  } catch (err) {
-    console.error("Network Error:", err);
-    setError("Network error. Please try again later.");
-  } finally {
-    setLoading(false);
-  }
-};
-
-return (
-  <>
-    <form
-      onSubmit={handleSubmit}
-      className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6"
-    >
-      <input
-        type="email"
-        name="email"
-        required
-        placeholder="Enter your email"
-        value={email}
-        onChange={(e) => setEmail(e.target.value)}
-        className="px-4 py-3 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 w-64 sm:w-72 shadow-md"
-      />
-
-      <button
-        type="submit"
-        disabled={loading}
-        className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 px-8 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-[0_0_35px_rgba(103,232,249,0.45)] transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed"
-      >
-        <span className="absolute inset-0 animate-glow bg-gradient-to-r from-cyan-300/30 via-transparent to-fuchsia-400/30" />
-        <span className="relative">
-          {loading ? "Sending…" : "Join Waitlist"}
-        </span>
-      </button>
-    </form>
-
-    {submitted && !error && (
-      <p className="mt-4 text-sky-300 text-sm fade-up">
-        🎉 You’re on the waitlist! We’ll be in touch soon.
-      </p>
-    )}
-
-    {error && (
-      <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
-    )}
-  </>
-);
-
-            </div>
-          </div>
-
-          {/* VR CARD */}
-          <div className="relative mt-20 flex w-full max-w-sm justify-center lg:mt-0">
-            <div
-              className="relative w-full rounded-[2.5rem] border border-white/10 bg-white/10 p-[1px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
-              style={{ perspective: "1400px" }}
-            >
-              <div
-                className="relative overflow-hidden rounded-[2.4rem] bg-white/5 p-10 backdrop-blur-2xl transition-transform duration-500 ease-out will-change-transform"
-                style={{ transform: cardTransform }}
-              >
-                <div className="flex flex-col gap-6 text-left">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-[0.45em] text-cyan-200/80">
-                      Quantum Cart
-                    </span>
-                    <span className="rounded-full bg-cyan-400/20 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200/70">
-                      Live
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-300 to-violet-500 shadow-lg shadow-cyan-400/30" />
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold tracking-wide text-white/90">
-                        Luminous Hyper-Sneaker
-                      </p>
-                      <p className="text-xs text-slate-200/70">
-                        Adaptive fit · Haptic weave · Void black
-                      </p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 text-xs text-slate-200/80">
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
-                        Environment
-                      </p>
-                      <p className="mt-2 text-sm text-white">Neon Spires</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
-                        Emotion
-                      </p>
-                      <p className="mt-2 text-sm text-white">Euphoric Calm</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-400/20 via-transparent to-fuchsia-400/20 p-5">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.4em] text-cyan-200/60">
-                        Checkout Pulse
-                      </p>
-                      <p className="mt-2 text-lg font-semibold text-white">
-                        2.3 s
-                      </p>
-                    </div>
-                    <span className="rounded-full bg-white/10 px-5 py-2 text-[10px] uppercase tracking-[0.4em] text-white/80">
-                      Synced
-                    </span>
-                  </div>
-                </div>
-              </div>
-            </div>
-          </div>
+          )}
+          {error && (
+            <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
+          )}
         </main>
 
-        <footer className="relative z-10 border-t border-white/10 bg-black/20 py-8 text-center text-xs uppercase tracking-[0.4em] text-slate-300/60">
-          © 2025 QSV Multiverse All rights reserved
+        <footer className="text-center text-xs text-slate-400 py-8">
+          © 2025 QSV Multiverse. All rights reserved.
         </footer>
       </div>
-
-      <style jsx global>{`
-        :root {
-          color-scheme: dark;
-        }
-        body {
-          background-color: #040824;
-        }
-
-        @keyframes fadeUp {
-          0% {
-            opacity: 0;
-            transform: translateY(24px);
-          }
-          100% {
-            opacity: 1;
-            transform: translateY(0);
-          }
-        }
-        .fade-up {
-          opacity: 0;
-          transform: translateY(24px);
-        }
-        .fade-up--animate {
-          animation: fadeUp 1s ease-out forwards;
-        }
-
-        @keyframes particleTwinkle {
-          0% {
-            transform: translateY(0) scale(1);
-            opacity: 0.25;
-          }
-          50% {
-            transform: translateY(-12px) scale(1.6);
-            opacity: 0.8;
-          }
-          100% {
-            transform: translateY(0) scale(1);
-            opacity: 0.25;
-          }
-        }
-        .qsv-particle {
-          position: absolute;
-          border-radius: 9999px;
-          background: rgba(255, 255, 255, 0.65);
-          opacity: 0.4;
-          box-shadow: 0 0 12px rgba(114, 255, 255, 0.35);
-          animation: particleTwinkle 6s ease-in-out infinite;
-        }
-
-        .animate-glow {
-          animation: glowPulse 4s ease-in-out infinite;
-          mix-blend-mode: screen;
-        }
-        @keyframes glowPulse {
-          0%,
-          100% {
-            opacity: 0.35;
-            transform: translateX(-40%);
-          }
-          50% {
-            opacity: 0.7;
-            transform: translateX(20%);
-          }
-        }
-
-        .text-shimmer {
-          background-size: 200% 200%;
-          animation: textShimmer 10s ease-in-out infinite;
-        }
-        @keyframes textShimmer {
-          0% {
-            background-position: 0% 50%;
-          }
-          50% {
-            background-position: 100% 50%;
-          }
-          100% {
-            background-position: 0% 50%;
-          }
-        }
-
-        @media (prefers-reduced-motion: reduce) {
-          .fade-up,
-          .qsv-particle,
-          .animate-glow {
-            animation-duration: 0.01ms !important;
-            animation-iteration-count: 1 !important;
-            transition-duration: 0.01ms !important;
-          }
-        }
-      `}</style>
     </>
   );
 }
+
 
 
