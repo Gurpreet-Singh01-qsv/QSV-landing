@@ -313,17 +313,16 @@ const handleSubmit = async (e) => {
             opacity: 0.7;
             transform: translateX(20%);
           }
-        }
-      `}</style>
-    </>
-  );
-}
-@keyframes pulseSlow {
+          @keyframes pulseSlow {
   0%, 100% { opacity: 0.9; transform: scale(1); }
   50% { opacity: 1; transform: scale(1.05); }
 }
 .animate-pulse-slow {
   animation: pulseSlow 5s ease-in-out infinite;
+}
+      `}</style>
+    </>
+  );
 }
 
 
