@@ -142,7 +142,7 @@ const handleSubmit = async (e) => {
               }`}
               style={{ animationDelay: "0.2s" }}
             >
-              Shop the Multiverse
+              Step into the Multiverse
             </h1>
             <p
               className={`text-base text-slate-200/90 sm:text-lg fade-up ${
