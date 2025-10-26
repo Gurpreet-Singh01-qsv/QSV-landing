@@ -107,57 +107,53 @@ return (
 
       {/* HERO SECTION */}
       <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center lg:flex-row lg:text-left lg:px-16 lg:py-32">
-        {/* TEXT SECTION */}
-        <div className="max-w-2xl space-y-8">
-          <p
-            className={`uppercase tracking-[0.4em] text-xs text-cyan-200/70 fade-up ${
-              isMounted ? "fade-up--animate" : ""
-            }`}
-            style={{ animationDelay: "0.05s" }}
-          >
-            FUTURISTIC VR SHOPPING PLATFORM
-          </p>
+  <div className="max-w-2xl space-y-8">
+    <p
+      className={`uppercase tracking-[0.4em] text-xs text-cyan-200/70 fade-up ${
+        isMounted ? "fade-up--animate" : ""
+      }`}
+      style={{ animationDelay: "0.05s" }}
+    >
+      FUTURISTIC VR SHOPPING PLATFORM
+    </p>
 
-          {/* QSV Logo Section */}
-          <div className="flex flex-col items-center justify-center mb-10 relative fade-up">
-            {/* Glow halo */}
-            <div className="absolute inset-0 flex items-center justify-center">
-              <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-tr from-cyan-400/25 via-violet-500/20 to-fuchsia-500/25 blur-3xl animate-pulse-slow" />
-            </div>
+    {/* QSV Logo Section */}
+    <div className="flex flex-col items-center justify-center mb-10 relative fade-up">
+      <div className="absolute inset-0 flex items-center justify-center">
+        <div className="w-56 h-56 sm:w-64 sm:h-64 rounded-full bg-gradient-to-tr from-cyan-400/25 via-violet-500/20 to-fuchsia-500/25 blur-3xl animate-pulse-slow" />
+      </div>
 
-            {/* Floating Logo */}
-            <img
-              src="/images/qsv-logo.png"
-              alt="QSV Logo"
-              className="relative w-40 h-40 sm:w-52 sm:h-52 drop-shadow-[0_0_25px_rgba(56,189,248,0.5)] hover:drop-shadow-[0_0_45px_rgba(139,92,246,0.6)] transition-all duration-700 animate-float"
-            />
+      <img
+        src="/images/qsv-logo.png"
+        alt="QSV Logo"
+        className="relative w-40 h-40 sm:w-52 sm:h-52 drop-shadow-[0_0_25px_rgba(56,189,248,0.5)] hover:drop-shadow-[0_0_45px_rgba(139,92,246,0.6)] transition-all duration-700 animate-float"
+      />
 
-            {/* Tagline */}
-            <h2 className="relative mt-5 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-violet-500 text-2xl sm:text-3xl font-extrabold tracking-wide uppercase drop-shadow-[0_0_20px_rgba(139,92,246,0.4)]">
-              Step Into the Multiverse
-            </h2>
-          </div>
+      <h2 className="relative mt-5 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 via-sky-400 to-violet-500 text-2xl sm:text-3xl font-extrabold tracking-wide uppercase drop-shadow-[0_0_20px_rgba(139,92,246,0.4)]">
+        Step Into the Multiverse
+      </h2>
+    </div>
 
-          <h1
-            className={`bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-500 bg-clip-text text-5xl font-extrabold uppercase text-transparent drop-shadow-[0_10px_35px_rgba(114,106,255,0.35)] sm:text-6xl xl:text-7xl fade-up ${
-              isMounted ? "fade-up--animate" : ""
-            }`}
-            style={{ animationDelay: "0.2s" }}
-          >
-            Step into the Multiverse
-          </h1>
+    <h1
+      className={`bg-gradient-to-r from-cyan-300 via-violet-400 to-fuchsia-500 bg-clip-text text-5xl font-extrabold uppercase text-transparent drop-shadow-[0_10px_35px_rgba(114,106,255,0.35)] sm:text-6xl xl:text-7xl fade-up ${
+        isMounted ? "fade-up--animate" : ""
+      }`}
+      style={{ animationDelay: "0.2s" }}
+    >
+      Step into the Multiverse
+    </h1>
 
-          <p
-            className={`text-base text-slate-200/90 sm:text-lg fade-up ${
-              isMounted ? "fade-up--animate" : ""
-            }`}
-            style={{ animationDelay: "0.35s" }}
-          >
-            Experience shopping like never before — traverse immersive virtual
-            realms, touch lifelike holograms, and customize your dream spaces
-            with quantum precision.
-          </p>
-        </div>
+    <p
+      className={`text-base text-slate-200/90 sm:text-lg fade-up ${
+        isMounted ? "fade-up--animate" : ""
+      }`}
+      style={{ animationDelay: "0.35s" }}
+    >
+      Experience shopping like never before — traverse immersive virtual realms,
+      touch lifelike holograms, and customize your dream spaces with quantum
+      precision.
+    </p>
+  </div>
 
             <form
   onSubmit={handleSubmit}
