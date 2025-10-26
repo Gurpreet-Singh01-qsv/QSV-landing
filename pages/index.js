@@ -46,32 +46,20 @@ const handleSubmit = async (e) => {
   setSubmitted(false);
 
   try {
-    const res = await fetch(
-      `https://api.allorigins.win/raw?url=${encodeURIComponent(
-        "https://script.google.com/macros/s/AKfycbyBcxB2Va5bcmyEsQkYM1bdVSVo8DHFdBXPFw_M_B846kjJQcvR9-8IEBdd8RoqmZvv/exec"
-      )}`,
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      }
-    );
+    const res = await fetch("/api/submit", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    });
 
-    const text = await res.text();
-    let result = {};
-    try {
-      result = JSON.parse(text);
-    } catch {
-      result = {};
-    }
+    const result = await res.json();
 
-    if (res.ok && (result.success || text.includes("success"))) {
+    if (result.success) {
       setSubmitted(true);
       setEmail("");
       e.currentTarget.reset();
       setError("");
     } else {
-      console.error("Response text:", text);
       setError("Submission failed. Please try again.");
     }
   } catch (err) {
