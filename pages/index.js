@@ -39,7 +39,7 @@ const [error, setError] = useState("");
     return `translateY(${n}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   }, [scrollIntensity]);
 
- const handleSubmit = async (e) => {
+const handleSubmit = async (e) => {
   e.preventDefault();
   setLoading(true);
   setError("");
