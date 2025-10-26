@@ -39,47 +39,48 @@ export default function Home() {
     return `translateY(${n}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   }, [scrollIntensity]);
 
-  // ✅ Form Handler (Google Sheets Integration)
-  const handleSubmit = async (e) => {
-    e.preventDefault();
-    setLoading(true);
-    setError("");
-    setSubmitted(false);
+const handleSubmit = async (e) => {
+  e.preventDefault();
+  setLoading(true);
+  setError("");
+  setSubmitted(false);
+
+  try {
+    const res = await fetch(
+      "https://corsproxy.io/?https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec",
+      {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      }
+    );
+
+    const text = await res.text();
+    let result = {};
 
     try {
-      const res = await fetch(
-        "https://corsproxy.io/?https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec",
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
-
-      const text = await res.text();
-      let result = {};
-      try {
-        result = JSON.parse(text);
-      } catch {
-        result = { success: false, error: "Invalid JSON response" };
-      }
-
-      if (result.success) {
-        setSubmitted(true);
-        setEmail("");
-        e.currentTarget.reset();
-        setError("");
-      } else {
-        console.error(result.error || "Unknown error");
-        setError("Submission failed. Please try again.");
-      }
+      result = JSON.parse(text);
     } catch (err) {
-      console.error("Network Error:", err);
-      setError("Network error. Please try again later.");
-    } finally {
-      setLoading(false);
+      console.error("Invalid JSON:", err);
+      result = { success: false, error: "Invalid JSON response" };
     }
-  };
+
+    if (result.success) {
+      setSubmitted(true);
+      setEmail("");
+      e.currentTarget.reset();
+      setError("");
+    } else {
+      console.error(result.error || "Unknown error");
+      setError("Submission failed. Please try again.");
+    }
+  } catch (err) {
+    console.error("Network Error:", err);
+    setError("Network error. Please try again later.");
+  } finally {
+    setLoading(false);
+  }
+};
 
   return (
     <>
@@ -141,41 +142,40 @@ export default function Home() {
               with quantum precision.
             </p>
 
-            {/* ✅ FORM */}
             <form
-              onSubmit={handleSubmit}
-              className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6"
-            >
-              <input
-                type="email"
-                name="email"
-                required
-                placeholder="Enter your email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                className="px-4 py-3 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 w-64 sm:w-72 shadow-md"
-              />
+  onSubmit={handleSubmit}
+  className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6"
+>
+  <input
+    type="email"
+    name="email"
+    required
+    placeholder="Enter your email"
+    value={email}
+    onChange={(e) => setEmail(e.target.value)}
+    className="px-4 py-3 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 w-64 sm:w-72 shadow-md"
+  />
 
-              <button
-                type="submit"
-                disabled={loading}
-                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 px-8 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-[0_0_35px_rgba(103,232,249,0.45)] transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed"
-              >
-                <span className="absolute inset-0 animate-glow bg-gradient-to-r from-cyan-300/30 via-transparent to-fuchsia-400/30" />
-                <span className="relative">
-                  {loading ? "Sending…" : "Join Waitlist"}
-                </span>
-              </button>
-            </form>
+  <button
+    type="submit"
+    disabled={loading}
+    className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 px-8 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-[0_0_35px_rgba(103,232,249,0.45)] transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed"
+  >
+    <span className="absolute inset-0 animate-glow bg-gradient-to-r from-cyan-300/30 via-transparent to-fuchsia-400/30" />
+    <span className="relative">{loading ? "Sending…" : "Join Waitlist"}</span>
+  </button>
+</form>
 
-            {submitted && !error && (
-              <p className="mt-4 text-sky-300 text-sm fade-up">
-                🎉 You’re on the waitlist! We’ll be in touch soon.
-              </p>
-            )}
-            {error && (
-              <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
-            )}
+{submitted && !error && (
+  <p className="mt-4 text-sky-300 text-sm fade-up">
+    🎉 You’re on the waitlist! We’ll be in touch soon.
+  </p>
+)}
+
+{error && (
+  <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
+)}
+
           </div>
 
           {/* VR CARD SECTION */}
