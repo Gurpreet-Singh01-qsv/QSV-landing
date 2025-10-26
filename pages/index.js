@@ -107,9 +107,7 @@ const handleSubmit = async (e) => {
 
         {/* HERO SECTION */}
         <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center lg:flex-row lg:text-left lg:px-16 lg:py-32">
-          {/* TEXT SECTION */}
-          
-
+  
           <div className="max-w-2xl space-y-8">
            <p
   className={`uppercase tracking-[0.4em] text-xs text-cyan-200/70 fade-up ${
@@ -119,7 +117,7 @@ const handleSubmit = async (e) => {
 >
   FUTURISTIC VR SHOPPING PLATFORM
 </p>
-
+  
 {/* ✅ QSV Logo Section ... */}
 <div className="flex flex-col items-center justify-center mb-10 relative fade-up">
   {/* Animated glow halo behind logo */}
@@ -148,6 +146,7 @@ const handleSubmit = async (e) => {
 >
   Step into the Multiverse
 </h1>
+
             <p
               className={`text-base text-slate-200/90 sm:text-lg fade-up ${
                 isMounted ? "fade-up--animate" : ""
