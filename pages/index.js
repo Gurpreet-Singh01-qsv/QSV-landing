@@ -47,7 +47,9 @@ const handleSubmit = async (e) => {
 
   try {
     const res = await fetch(
-      "https://script.google.com/macros/s/AKfycbwO_9DPp3wrLUg_zYuV_yJZCBiCPvUIrDHRfUETzdPtOyFTZb-y9SVkqyKDWLh-mdUq/exec",
+      `https://api.allorigins.win/raw?url=${encodeURIComponent(
+        "https://script.google.com/macros/s/AKfycbyBcxB2Va5bcmyEsQkYM1bdVSVo8DHFdBXPFw_M_B846kjJQcvR9-8IEBdd8RoqmZvv/exec"
+      )}`,
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -55,7 +57,6 @@ const handleSubmit = async (e) => {
       }
     );
 
-    // Try to parse JSON
     const text = await res.text();
     let result = {};
     try {
@@ -64,15 +65,14 @@ const handleSubmit = async (e) => {
       result = {};
     }
 
-    // Treat both valid JSON {success:true} or any 200 OK as success
-    if (res.ok && (result.success || text.includes("live") || text.includes("OK"))) {
+    if (res.ok && (result.success || text.includes("success"))) {
       setSubmitted(true);
       setEmail("");
       e.currentTarget.reset();
       setError("");
     } else {
-      setError("Submission failed. Please try again.");
       console.error("Response text:", text);
+      setError("Submission failed. Please try again.");
     }
   } catch (err) {
     console.error("Network Error:", err);
