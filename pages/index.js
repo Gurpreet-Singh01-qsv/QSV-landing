@@ -57,7 +57,12 @@ const handleSubmit = async (e) => {
     if (res.ok && result.success) {
       setSubmitted(true);
       setEmail("");
-      e.currentTarget.reset();
+
+      // ✅ Safely reset the form (React event pooling fix)
+      if (e && e.target && typeof e.target.reset === "function") {
+        e.target.reset();
+      }
+
       setError("");
     } else {
       console.error("Backend error:", result.error || "Unknown error");
