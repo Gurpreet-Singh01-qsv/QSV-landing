@@ -162,7 +162,7 @@ const handleSubmit = async (e) => {
 
 {submitted && !error && (
   <p className="mt-4 text-sky-300 text-sm fade-up">
-    🎉 You’re on the waitlist! We’ll be in touch soon.
+    You’re officially in. The Multiverse awaits — stay tuned for your access key.
   </p>
 )}
 
