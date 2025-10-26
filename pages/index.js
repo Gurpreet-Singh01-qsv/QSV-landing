@@ -149,43 +149,6 @@ const [error, setError] = useState("");
   onSubmit={handleSubmit}
   className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6"
 >
-    try {
-      const res = await fetch(
-        `https://corsproxy.io/?https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec`,
-        {
-          method: "POST",
-          headers: { "Content-Type": "application/json" },
-          body: JSON.stringify({ email }),
-        }
-      );
-
-      const text = await res.text();
-      let result = {};
-
-      try {
-        result = JSON.parse(text);
-      } catch {
-        result = { success: false, error: "Invalid JSON response" };
-      }
-
-      if (result.success) {
-        setSubmitted(true);
-        setEmail("");
-        e.currentTarget.reset();
-        setError("");
-      } else {
-        console.error(result.error || "Unknown error");
-        setError("Submission failed. Please try again.");
-      }
-    } catch (err) {
-      console.error("Network Error:", err);
-      setError("Network error. Please try again later.");
-    } finally {
-      setLoading(false);
-    }
-  }}
-  className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6"
->
   <input
     type="email"
     name="email"
@@ -210,6 +173,10 @@ const [error, setError] = useState("");
   <p className="mt-4 text-sky-300 text-sm fade-up">
     🎉 You’re on the waitlist! We’ll be in touch soon.
   </p>
+)}
+
+{error && (
+  <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
 )}
 
 {error && (
