@@ -46,23 +46,29 @@ const handleSubmit = async (e) => {
   setSubmitted(false);
 
   try {
-    const res = await fetch(
-      "https://corsproxy.io/?https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec",
-      {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        body: JSON.stringify({ email }),
-      }
-    );
+  const res = await fetch(
+    "https://corsproxy.io/?https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec",
+    {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ email }),
+    }
+  );
 
-    const text = await res.text();
-    let result = {};
+  const text = await res.text();
 
+  // If response includes "live" or "success", treat it as success even if not JSON
+  if (text.includes("live") || text.includes("success")) {
+    setSubmitted(true);
+    setEmail("");
+    e.currentTarget.reset();
+    setError("");
+  } else {
+    let result;
     try {
       result = JSON.parse(text);
-    } catch (err) {
-      console.error("Invalid JSON:", err);
-      result = { success: false, error: "Invalid JSON response" };
+    } catch {
+      throw new Error("Invalid response format");
     }
 
     if (result.success) {
@@ -71,15 +77,15 @@ const handleSubmit = async (e) => {
       e.currentTarget.reset();
       setError("");
     } else {
-      console.error(result.error || "Unknown error");
       setError("Submission failed. Please try again.");
     }
-  } catch (err) {
-    console.error("Network Error:", err);
-    setError("Network error. Please try again later.");
-  } finally {
-    setLoading(false);
   }
+} catch (err) {
+  console.error("Network Error:", err);
+  setError("Network error. Please try again later.");
+} finally {
+  setLoading(false);
+}
 };
 
   return (
