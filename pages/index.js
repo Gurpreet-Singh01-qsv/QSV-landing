@@ -47,7 +47,7 @@ const handleSubmit = async (e) => {
 
   try {
     const res = await fetch(
-      "https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec",
+      "https://script.google.com/macros/s/AKfycbwO_9DPp3wrLUg_zYuV_yJZCBiCPvUIrDHRfUETzdPtOyFTZb-y9SVkqyKDWLh-mdUq/exec",
       {
         method: "POST",
         headers: { "Content-Type": "application/json" },
