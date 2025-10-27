@@ -118,38 +118,44 @@ return (
     >
       FUTURISTIC VR SHOPPING PLATFORM
     </p>
-
-    {/* Logo — feathered, blended, with a subtle sheen */}
    
+{/* QSV Logo — heavier, no disk, no blend */}
 <div className="relative mb-8 flex flex-col items-center justify-center fade-up isolate">
-  {/* Circular logo frame that CLIPS everything inside */}
   <div className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden">
-    {/* Logo (feathered + blended) */}
+    {/* Logo */}
     <img
-      src="/images/qsv-logo-merged.png" /* or /images/qsv-logo.png */
+      src="/images/qsv-logo-merged.png"
       alt="QSV Logo"
       className="
         absolute inset-0 w-full h-full object-contain select-none animate-float
-        mix-blend-screen
-        [mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
-        [-webkit-mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
-        brightness-[1.03] contrast-[1.06] saturate-[1.08]
+        brightness-[0.86] contrast-[1.22] saturate-[1.05]
+        [mask-image:radial-gradient(closest-side,white_88%,transparent_100%)]
+        [-webkit-mask-image:radial-gradient(closest-side,white_88%,transparent_100%)]
+        drop-shadow-[0_10px_30px_rgba(10,12,28,0.55)]
       "
       draggable="false"
     />
 
-    {/* Sheen (now clipped + masked so it cannot form a vertical bar) */}
-    <div className="pointer-events-none absolute inset-0
-                    [mask-image:radial-gradient(closest-side,white,transparent)]
-                    [-webkit-mask-image:radial-gradient(closest-side,white,transparent)]">
-      <div className="absolute -left-1/2 top-0 h-full w-[60%]
-                      bg-[linear-gradient(100deg,transparent,rgba(255,255,255,0.12),transparent)]
-                      animate-logo-sheen" />
+    {/* Inner vignette adds mass (clipped, very soft) */}
+    <div
+      className="pointer-events-none absolute inset-0"
+      style={{
+        background:
+          "radial-gradient(60% 60% at 50% 50%, rgba(0,0,0,0.22) 0%, rgba(0,0,0,0.10) 55%, rgba(0,0,0,0) 85%)",
+        WebkitMaskImage:
+          "radial-gradient(closest-side, rgba(255,255,255,0.95), transparent)",
+        maskImage:
+          "radial-gradient(closest-side, rgba(255,255,255,0.95), transparent)",
+      }}
+    />
+
+    {/* Subtle light sweep (kept minimal) */}
+    <div className="pointer-events-none absolute inset-0 [mask-image:radial-gradient(closest-side,white,transparent)] [-webkit-mask-image:radial-gradient(closest-side,white,transparent)]">
+      <div className="absolute -left-1/2 top-0 h-full w-[60%] bg-[linear-gradient(100deg,transparent,rgba(255,255,255,0.06),transparent)] animate-logo-sheen" />
     </div>
   </div>
 
-  {/* Tagline */}
-  <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide drop-shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+  <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide">
     Step Into the Multiverse
   </h2>
 </div>
