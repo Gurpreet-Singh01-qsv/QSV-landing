@@ -39,104 +39,103 @@ export default function Home() {
     return `translateY(${n}px) rotateX(${rotateX}deg) rotateY(${rotateY}deg)`;
   }, [scrollIntensity]);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  setError("");
-  setSubmitted(false);
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setLoading(true);
+    setError("");
+    setSubmitted(false);
 
-  try {
-    const res = await fetch("/api/submit", {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify({ email }),
-    });
+    try {
+      const res = await fetch("/api/submit", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ email }),
+      });
 
-    const result = await res.json();
+      const result = await res.json();
 
-    if (res.ok && result.success) {
-      setSubmitted(true);
-      setEmail("");
+      if (res.ok && result.success) {
+        setSubmitted(true);
+        setEmail("");
 
-      // ✅ Safely reset the form (React event pooling fix)
-      if (e && e.target && typeof e.target.reset === "function") {
-        e.target.reset();
+        // ✅ Safely reset the form (React event pooling fix)
+        if (e && e.target && typeof e.target.reset === "function") {
+          e.target.reset();
+        }
+
+        setError("");
+      } else {
+        console.error("Backend error:", result.error || "Unknown error");
+        setError("Submission failed. Please try again.");
       }
-
-      setError("");
-    } else {
-      console.error("Backend error:", result.error || "Unknown error");
-      setError("Submission failed. Please try again.");
+    } catch (err) {
+      console.error("Frontend error:", err);
+      setError("Network error. Please try again later.");
+    } finally {
+      setLoading(false);
     }
-  } catch (err) {
-    console.error("Frontend error:", err);
-    setError("Network error. Please try again later.");
-  } finally {
-    setLoading(false);
-  }
-};
+  };
 
-return (
-  <>
-    <Head>
-      <title>QSV – Shop the Multiverse</title>
-      <meta
-        name="description"
-        content="Experience immersive VR shopping with QSV – Shop the Multiverse."
-      />
-    </Head>
-
-    <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#040824] via-[#120538] to-[#01010f] text-white">
-      {/* Background Glow */}
-      <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(68,215,255,0.25),transparent_55%),radial-gradient(circle_at_80%_10%,rgba(155,108,255,0.35),transparent_50%),radial-gradient(circle_at_50%_80%,rgba(0,102,255,0.2),transparent_55%)]" />
-
-      {/* Floating Particles */}
-      {particleConfig.map((p, i) => (
-        <span
-          key={i}
-          style={{
-            top: p.top,
-            left: p.left,
-            width: `${p.size}px`,
-            height: `${p.size}px`,
-            animationDelay: p.delay,
-          }}
-          className="qsv-particle"
+  return (
+    <>
+      <Head>
+        <title>QSV – Shop the Multiverse</title>
+        <meta
+          name="description"
+          content="Experience immersive VR shopping with QSV – Shop the Multiverse."
         />
-      ))}
+      </Head>
 
-      {/* HERO SECTION */}
-      <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center lg:flex-row lg:text-left lg:px-16 lg:py-32">
-  {/* LEFT: Text + Logo */}
-  <div className="max-w-2xl space-y-8">
-    {/* Eyebrow */}
-    <p
-      className={`uppercase tracking-[0.35em] text-[11px] text-cyan-200/60 fade-up ${
-        isMounted ? "fade-up--animate" : ""
-      }`}
-      style={{ animationDelay: "0.05s" }}
-    >
-      FUTURISTIC VR SHOPPING PLATFORM
-    </p>
-   
-{/* QSV Logo — mobile-heavier, no disk, responsive tweaks */}
-<div className="relative mb-8 flex flex-col items-center justify-center fade-up isolate">
-  <div className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden">
-    {/* Mobile-only local darkener to add contrast without a visible circle */}
-    <div
-      className="pointer-events-none absolute inset-0 rounded-full md:hidden"
-      style={{
-        background:
-          "radial-gradient(closest-side, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.22) 58%, rgba(0,0,0,0) 82%)",
-        mixBlendMode: "multiply",
-      }}
-    />
+      <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#040824] via-[#120538] to-[#01010f] text-white">
+        {/* Background Glow */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(68,215,255,0.25),transparent_55%),radial-gradient(circle_at_80%_10%,rgba(155,108,255,0.35),transparent_50%),radial-gradient(circle_at_50%_80%,rgba(0,102,255,0.2),transparent_55%)]" />
 
-    {/* Logo (heavier on mobile, relaxed on md+) */}
-    <img
-      src="/images/qsv-logo-merged.png"
-      alt="QSV Logo"
-      className="
+        {/* Floating Particles */}
+        {particleConfig.map((p, i) => (
+          <span
+            key={i}
+            style={{
+              top: p.top,
+              left: p.left,
+              width: `${p.size}px`,
+              height: `${p.size}px`,
+              animationDelay: p.delay,
+            }}
+            className="qsv-particle"
+          />
+        ))}
+
+        {/* HERO SECTION */}
+        <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center lg:flex-row lg:text-left lg:px-16 lg:py-32">
+          {/* LEFT: Text + Logo */}
+          <div className="max-w-2xl space-y-8">
+            {/* Eyebrow */}
+            <p
+              className={`uppercase tracking-[0.35em] text-[11px] text-cyan-200/60 fade-up ${isMounted ? "fade-up--animate" : ""
+                }`}
+              style={{ animationDelay: "0.05s" }}
+            >
+              FUTURISTIC VR SHOPPING PLATFORM
+            </p>
+
+            {/* QSV Logo — mobile-heavier, no disk, responsive tweaks */}
+            <div className="relative mb-8 flex flex-col items-center justify-center fade-up isolate">
+              <div className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden">
+                {/* Mobile-only local darkener to add contrast without a visible circle */}
+                <div
+                  className="pointer-events-none absolute inset-0 rounded-full md:hidden"
+                  style={{
+                    background:
+                      "radial-gradient(closest-side, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.22) 58%, rgba(0,0,0,0) 82%)",
+                    mixBlendMode: "multiply",
+                  }}
+                />
+
+                {/* Logo (heavier on mobile, relaxed on md+) */}
+                <img
+                  src="/images/qsv-logo-merged.png"
+                  alt="QSV Logo"
+                  className="
         absolute inset-0 w-full h-full object-contain select-none animate-float
         /* MOBILE (default) */
         brightness-[0.82] contrast-[1.26] saturate-[1.12]
@@ -148,173 +147,172 @@ return (
         md:[mask-image:radial-gradient(closest-side,white_88%,transparent_100%)]
         md:[-webkit-mask-image:radial-gradient(closest-side,white_88%,transparent_100%)]
       "
-      draggable="false"
-    />
+                  draggable="false"
+                />
 
-    {/* Sheen: off on mobile, on from md+ */}
-    <div className="pointer-events-none absolute inset-0 hidden md:block
+                {/* Sheen: off on mobile, on from md+ */}
+                <div className="pointer-events-none absolute inset-0 hidden md:block
                     [mask-image:radial-gradient(closest-side,white,transparent)]
                     [-webkit-mask-image:radial-gradient(closest-side,white,transparent)]">
-      <div className="absolute -left-1/2 top-0 h-full w-[60%]
+                  <div className="absolute -left-1/2 top-0 h-full w-[60%]
                       bg-[linear-gradient(100deg,transparent,rgba(255,255,255,0.06),transparent)]
                       animate-logo-sheen" />
-    </div>
-  </div>
+                </div>
+              </div>
 
-  <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide">
-    Step Into the Multiverse
-  </h2>
-</div>
+              <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide">
+                Step Into the Multiverse
+              </h2>
+            </div>
 
 
-  {/* Primary Heading — fallback + gradient overlay */}
-<h1
-  className={`mt-2 relative z-20 text-5xl sm:text-6xl xl:text-7xl
+            {/* Primary Heading — fallback + gradient overlay */}
+            <h1
+              className={`mt-2 relative z-20 text-5xl sm:text-6xl xl:text-7xl
               font-semibold tracking-tight leading-tight fade-up text-cyan-200
               ${isMounted ? "fade-up--animate" : ""}`}
-  style={{ animationDelay: "0.2s" }}
->
-  {/* Fallback solid text (always visible) */}
-  <span>Shop the Multiverse</span>
+              style={{ animationDelay: "0.2s" }}
+            >
+              {/* Fallback solid text (always visible) */}
+              <span>Shop the Multiverse</span>
 
-  {/* Gradient overlay (sits on top if supported) */}
-  <span
-    aria-hidden="true"
-    className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-300/90 to-violet-300/90 bg-clip-text text-transparent"
-    style={{ WebkitTextFillColor: "transparent" }}
-  >
-    Shop the Multiverse
-  </span>
+              {/* Gradient overlay (sits on top if supported) */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-300/90 to-violet-300/90 bg-clip-text text-transparent"
+                style={{ WebkitTextFillColor: "transparent" }}
+              >
+                Shop the Multiverse
+              </span>
 
-  {/* Ultra-subtle sweep on the gradient layer */}
-  <span
-    aria-hidden="true"
-    className="pointer-events-none absolute inset-0
+              {/* Ultra-subtle sweep on the gradient layer */}
+              <span
+                aria-hidden="true"
+                className="pointer-events-none absolute inset-0
                bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)]
                animate-h1-sheen"
-    style={{ mixBlendMode: "overlay" }}
-  />
-</h1>
+                style={{ mixBlendMode: "overlay" }}
+              />
+            </h1>
 
-{/* Body copy */}
-<p
-  className={`text-slate-200/80 sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 fade-up ${
-    isMounted ? "fade-up--animate" : ""
-  }`}
-  style={{ animationDelay: "0.35s" }}
->
-  Experience shopping like never before — traverse immersive virtual realms,
-  touch lifelike holograms, and customize your dream spaces with quantum precision.
-</p>
-{/* ==== FORM STARTS HERE ==== */}
-<form
-  onSubmit={handleSubmit}
-  className="mt-8 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:gap-4"
-  aria-describedby="waitlist-desc"
->
-  <label htmlFor="email" className="sr-only">Email address</label>
+            {/* Body copy */}
+            <p
+              className={`text-slate-200/80 sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 fade-up ${isMounted ? "fade-up--animate" : ""
+                }`}
+              style={{ animationDelay: "0.35s" }}
+            >
+              Experience shopping like never before — traverse immersive virtual realms,
+              touch lifelike holograms, and customize your dream spaces with quantum precision.
+            </p>
+            {/* ==== FORM STARTS HERE ==== */}
+            <form
+              onSubmit={handleSubmit}
+              className="mt-8 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:gap-4"
+              aria-describedby="waitlist-desc"
+            >
+              <label htmlFor="email" className="sr-only">Email address</label>
 
-  <div className="relative w-full sm:flex-1">
-    <input
-      id="email"
-      type="email"
-      name="email"
-      required
-      placeholder="Enter your email"
-      value={email}
-      onChange={(e) => setEmail(e.target.value)}
-      className="w-full rounded-full bg-white/90 text-slate-900 placeholder-slate-500 px-5 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-cyan-300/60 focus:ring-offset-0 transition-shadow"
-      aria-invalid={Boolean(error) || undefined}
-      aria-describedby="waitlist-desc waitlist-msg"
-    />
-    {/* subtle inset highlight */}
-    <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/10" />
-  </div>
+              <div className="relative w-full sm:flex-1">
+                <input
+                  id="email"
+                  type="email"
+                  name="email"
+                  required
+                  placeholder="Enter your email"
+                  value={email}
+                  onChange={(e) => setEmail(e.target.value)}
+                  className="w-full rounded-full bg-white/90 text-slate-900 placeholder-slate-500 px-5 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-cyan-300/60 focus:ring-offset-0 transition-shadow"
+                  aria-invalid={Boolean(error) || undefined}
+                  aria-describedby="waitlist-desc waitlist-msg"
+                />
+                {/* subtle inset highlight */}
+                <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/10" />
+              </div>
 
-  <button
-    type="submit"
-    disabled={loading}
-    className="group relative inline-flex items-center justify-center overflow-hidden rounded-full px-7 py-3 font-semibold uppercase tracking-wide text-white bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 shadow-[0_12px_40px_rgba(56,189,248,0.28)] transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed"
-    aria-live="polite"
-  >
-    <span className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)] translate-x-[-40%] group-hover:translate-x-[30%] transition-transform duration-[1200ms] ease-out" />
-    <span className="relative">{loading ? "Sending…" : "Join Waitlist"}</span>
-  </button>
-</form>
+              <button
+                type="submit"
+                disabled={loading}
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full px-7 py-3 font-semibold uppercase tracking-wide text-white bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 shadow-[0_12px_40px_rgba(56,189,248,0.28)] transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed"
+                aria-live="polite"
+              >
+                <span className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)] translate-x-[-40%] group-hover:translate-x-[30%] transition-transform duration-[1200ms] ease-out" />
+                <span className="relative">{loading ? "Sending…" : "Join Waitlist"}</span>
+              </button>
+            </form>
 
-{/* ARIA helper text (invisible) */}
-<p id="waitlist-desc" className="sr-only">Join the QSV early access waitlist. We’ll only use your email to contact you about access.</p>
+            {/* ARIA helper text (invisible) */}
+            <p id="waitlist-desc" className="sr-only">Join the QSV early access waitlist. We’ll only use your email to contact you about access.</p>
 
-{/* Success / Error messages */}
-<div id="waitlist-msg" className="mt-3 min-h-[1.5rem] text-center lg:text-left" aria-live="polite" role="status">
-  {submitted && !error && (
-    <p className="text-sm text-sky-300">You’re officially in. The Multiverse awaits — stay tuned for your access key.</p>
-  )}
-  {error && <p className="text-sm text-rose-300">{error}</p>}
-</div>
-{/* ==== FORM ENDS HERE ==== */}
-</div>
+            {/* Success / Error messages */}
+            <div id="waitlist-msg" className="mt-3 min-h-[1.5rem] text-center lg:text-left" aria-live="polite" role="status">
+              {submitted && !error && (
+                <p className="text-sm text-sky-300">You’re officially in. The Multiverse awaits — stay tuned for your access key.</p>
+              )}
+              {error && <p className="text-sm text-rose-300">{error}</p>}
+            </div>
+            {/* ==== FORM ENDS HERE ==== */}
+          </div>
           {/* VR CARD SECTION */}
           <div className="relative mt-20 flex w-full max-w-sm justify-center lg:mt-0">
-    <div
-      className="relative w-full rounded-[2.5rem] border border-white/10 bg-white/10 p-[1px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
-      style={{ perspective: "1400px" }}
-    >
-      <div
-        className="relative overflow-hidden rounded-[2.4rem] bg-white/5 p-10 backdrop-blur-2xl transition-transform duration-500 ease-out will-change-transform hover:shadow-[0_30px_120px_rgba(79,70,229,0.25)] hover:scale-[1.015]"
-        style={{ transform: cardTransform }}
-      >
-        {/* Your existing VR card content */}
-        <div className="flex flex-col gap-6 text-left">
-          <div className="flex items-center justify-between">
-            <span className="text-xs uppercase tracking-[0.45em] text-cyan-200/80">
-              Quantum Cart
-            </span>
-            <span className="rounded-full bg-cyan-400/20 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200/70">
-              Live
-            </span>
-          </div>
-          <div className="flex items-center gap-4">
-            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-300 to-violet-500 shadow-lg shadow-cyan-400/30" />
-            <div className="space-y-1">
-              <p className="text-sm font-semibold tracking-wide text-white/90">
-                Luminous Hyper-Sneaker
-              </p>
-              <p className="text-xs text-slate-200/70">
-                Adaptive fit · Haptic weave · Void black
-              </p>
+            <div
+              className="relative w-full rounded-[2.5rem] border border-white/10 bg-white/10 p-[1px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+              style={{ perspective: "1400px" }}
+            >
+              <div
+                className="relative overflow-hidden rounded-[2.4rem] bg-white/5 p-10 backdrop-blur-2xl transition-transform duration-500 ease-out will-change-transform hover:shadow-[0_30px_120px_rgba(79,70,229,0.25)] hover:scale-[1.015]"
+                style={{ transform: cardTransform }}
+              >
+                {/* Your existing VR card content */}
+                <div className="flex flex-col gap-6 text-left">
+                  <div className="flex items-center justify-between">
+                    <span className="text-xs uppercase tracking-[0.45em] text-cyan-200/80">
+                      Quantum Cart
+                    </span>
+                    <span className="rounded-full bg-cyan-400/20 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200/70">
+                      Live
+                    </span>
+                  </div>
+                  <div className="flex items-center gap-4">
+                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-300 to-violet-500 shadow-lg shadow-cyan-400/30" />
+                    <div className="space-y-1">
+                      <p className="text-sm font-semibold tracking-wide text-white/90">
+                        Luminous Hyper-Sneaker
+                      </p>
+                      <p className="text-xs text-slate-200/70">
+                        Adaptive fit · Haptic weave · Void black
+                      </p>
+                    </div>
+                  </div>
+                  <div className="grid grid-cols-2 gap-4 text-xs text-slate-200/80">
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
+                        Environment
+                      </p>
+                      <p className="mt-2 text-sm text-white">Neon Spires</p>
+                    </div>
+                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+                      <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
+                        Emotion
+                      </p>
+                      <p className="mt-2 text-sm text-white">Euphoric Calm</p>
+                    </div>
+                  </div>
+                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-400/20 via-transparent to-fuchsia-400/20 p-5">
+                    <div>
+                      <p className="text-[10px] uppercase tracking-[0.4em] text-cyan-200/60">
+                        Checkout Pulse
+                      </p>
+                      <p className="mt-2 text-lg font-semibold text-white">2.3 s</p>
+                    </div>
+                    <span className="rounded-full bg-white/10 px-5 py-2 text-[10px] uppercase tracking-[0.4em] text-white/80">
+                      Synced
+                    </span>
+                  </div>
+                </div>
+              </div>
             </div>
           </div>
-          <div className="grid grid-cols-2 gap-4 text-xs text-slate-200/80">
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
-                Environment
-              </p>
-              <p className="mt-2 text-sm text-white">Neon Spires</p>
-            </div>
-            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-              <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
-                Emotion
-              </p>
-              <p className="mt-2 text-sm text-white">Euphoric Calm</p>
-            </div>
-          </div>
-          <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-400/20 via-transparent to-fuchsia-400/20 p-5">
-            <div>
-              <p className="text-[10px] uppercase tracking-[0.4em] text-cyan-200/60">
-                Checkout Pulse
-              </p>
-              <p className="mt-2 text-lg font-semibold text-white">2.3 s</p>
-            </div>
-            <span className="rounded-full bg-white/10 px-5 py-2 text-[10px] uppercase tracking-[0.4em] text-white/80">
-              Synced
-            </span>
-          </div>
-        </div>
-      </div>
-    </div>
-  </div>
-</main>
+        </main>
 
         <footer className="relative z-10 border-t border-white/10 bg-black/20 py-8 text-center text-xs uppercase tracking-[0.4em] text-slate-300/60">
           © 2025 QSV Multiverse All rights reserved
@@ -396,17 +394,32 @@ return (
             opacity: 0.7;
             transform: translateX(20%);
           }
-          @keyframes pulseSlow {
-  0%, 100% { opacity: 0.9; transform: scale(1); }
-  50% { opacity: 1; transform: scale(1.05); }
-}
-.animate-pulse-slow {
-  animation: pulseSlow 5s ease-in-out infinite;
-}
+        }
+        @keyframes pulseSlow {
+          0%, 100% { 
+            opacity: 0.9; 
+            transform: scale(1); 
+          }
+          50% { 
+            opacity: 1; 
+            transform: scale(1.05); 
+          }
+        }
+        .animate-pulse-slow {
+          animation: pulseSlow 5s ease-in-out infinite;
+        }
+        @keyframes float {
+          0%, 100% { 
+            transform: translateY(0px); 
+          }
+          50% { 
+            transform: translateY(-10px); 
+          }
+        }
+        .animate-float {
+          animation: float 6s ease-in-out infinite;
+        }
       `}</style>
     </>
   );
 }
-
-
-
