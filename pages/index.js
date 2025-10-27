@@ -257,7 +257,7 @@ return (
   )}
   {error && <p className="text-sm text-rose-300">{error}</p>}
 </div>
-   
+ </div>  
           {/* VR CARD SECTION */}
           <div className="relative mt-20 flex w-full max-w-sm justify-center lg:mt-0">
     <div
