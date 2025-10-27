@@ -1,35 +1,38 @@
+import { addEmailToWaitlist } from '../../lib/supabase'
+
 export default async function handler(req, res) {
-  if (req.method !== "POST")
+  if (req.method !== "POST") {
     return res.status(405).json({ success: false, error: "Method not allowed" });
+  }
 
   try {
-    const scriptURL =
-      "https://script.google.com/macros/s/AKfycbzKTC70E2xjBizIkNYvBWjTpdZxfUtBRkPZrwstv9C4_6ZsagGewNFiaqVwG8fWpMb3/exec";
+    const { email } = req.body;
 
-    const response = await fetch(scriptURL, {
-      method: "POST",
-      headers: { "Content-Type": "application/json" },
-      body: JSON.stringify(req.body),
-    });
-
-    const text = await response.text();
-
-    // Try parsing response
-    let result;
-    try {
-      result = JSON.parse(text);
-    } catch {
-      result = { success: true, raw: text }; // assume success if script returned text
+    // Validate email
+    if (!email || !email.includes('@')) {
+      return res.status(400).json({ success: false, error: "Valid email required" });
     }
 
-    // ✅ Force success if HTTP status is 200
-    if (response.ok) {
-      return res.status(200).json({ success: true, message: "Added to sheet", data: result });
+    // Add to database
+    const result = await addEmailToWaitlist(email.toLowerCase().trim());
+
+    if (result.success) {
+      return res.status(200).json({ 
+        success: true, 
+        message: "Successfully added to waitlist",
+        data: result.data 
+      });
     } else {
-      return res.status(400).json({ success: false, error: "Bad response from script" });
+      return res.status(400).json({ 
+        success: false, 
+        error: result.error 
+      });
     }
   } catch (err) {
     console.error("Server error:", err);
-    return res.status(500).json({ success: false, error: err.message });
+    return res.status(500).json({ 
+      success: false, 
+      error: "Internal server error" 
+    });
   }
 }

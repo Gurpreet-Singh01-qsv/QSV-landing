@@ -83,7 +83,7 @@ export default function Home() {
       } else {
         console.error("Backend error:", result.error || "Unknown error");
         setError("Submission failed. Please try again.");
-        
+
         // Track form errors
         if (typeof window !== 'undefined' && window.gtag) {
           window.gtag('event', 'form_error', {
@@ -95,7 +95,7 @@ export default function Home() {
     } catch (err) {
       console.error("Frontend error:", err);
       setError("Network error. Please try again later.");
-      
+
       // Track network errors
       if (typeof window !== 'undefined' && window.gtag) {
         window.gtag('event', 'form_error', {
@@ -119,7 +119,7 @@ export default function Home() {
         <meta name="keywords" content="VR shopping, virtual reality, metaverse shopping, immersive commerce, quantum shopping, futuristic retail" />
         <meta name="author" content="QSV Multiverse" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-        
+
         {/* Open Graph / Facebook */}
         <meta property="og:type" content="website" />
         <meta property="og:url" content="https://qsv-multiverse.com/" />
@@ -128,23 +128,23 @@ export default function Home() {
         <meta property="og:image" content="/images/qsv-og-image.png" />
         <meta property="og:image:width" content="1200" />
         <meta property="og:image:height" content="630" />
-        
+
         {/* Twitter */}
         <meta property="twitter:card" content="summary_large_image" />
         <meta property="twitter:url" content="https://qsv-multiverse.com/" />
         <meta property="twitter:title" content="QSV – Shop the Multiverse | Revolutionary VR Shopping" />
         <meta property="twitter:description" content="Experience the future of shopping with QSV. Traverse immersive virtual realms and customize your dream spaces." />
         <meta property="twitter:image" content="/images/qsv-og-image.png" />
-        
+
         {/* Favicon */}
         <link rel="icon" href="/favicon.ico" />
         <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
         <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
         <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
-        
+
         {/* Preload critical resources */}
         <link rel="preload" href="/images/qsv-logo-merged.png" as="image" />
-        
+
         {/* Structured Data */}
         <script
           type="application/ld+json"
