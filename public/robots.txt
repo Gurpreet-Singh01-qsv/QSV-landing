@@ -1,0 +1,9 @@
+User-agent: *
+Allow: /
+
+# Sitemap
+Sitemap: https://qsv-multiverse.com/sitemap.xml
+
+# Block access to admin areas (when you add them later)
+Disallow: /admin/
+Disallow: /api/

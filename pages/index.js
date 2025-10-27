@@ -45,6 +45,14 @@ export default function Home() {
     setError("");
     setSubmitted(false);
 
+    // Track form submission attempt
+    if (typeof window !== 'undefined' && window.gtag) {
+      window.gtag('event', 'form_submit_attempt', {
+        event_category: 'engagement',
+        event_label: 'waitlist_signup'
+      });
+    }
+
     try {
       const res = await fetch("/api/submit", {
         method: "POST",
@@ -58,6 +66,14 @@ export default function Home() {
         setSubmitted(true);
         setEmail("");
 
+        // Track successful conversion
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'conversion', {
+            event_category: 'engagement',
+            event_label: 'waitlist_signup_success'
+          });
+        }
+
         // ✅ Safely reset the form (React event pooling fix)
         if (e && e.target && typeof e.target.reset === "function") {
           e.target.reset();
@@ -67,10 +83,26 @@ export default function Home() {
       } else {
         console.error("Backend error:", result.error || "Unknown error");
         setError("Submission failed. Please try again.");
+        
+        // Track form errors
+        if (typeof window !== 'undefined' && window.gtag) {
+          window.gtag('event', 'form_error', {
+            event_category: 'engagement',
+            event_label: 'waitlist_signup_failed'
+          });
+        }
       }
     } catch (err) {
       console.error("Frontend error:", err);
       setError("Network error. Please try again later.");
+      
+      // Track network errors
+      if (typeof window !== 'undefined' && window.gtag) {
+        window.gtag('event', 'form_error', {
+          event_category: 'engagement',
+          event_label: 'network_error'
+        });
+      }
     } finally {
       setLoading(false);
     }
@@ -79,10 +111,57 @@ export default function Home() {
   return (
     <>
       <Head>
-        <title>QSV – Shop the Multiverse</title>
+        <title>QSV – Shop the Multiverse | Revolutionary VR Shopping Platform</title>
         <meta
           name="description"
-          content="Experience immersive VR shopping with QSV – Shop the Multiverse."
+          content="Experience the future of shopping with QSV. Traverse immersive virtual realms, touch lifelike holograms, and customize your dream spaces with quantum precision. Join the VR shopping revolution."
+        />
+        <meta name="keywords" content="VR shopping, virtual reality, metaverse shopping, immersive commerce, quantum shopping, futuristic retail" />
+        <meta name="author" content="QSV Multiverse" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        
+        {/* Open Graph / Facebook */}
+        <meta property="og:type" content="website" />
+        <meta property="og:url" content="https://qsv-multiverse.com/" />
+        <meta property="og:title" content="QSV – Shop the Multiverse | Revolutionary VR Shopping" />
+        <meta property="og:description" content="Experience the future of shopping with QSV. Traverse immersive virtual realms and customize your dream spaces with quantum precision." />
+        <meta property="og:image" content="/images/qsv-og-image.png" />
+        <meta property="og:image:width" content="1200" />
+        <meta property="og:image:height" content="630" />
+        
+        {/* Twitter */}
+        <meta property="twitter:card" content="summary_large_image" />
+        <meta property="twitter:url" content="https://qsv-multiverse.com/" />
+        <meta property="twitter:title" content="QSV – Shop the Multiverse | Revolutionary VR Shopping" />
+        <meta property="twitter:description" content="Experience the future of shopping with QSV. Traverse immersive virtual realms and customize your dream spaces." />
+        <meta property="twitter:image" content="/images/qsv-og-image.png" />
+        
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/apple-touch-icon.png" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/favicon-32x32.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/favicon-16x16.png" />
+        
+        {/* Preload critical resources */}
+        <link rel="preload" href="/images/qsv-logo-merged.png" as="image" />
+        
+        {/* Structured Data */}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{
+            __html: JSON.stringify({
+              "@context": "https://schema.org",
+              "@type": "Organization",
+              "name": "QSV Multiverse",
+              "description": "Revolutionary VR shopping platform for the metaverse",
+              "url": "https://qsv-multiverse.com",
+              "logo": "https://qsv-multiverse.com/images/qsv-logo-merged.png",
+              "sameAs": [
+                "https://twitter.com/qsv_multiverse",
+                "https://linkedin.com/company/qsv-multiverse"
+              ]
+            })
+          }}
         />
       </Head>
 
@@ -134,7 +213,11 @@ export default function Home() {
                 {/* Logo (heavier on mobile, relaxed on md+) */}
                 <img
                   src="/images/qsv-logo-merged.png"
-                  alt="QSV Logo"
+                  alt="QSV Logo - Revolutionary VR Shopping Platform"
+                  width="208"
+                  height="208"
+                  loading="eager"
+                  decoding="async"
                   className="
         absolute inset-0 w-full h-full object-contain select-none animate-float
         /* MOBILE (default) */
@@ -244,7 +327,7 @@ export default function Home() {
             <p id="waitlist-desc" className="sr-only">Join the QSV early access waitlist. We’ll only use your email to contact you about access.</p>
 
             {/* Success / Error messages */}
-            <div id="waitlist-msg" className="mt-3 min-h-[1.5rem] text-center lg:text-left" aria-live="polite" role="status">
+            <div id="waitlist-msg" className="mt-3 min-h-[2.5rem] text-center lg:text-left" aria-live="polite" role="status">
               {submitted && !error && (
                 <p className="text-sm text-sky-300">You’re officially in. The Multiverse awaits — stay tuned for your access key.</p>
               )}
@@ -418,6 +501,13 @@ export default function Home() {
         }
         .animate-float {
           animation: float 6s ease-in-out infinite;
+        }
+        @keyframes fadeIn {
+          from { opacity: 0; transform: translateY(10px); }
+          to { opacity: 1; transform: translateY(0); }
+        }
+        .animate-fadeIn {
+          animation: fadeIn 0.5s ease-out forwards;
         }
       `}</style>
     </>
