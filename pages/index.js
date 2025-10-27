@@ -154,22 +154,33 @@ return (
   </h2>
 </div>
 
-  {/* Primary Heading — visible gradient + shimmer */}
+  {/* Primary Heading — fallback + gradient overlay */}
 <h1
-  className={`mt-2 relative z-10 bg-gradient-to-r from-cyan-300/90 to-violet-300/90
-              bg-clip-text text-transparent text-5xl sm:text-6xl xl:text-7xl
-              font-semibold tracking-tight leading-tight fade-up ${
-                isMounted ? "fade-up--animate" : ""
-              }`}
-  style={{ WebkitTextFillColor: "transparent" }}  // Safari fallback
+  className={`mt-2 relative z-20 text-5xl sm:text-6xl xl:text-7xl
+              font-semibold tracking-tight leading-tight fade-up text-cyan-200
+              ${isMounted ? "fade-up--animate" : ""}`}
+  style={{ animationDelay: "0.2s" }}
 >
-  <span className="relative inline-block">
+  {/* Fallback solid text (always visible) */}
+  <span>Shop the Multiverse</span>
+
+  {/* Gradient overlay (sits on top if supported) */}
+  <span
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0 bg-gradient-to-r from-cyan-300/90 to-violet-300/90 bg-clip-text text-transparent"
+    style={{ WebkitTextFillColor: "transparent" }}
+  >
     Shop the Multiverse
-    {/* ultra-subtle sweep */}
-    <span className="pointer-events-none absolute inset-0
-                     bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)]
-                     animate-h1-sheen" />
   </span>
+
+  {/* Ultra-subtle sweep on the gradient layer */}
+  <span
+    aria-hidden="true"
+    className="pointer-events-none absolute inset-0
+               bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)]
+               animate-h1-sheen"
+    style={{ mixBlendMode: "overlay" }}
+  />
 </h1>
 
 {/* Body copy */}
