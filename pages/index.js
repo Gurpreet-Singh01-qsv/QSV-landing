@@ -154,20 +154,21 @@ return (
   </h2>
 </div>
 
-   {/* Primary Heading — calm two-stop gradient with subtle shimmer */}
+  {/* Primary Heading — visible gradient + shimmer */}
 <h1
-  className={`mt-2 bg-clip-text text-transparent text-5xl sm:text-6xl xl:text-7xl font-semibold tracking-tight leading-tight fade-up ${
-    isMounted ? "fade-up--animate" : ""
-  }`}
-  style={{
-    animationDelay: "0.2s",
-    backgroundImage:
-      "linear-gradient(90deg, rgba(168,218,255,.95), rgba(196,181,253,.95))",
-  }}
+  className={`mt-2 relative z-10 bg-gradient-to-r from-cyan-300/90 to-violet-300/90
+              bg-clip-text text-transparent text-5xl sm:text-6xl xl:text-7xl
+              font-semibold tracking-tight leading-tight fade-up ${
+                isMounted ? "fade-up--animate" : ""
+              }`}
+  style={{ WebkitTextFillColor: "transparent" }}  // Safari fallback
 >
   <span className="relative inline-block">
     Shop the Multiverse
-    <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)] animate-h1-sheen" />
+    {/* ultra-subtle sweep */}
+    <span className="pointer-events-none absolute inset-0
+                     bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)]
+                     animate-h1-sheen" />
   </span>
 </h1>
 
