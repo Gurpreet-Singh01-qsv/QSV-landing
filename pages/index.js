@@ -118,27 +118,28 @@ return (
     FUTURISTIC VR SHOPPING PLATFORM
   </p>
 
-  {/* QSV Logo Section — blend into scene */}
-  <div className="relative mb-8 flex flex-col items-center justify-center fade-up">
-    {/* Ambient wash behind */}
-    <div className="absolute -inset-6 rounded-full bg-gradient-to-tr from-cyan-400/15 via-violet-500/10 to-fuchsia-500/15 blur-2xl" />
+  {/* QSV Logo Section — clean blend, no disk */}
+<div className="relative mb-8 flex flex-col items-center justify-center fade-up isolate">
+  {/* Logo only (feathered + blended) */}
+  <img
+    src="/images/qsv-logo-merged.png"  /* or /images/qsv-logo.png if you didn't swap */
+    alt="QSV Logo"
+    className="
+      w-40 h-40 sm:w-52 sm:h-52
+      animate-float select-none
+      mix-blend-screen
+      [mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
+      [-webkit-mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
+      brightness-[1.03] contrast-[1.06] saturate-[1.08]
+    "
+    draggable="false"
+  />
 
-    {/* Logo with blend layers */}
-    <div className="relative">
-      <img
-        src="/images/qsv-logo-merged.png"
-        alt="QSV Logo"
-        className="w-40 h-40 sm:w-52 sm:h-52 animate-float mix-blend-screen"
-      />
-      {/* Soft-light overlay to pick up scene tones */}
-      <div className="pointer-events-none absolute inset-0 rounded-full bg-gradient-to-br from-cyan-200/25 via-transparent to-violet-200/25 mix-blend-soft-light" />
-    </div>
-
-    {/* Tagline */}
-    <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide drop-shadow-[0_0_10px_rgba(139,92,246,0.3)]">
-      Step Into the Multiverse
-    </h2>
-  </div>
+  {/* Tagline */}
+  <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide drop-shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+    Step Into the Multiverse
+  </h2>
+</div>
 
   {/* Primary Heading — calm two-stop gradient */}
   <h1
