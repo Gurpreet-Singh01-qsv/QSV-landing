@@ -206,7 +206,7 @@ return (
   Experience shopping like never before — traverse immersive virtual realms,
   touch lifelike holograms, and customize your dream spaces with quantum precision.
 </p>
-           {/* ==== FORM STARTS HERE ==== */}
+{/* ==== FORM STARTS HERE ==== */}
 <form
   onSubmit={handleSubmit}
   className="mt-8 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:gap-4"
@@ -237,27 +237,23 @@ return (
     className="group relative inline-flex items-center justify-center overflow-hidden rounded-full px-7 py-3 font-semibold uppercase tracking-wide text-white bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 shadow-[0_12px_40px_rgba(56,189,248,0.28)] transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed"
     aria-live="polite"
   >
-    {/* gentle moving glow */}
     <span className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)] translate-x-[-40%] group-hover:translate-x-[30%] transition-transform duration-[1200ms] ease-out" />
     <span className="relative">{loading ? "Sending…" : "Join Waitlist"}</span>
   </button>
 </form>
 
 {/* ARIA helper text (invisible) */}
-<p id="waitlist-desc" className="sr-only">
-  Join the QSV early access waitlist. We’ll only use your email to contact you about access.
-</p>
+<p id="waitlist-desc" className="sr-only">Join the QSV early access waitlist. We’ll only use your email to contact you about access.</p>
 
 {/* Success / Error messages */}
-<div id="waitlist-msg" className="mt-3 min-h-[1.5rem] text-center lg:text-left">
+<div id="waitlist-msg" className="mt-3 min-h-[1.5rem] text-center lg:text-left" aria-live="polite" role="status">
   {submitted && !error && (
-    <p className="text-sm text-sky-300">
-      You’re officially in. The Multiverse awaits — stay tuned for your acce
-    </p>
+    <p className="text-sm text-sky-300">You’re officially in. The Multiverse awaits — stay tuned for your access key.</p>
   )}
   {error && <p className="text-sm text-rose-300">{error}</p>}
 </div>
- </div>  
+{/* ==== FORM ENDS HERE ==== */}
+</div>
           {/* VR CARD SECTION */}
           <div className="relative mt-20 flex w-full max-w-sm justify-center lg:mt-0">
     <div
