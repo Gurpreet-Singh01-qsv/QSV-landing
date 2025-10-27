@@ -1,6 +1,5 @@
 import { useState, useEffect } from 'react'
 import Head from 'next/head'
-import { getWaitlistEmails } from '../lib/supabase'
 
 export default function Admin() {
   const [emails, setEmails] = useState([])
@@ -15,7 +14,9 @@ export default function Admin() {
   const fetchEmails = async () => {
     setLoading(true)
     try {
-      const result = await getWaitlistEmails()
+      const response = await fetch('/api/admin/emails')
+      const result = await response.json()
+      
       if (result.success) {
         setEmails(result.data)
         calculateStats(result.data)
