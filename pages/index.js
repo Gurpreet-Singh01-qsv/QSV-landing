@@ -120,62 +120,67 @@ return (
     </p>
 
     {/* Logo — feathered, blended, with a subtle sheen */}
-    <div className="relative mb-8 flex flex-col items-center justify-center fade-up isolate">
-      {/* Feathered + blended logo (no grey disk) */}
-      <div className="relative">
-        <img
-          src="/images/qsv-logo-merged.png" /* keep this if you saved the blended one; otherwise use /images/qsv-logo.png */
-          alt="QSV Logo"
-          className="
-            w-40 h-40 sm:w-52 sm:h-52 animate-float select-none
-            mix-blend-screen
-            [mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
-            [-webkit-mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
-            brightness-[1.03] contrast-[1.06] saturate-[1.08]
-          "
-          draggable="false"
-        />
+   
+<div className="relative mb-8 flex flex-col items-center justify-center fade-up isolate">
+  {/* Circular logo frame that CLIPS everything inside */}
+  <div className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden">
+    {/* Logo (feathered + blended) */}
+    <img
+      src="/images/qsv-logo-merged.png" /* or /images/qsv-logo.png */
+      alt="QSV Logo"
+      className="
+        absolute inset-0 w-full h-full object-contain select-none animate-float
+        mix-blend-screen
+        [mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
+        [-webkit-mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
+        brightness-[1.03] contrast-[1.06] saturate-[1.08]
+      "
+      draggable="false"
+    />
 
-        {/* Light sweep */}
-        <div className="pointer-events-none absolute inset-0 overflow-hidden">
-          <div className="absolute -left-1/3 top-0 h-full w-1/2 bg-[linear-gradient(100deg,transparent,rgba(255,255,255,0.12),transparent)] animate-logo-sheen" />
-        </div>
-      </div>
-
-      {/* Tagline */}
-      <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide drop-shadow-[0_0_10px_rgba(139,92,246,0.3)]">
-        Step Into the Multiverse
-      </h2>
+    {/* Sheen (now clipped + masked so it cannot form a vertical bar) */}
+    <div className="pointer-events-none absolute inset-0
+                    [mask-image:radial-gradient(closest-side,white,transparent)]
+                    [-webkit-mask-image:radial-gradient(closest-side,white,transparent)]">
+      <div className="absolute -left-1/2 top-0 h-full w-[60%]
+                      bg-[linear-gradient(100deg,transparent,rgba(255,255,255,0.12),transparent)]
+                      animate-logo-sheen" />
     </div>
+  </div>
 
-    {/* Primary Heading — calm two-stop gradient with ultra-subtle shimmer */}
-    <h1
-      className={`mt-2 bg-clip-text text-transparent text-5xl sm:text-6xl xl:text-7xl font-semibold tracking-tight leading-tight fade-up ${
-        isMounted ? "fade-up--animate" : ""
-      }`}
-      style={{
-        animationDelay: "0.2s",
-        backgroundImage:
-          "linear-gradient(90deg, rgba(168,218,255,.95), rgba(196,181,253,.95))",
-      }}
-    >
-      <span className="relative inline-block">
-        Shop the Multiverse
-        <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)] animate-h1-sheen" />
-      </span>
-    </h1>
+  {/* Tagline */}
+  <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide drop-shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+    Step Into the Multiverse
+  </h2>
+</div>
 
-    {/* Body copy — narrower, quieter */}
-    <p
-      className={`text-slate-200/80 sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 fade-up ${
-        isMounted ? "fade-up--animate" : ""
-      }`}
-      style={{ animationDelay: "0.35s" }}
-    >
-      Experience shopping like never before — traverse immersive virtual realms,
-      touch lifelike holograms, and customize your dream spaces with quantum
-      precision.
-    </p>
+   {/* Primary Heading — calm two-stop gradient with subtle shimmer */}
+<h1
+  className={`mt-2 bg-clip-text text-transparent text-5xl sm:text-6xl xl:text-7xl font-semibold tracking-tight leading-tight fade-up ${
+    isMounted ? "fade-up--animate" : ""
+  }`}
+  style={{
+    animationDelay: "0.2s",
+    backgroundImage:
+      "linear-gradient(90deg, rgba(168,218,255,.95), rgba(196,181,253,.95))",
+  }}
+>
+  <span className="relative inline-block">
+    Shop the Multiverse
+    <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)] animate-h1-sheen" />
+  </span>
+</h1>
+
+{/* Body copy */}
+<p
+  className={`text-slate-200/80 sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 fade-up ${
+    isMounted ? "fade-up--animate" : ""
+  }`}
+  style={{ animationDelay: "0.35s" }}
+>
+  Experience shopping like never before — traverse immersive virtual realms,
+  touch lifelike holograms, and customize your dream spaces with quantum precision.
+</p>
  
             <form
   onSubmit={handleSubmit}
