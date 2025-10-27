@@ -126,7 +126,7 @@ return (
     {/* Logo with blend layers */}
     <div className="relative">
       <img
-        src="/images/qsv-logo.png"
+        src="/images/qsv-logo-merged.png"
         alt="QSV Logo"
         className="w-40 h-40 sm:w-52 sm:h-52 animate-float mix-blend-screen"
       />
