@@ -82,7 +82,7 @@ export default function Home() {
         setError("");
       } else {
         console.error("Backend error:", result.error || "Unknown error");
-        setError("Submission failed. Please try again.");
+        setError(result.error || "Submission failed. Please try again.");
 
         // Track form errors
         if (typeof window !== 'undefined' && window.gtag) {
