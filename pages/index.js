@@ -107,60 +107,75 @@ return (
 
       {/* HERO SECTION */}
       <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center lg:flex-row lg:text-left lg:px-16 lg:py-32">
+  {/* LEFT: Text + Logo */}
   <div className="max-w-2xl space-y-8">
-  {/* Eyebrow */}
-  <p
-    className={`uppercase tracking-[0.35em] text-[11px] text-cyan-200/60 fade-up ${
-      isMounted ? "fade-up--animate" : ""
-    }`}
-    style={{ animationDelay: "0.05s" }}
-  >
-    FUTURISTIC VR SHOPPING PLATFORM
-  </p>
+    {/* Eyebrow */}
+    <p
+      className={`uppercase tracking-[0.35em] text-[11px] text-cyan-200/60 fade-up ${
+        isMounted ? "fade-up--animate" : ""
+      }`}
+      style={{ animationDelay: "0.05s" }}
+    >
+      FUTURISTIC VR SHOPPING PLATFORM
+    </p>
 
-  {/* QSV Logo Section — clean blend, no disk */}
-<div className="relative mb-8 flex flex-col items-center justify-center fade-up isolate">
-  {/* Logo only (feathered + blended) */}
-  <img
-    src="/images/qsv-logo-merged.png"  /* or /images/qsv-logo.png if you didn't swap */
-    alt="QSV Logo"
-    className="
-      w-40 h-40 sm:w-52 sm:h-52
-      animate-float select-none
-      mix-blend-screen
-      [mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
-      [-webkit-mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
-      brightness-[1.03] contrast-[1.06] saturate-[1.08]
-    "
-    draggable="false"
-  />
+    {/* Logo — feathered, blended, with a subtle sheen */}
+    <div className="relative mb-8 flex flex-col items-center justify-center fade-up isolate">
+      {/* Feathered + blended logo (no grey disk) */}
+      <div className="relative">
+        <img
+          src="/images/qsv-logo-merged.png" /* keep this if you saved the blended one; otherwise use /images/qsv-logo.png */
+          alt="QSV Logo"
+          className="
+            w-40 h-40 sm:w-52 sm:h-52 animate-float select-none
+            mix-blend-screen
+            [mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
+            [-webkit-mask-image:radial-gradient(closest-side,white_86%,transparent_100%)]
+            brightness-[1.03] contrast-[1.06] saturate-[1.08]
+          "
+          draggable="false"
+        />
 
-  {/* Tagline */}
-  <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide drop-shadow-[0_0_10px_rgba(139,92,246,0.3)]">
-    Step Into the Multiverse
-  </h2>
-</div>
+        {/* Light sweep */}
+        <div className="pointer-events-none absolute inset-0 overflow-hidden">
+          <div className="absolute -left-1/3 top-0 h-full w-1/2 bg-[linear-gradient(100deg,transparent,rgba(255,255,255,0.12),transparent)] animate-logo-sheen" />
+        </div>
+      </div>
 
-  {/* Primary Heading — calm two-stop gradient */}
-  <h1
-    className={`mt-2 bg-gradient-to-r from-cyan-300/80 to-violet-300/80 bg-clip-text text-transparent text-5xl sm:text-6xl xl:text-7xl font-semibold tracking-tight leading-tight fade-up ${
-      isMounted ? "fade-up--animate" : ""
-    }`}
-    style={{ animationDelay: "0.2s" }}
-  >
-    Shop the Multiverse
-  </h1>
+      {/* Tagline */}
+      <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide drop-shadow-[0_0_10px_rgba(139,92,246,0.3)]">
+        Step Into the Multiverse
+      </h2>
+    </div>
 
-  {/* Body copy — narrower, quieter */}
-  <p
-    className={`text-slate-200/80 sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 fade-up ${
-      isMounted ? "fade-up--animate" : ""
-    }`}
-    style={{ animationDelay: "0.35s" }}
-  >
-    Experience shopping like never before — traverse immersive virtual realms,
-    touch lifelike holograms, and customize your dream spaces with quantum precision.
-  </p>
+    {/* Primary Heading — calm two-stop gradient with ultra-subtle shimmer */}
+    <h1
+      className={`mt-2 bg-clip-text text-transparent text-5xl sm:text-6xl xl:text-7xl font-semibold tracking-tight leading-tight fade-up ${
+        isMounted ? "fade-up--animate" : ""
+      }`}
+      style={{
+        animationDelay: "0.2s",
+        backgroundImage:
+          "linear-gradient(90deg, rgba(168,218,255,.95), rgba(196,181,253,.95))",
+      }}
+    >
+      <span className="relative inline-block">
+        Shop the Multiverse
+        <span className="pointer-events-none absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,.10),transparent)] animate-h1-sheen" />
+      </span>
+    </h1>
+
+    {/* Body copy — narrower, quieter */}
+    <p
+      className={`text-slate-200/80 sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 fade-up ${
+        isMounted ? "fade-up--animate" : ""
+      }`}
+      style={{ animationDelay: "0.35s" }}
+    >
+      Experience shopping like never before — traverse immersive virtual realms,
+      touch lifelike holograms, and customize your dream spaces with quantum
+      precision.
+    </p>
  
             <form
   onSubmit={handleSubmit}
@@ -200,66 +215,65 @@ return (
 
           {/* VR CARD SECTION */}
           <div className="relative mt-20 flex w-full max-w-sm justify-center lg:mt-0">
-            <div
-              className="relative w-full rounded-[2.5rem] border border-white/10 bg-white/10 p-[1px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
-              style={{ perspective: "1400px" }}
-            >
-              <div
-                className="relative overflow-hidden rounded-[2.4rem] bg-white/5 p-10 backdrop-blur-2xl transition-transform duration-500 ease-out will-change-transform"
-                style={{ transform: cardTransform }}
-              >
-                <div className="flex flex-col gap-6 text-left">
-                  <div className="flex items-center justify-between">
-                    <span className="text-xs uppercase tracking-[0.45em] text-cyan-200/80">
-                      Quantum Cart
-                    </span>
-                    <span className="rounded-full bg-cyan-400/20 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200/70">
-                      Live
-                    </span>
-                  </div>
-                  <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-300 to-violet-500 shadow-lg shadow-cyan-400/30" />
-                    <div className="space-y-1">
-                      <p className="text-sm font-semibold tracking-wide text-white/90">
-                        Luminous Hyper-Sneaker
-                      </p>
-                      <p className="text-xs text-slate-200/70">
-                        Adaptive fit · Haptic weave · Void black
-                      </p>
-                    </div>
-                  </div>
-                  <div className="grid grid-cols-2 gap-4 text-xs text-slate-200/80">
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
-                        Environment
-                      </p>
-                      <p className="mt-2 text-sm text-white">Neon Spires</p>
-                    </div>
-                    <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
-                      <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
-                        Emotion
-                      </p>
-                      <p className="mt-2 text-sm text-white">Euphoric Calm</p>
-                    </div>
-                  </div>
-                  <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-400/20 via-transparent to-fuchsia-400/20 p-5">
-                    <div>
-                      <p className="text-[10px] uppercase tracking-[0.4em] text-cyan-200/60">
-                        Checkout Pulse
-                      </p>
-                      <p className="mt-2 text-lg font-semibold text-white">
-                        2.3 s
-                      </p>
-                    </div>
-                    <span className="rounded-full bg-white/10 px-5 py-2 text-[10px] uppercase tracking-[0.4em] text-white/80">
-                      Synced
-                    </span>
-                  </div>
-                </div>
-              </div>
+    <div
+      className="relative w-full rounded-[2.5rem] border border-white/10 bg-white/10 p-[1px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
+      style={{ perspective: "1400px" }}
+    >
+      <div
+        className="relative overflow-hidden rounded-[2.4rem] bg-white/5 p-10 backdrop-blur-2xl transition-transform duration-500 ease-out will-change-transform hover:shadow-[0_30px_120px_rgba(79,70,229,0.25)] hover:scale-[1.015]"
+        style={{ transform: cardTransform }}
+      >
+        {/* Your existing VR card content */}
+        <div className="flex flex-col gap-6 text-left">
+          <div className="flex items-center justify-between">
+            <span className="text-xs uppercase tracking-[0.45em] text-cyan-200/80">
+              Quantum Cart
+            </span>
+            <span className="rounded-full bg-cyan-400/20 px-4 py-1 text-[10px] font-semibold uppercase tracking-[0.35em] text-cyan-200/70">
+              Live
+            </span>
+          </div>
+          <div className="flex items-center gap-4">
+            <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-300 to-violet-500 shadow-lg shadow-cyan-400/30" />
+            <div className="space-y-1">
+              <p className="text-sm font-semibold tracking-wide text-white/90">
+                Luminous Hyper-Sneaker
+              </p>
+              <p className="text-xs text-slate-200/70">
+                Adaptive fit · Haptic weave · Void black
+              </p>
             </div>
           </div>
-        </main>
+          <div className="grid grid-cols-2 gap-4 text-xs text-slate-200/80">
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
+                Environment
+              </p>
+              <p className="mt-2 text-sm text-white">Neon Spires</p>
+            </div>
+            <div className="rounded-2xl border border-white/10 bg-white/5 p-4">
+              <p className="text-[10px] uppercase tracking-[0.35em] text-cyan-200/60">
+                Emotion
+              </p>
+              <p className="mt-2 text-sm text-white">Euphoric Calm</p>
+            </div>
+          </div>
+          <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-400/20 via-transparent to-fuchsia-400/20 p-5">
+            <div>
+              <p className="text-[10px] uppercase tracking-[0.4em] text-cyan-200/60">
+                Checkout Pulse
+              </p>
+              <p className="mt-2 text-lg font-semibold text-white">2.3 s</p>
+            </div>
+            <span className="rounded-full bg-white/10 px-5 py-2 text-[10px] uppercase tracking-[0.4em] text-white/80">
+              Synced
+            </span>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+</main>
 
         <footer className="relative z-10 border-t border-white/10 bg-black/20 py-8 text-center text-xs uppercase tracking-[0.4em] text-slate-300/60">
           © 2025 QSV Multiverse All rights reserved
@@ -317,6 +331,20 @@ return (
           animation: glowPulse 4s ease-in-out infinite;
           mix-blend-mode: screen;
         }
+        @keyframes logoSheen {
+  0% { transform: translateX(0); opacity: .0; }
+  25% { opacity: .7; }
+  100% { transform: translateX(180%); opacity: 0; }
+}
+.animate-logo-sheen { animation: logoSheen 3.8s ease-in-out infinite; }
+
+@keyframes h1Sheen {
+  0% { transform: translateX(-120%); opacity: 0; }
+  40% { opacity: .5; }
+  100% { transform: translateX(120%); opacity: 0; }
+}
+.animate-h1-sheen { animation: h1Sheen 6s ease-in-out infinite; }
+
         @keyframes glowPulse {
           0%,
           100% {
