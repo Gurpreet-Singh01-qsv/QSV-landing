@@ -207,41 +207,68 @@ return (
   touch lifelike holograms, and customize your dream spaces with quantum precision.
 </p>
  
-            <form
+           {/* ==== FORM STARTS HERE ==== */}
+<form
   onSubmit={handleSubmit}
-  className="flex flex-col sm:flex-row gap-4 items-center justify-center mt-6"
+  className="mt-8 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:gap-4"
+  aria-describedby="waitlist-desc"
 >
-  <input
-    type="email"
-    name="email"
-    required
-    placeholder="Enter your email"
-    value={email}
-    onChange={(e) => setEmail(e.target.value)}
-    className="px-4 py-3 rounded-full bg-white text-black placeholder-gray-500 focus:outline-none focus:ring-2 focus:ring-sky-400 w-64 sm:w-72 shadow-md"
-  />
+  <label htmlFor="email" className="sr-only">
+    Email address
+  </label>
+
+  <div className="relative w-full sm:flex-1">
+    <input
+      id="email"
+      type="email"
+      name="email"
+      required
+      placeholder="Enter your email"
+      value={email}
+      onChange={(e) => setEmail(e.target.value)}
+      className="w-full rounded-full bg-white/90 text-slate-900 placeholder-slate-500
+                 px-5 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)]
+                 focus:outline-none focus:ring-2 focus:ring-cyan-300/60 focus:ring-offset-0
+                 transition-shadow"
+      aria-invalid={Boolean(error) || undefined}
+      aria-describedby="waitlist-desc waitlist-msg"
+    />
+    {/* subtle inset highlight */}
+    <span className="pointer-events-none absolute inset-0 rounded-full ring-1 ring-white/10" />
+  </div>
 
   <button
     type="submit"
     disabled={loading}
-    className="group relative inline-flex items-center justify-center overflow-hidden rounded-full bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 px-8 py-3 text-base font-semibold uppercase tracking-wide text-white shadow-[0_0_35px_rgba(103,232,249,0.45)] transition-transform duration-300 hover:scale-105 focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed"
+    className="group relative inline-flex items-center justify-center overflow-hidden
+               rounded-full px-7 py-3 font-semibold uppercase tracking-wide text-white
+               bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600
+               shadow-[0_12px_40px_rgba(56,189,248,0.28)]
+               transition-transform duration-300 hover:scale-[1.03]
+               focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200
+               disabled:opacity-60 disabled:cursor-not-allowed"
+    aria-live="polite"
   >
-    <span className="absolute inset-0 animate-glow bg-gradient-to-r from-cyan-300/30 via-transparent to-fuchsia-400/30" />
+    {/* gentle moving glow */}
+    <span className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.16),transparent)] translate-x-[-40%] group-hover:translate-x-[30%] transition-transform duration-[1200ms] ease-out" />
     <span className="relative">{loading ? "Sending…" : "Join Waitlist"}</span>
   </button>
 </form>
 
-{submitted && !error && (
-  <p className="mt-4 text-sky-300 text-sm fade-up">
-    You’re officially in. The Multiverse awaits — stay tuned for your access key.
-  </p>
-)}
+{/* ARIA helper text (invisible) */}
+<p id="waitlist-desc" className="sr-only">
+  Join the QSV early access waitlist. We’ll only use your email to contact you about access.
+</p>
 
-{error && (
-  <p className="mt-4 text-rose-300 text-sm fade-up">{error}</p>
-)}
-
-          </div>
+{/* Success / Error messages */}
+<div id="waitlist-msg" className="mt-3 min-h-[1.5rem] text-center lg:text-left">
+  {submitted && !error && (
+    <p className="text-sm text-sky-300">
+      You’re officially in. The Multiverse awaits — stay tuned for your access key.
+    </p>
+  )}
+  {error && <p className="text-sm text-rose-300">{error}</p>}
+</div>
 
           {/* VR CARD SECTION */}
           <div className="relative mt-20 flex w-full max-w-sm justify-center lg:mt-0">
