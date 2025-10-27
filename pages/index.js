@@ -206,16 +206,13 @@ return (
   Experience shopping like never before — traverse immersive virtual realms,
   touch lifelike holograms, and customize your dream spaces with quantum precision.
 </p>
- 
            {/* ==== FORM STARTS HERE ==== */}
 <form
   onSubmit={handleSubmit}
   className="mt-8 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:gap-4"
   aria-describedby="waitlist-desc"
 >
-  <label htmlFor="email" className="sr-only">
-    Email address
-  </label>
+  <label htmlFor="email" className="sr-only">Email address</label>
 
   <div className="relative w-full sm:flex-1">
     <input
@@ -226,10 +223,7 @@ return (
       placeholder="Enter your email"
       value={email}
       onChange={(e) => setEmail(e.target.value)}
-      className="w-full rounded-full bg-white/90 text-slate-900 placeholder-slate-500
-                 px-5 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)]
-                 focus:outline-none focus:ring-2 focus:ring-cyan-300/60 focus:ring-offset-0
-                 transition-shadow"
+      className="w-full rounded-full bg-white/90 text-slate-900 placeholder-slate-500 px-5 py-3 shadow-[0_10px_30px_rgba(0,0,0,0.25)] focus:outline-none focus:ring-2 focus:ring-cyan-300/60 focus:ring-offset-0 transition-shadow"
       aria-invalid={Boolean(error) || undefined}
       aria-describedby="waitlist-desc waitlist-msg"
     />
@@ -240,13 +234,7 @@ return (
   <button
     type="submit"
     disabled={loading}
-    className="group relative inline-flex items-center justify-center overflow-hidden
-               rounded-full px-7 py-3 font-semibold uppercase tracking-wide text-white
-               bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600
-               shadow-[0_12px_40px_rgba(56,189,248,0.28)]
-               transition-transform duration-300 hover:scale-[1.03]
-               focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200
-               disabled:opacity-60 disabled:cursor-not-allowed"
+    className="group relative inline-flex items-center justify-center overflow-hidden rounded-full px-7 py-3 font-semibold uppercase tracking-wide text-white bg-gradient-to-r from-cyan-400 via-sky-500 to-violet-600 shadow-[0_12px_40px_rgba(56,189,248,0.28)] transition-transform duration-300 hover:scale-[1.03] focus:outline-none focus-visible:ring-2 focus-visible:ring-cyan-200 disabled:opacity-60 disabled:cursor-not-allowed"
     aria-live="polite"
   >
     {/* gentle moving glow */}
@@ -264,12 +252,12 @@ return (
 <div id="waitlist-msg" className="mt-3 min-h-[1.5rem] text-center lg:text-left">
   {submitted && !error && (
     <p className="text-sm text-sky-300">
-      You’re officially in. The Multiverse awaits — stay tuned for your access key.
+      You’re officially in. The Multiverse awaits — stay tuned for your acce
     </p>
   )}
   {error && <p className="text-sm text-rose-300">{error}</p>}
 </div>
-
+   
           {/* VR CARD SECTION */}
           <div className="relative mt-20 flex w-full max-w-sm justify-center lg:mt-0">
     <div
