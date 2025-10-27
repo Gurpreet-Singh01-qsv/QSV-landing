@@ -5,7 +5,19 @@ export default function Admin() {
   const [emails, setEmails] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
-  const [stats, setStats] = useState({ total: 0, today: 0, thisWeek: 0 })
+  const [stats, setStats] = useState({ 
+    total: 0, 
+    today: 0, 
+    thisWeek: 0, 
+    thisMonth: 0,
+    growthRate: 0,
+    topSources: [],
+    topCountries: []
+  })
+  const [filter, setFilter] = useState('all')
+  const [searchTerm, setSearchTerm] = useState('')
+  const [sortBy, setSortBy] = useState('created_at')
+  const [sortOrder, setSortOrder] = useState('desc')
 
   useEffect(() => {
     fetchEmails()
@@ -34,6 +46,8 @@ export default function Admin() {
     const now = new Date()
     const today = new Date(now.getFullYear(), now.getMonth(), now.getDate())
     const weekAgo = new Date(today.getTime() - 7 * 24 * 60 * 60 * 1000)
+    const monthAgo = new Date(today.getTime() - 30 * 24 * 60 * 60 * 1000)
+    const twoWeeksAgo = new Date(today.getTime() - 14 * 24 * 60 * 60 * 1000)
 
     const todayCount = emailList.filter(email => 
       new Date(email.created_at) >= today
@@ -43,20 +57,65 @@ export default function Admin() {
       new Date(email.created_at) >= weekAgo
     ).length
 
+    const monthCount = emailList.filter(email => 
+      new Date(email.created_at) >= monthAgo
+    ).length
+
+    const lastWeekCount = emailList.filter(email => {
+      const date = new Date(email.created_at)
+      return date >= twoWeeksAgo && date < weekAgo
+    }).length
+
+    const growthRate = lastWeekCount > 0 ? 
+      ((weekCount - lastWeekCount) / lastWeekCount * 100).toFixed(1) : 0
+
+    // Calculate top sources
+    const sources = {}
+    emailList.forEach(email => {
+      const source = email.utm_source || email.source || 'direct'
+      sources[source] = (sources[source] || 0) + 1
+    })
+    const topSources = Object.entries(sources)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([source, count]) => ({ source, count }))
+
+    // Calculate top countries
+    const countries = {}
+    emailList.forEach(email => {
+      if (email.country) {
+        countries[email.country] = (countries[email.country] || 0) + 1
+      }
+    })
+    const topCountries = Object.entries(countries)
+      .sort(([,a], [,b]) => b - a)
+      .slice(0, 5)
+      .map(([country, count]) => ({ country, count }))
+
     setStats({
       total: emailList.length,
       today: todayCount,
-      thisWeek: weekCount
+      thisWeek: weekCount,
+      thisMonth: monthCount,
+      growthRate,
+      topSources,
+      topCountries
     })
   }
 
   const exportToCSV = () => {
     const csvContent = [
-      ['Email', 'Date', 'Source'],
-      ...emails.map(email => [
+      ['Email', 'Date', 'Source', 'UTM Source', 'UTM Medium', 'UTM Campaign', 'Country', 'City', 'Status'],
+      ...filteredEmails.map(email => [
         email.email,
         new Date(email.created_at).toLocaleDateString(),
-        email.source || 'landing_page'
+        email.source || 'landing_page',
+        email.utm_source || '',
+        email.utm_medium || '',
+        email.utm_campaign || '',
+        email.country || '',
+        email.city || '',
+        email.status || 'active'
       ])
     ].map(row => row.join(',')).join('\n')
 
@@ -68,6 +127,31 @@ export default function Admin() {
     a.click()
     window.URL.revokeObjectURL(url)
   }
+
+  const filteredEmails = emails
+    .filter(email => {
+      if (filter === 'today') {
+        return new Date(email.created_at).toDateString() === new Date().toDateString()
+      }
+      if (filter === 'week') {
+        const weekAgo = new Date(Date.now() - 7 * 24 * 60 * 60 * 1000)
+        return new Date(email.created_at) >= weekAgo
+      }
+      return true
+    })
+    .filter(email => 
+      email.email.toLowerCase().includes(searchTerm.toLowerCase()) ||
+      (email.country && email.country.toLowerCase().includes(searchTerm.toLowerCase())) ||
+      (email.utm_source && email.utm_source.toLowerCase().includes(searchTerm.toLowerCase()))
+    )
+    .sort((a, b) => {
+      const aVal = a[sortBy] || ''
+      const bVal = b[sortBy] || ''
+      if (sortOrder === 'asc') {
+        return aVal > bVal ? 1 : -1
+      }
+      return aVal < bVal ? 1 : -1
+    })
 
   if (loading) {
     return (
@@ -96,19 +180,140 @@ export default function Admin() {
             </button>
           </div>
 
-          {/* Stats Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-3 gap-6 mb-8">
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-gray-400 text-sm uppercase tracking-wide">Total Signups</h3>
-              <p className="text-3xl font-bold text-cyan-400 mt-2">{stats.total}</p>
+          {/* Enhanced Stats Cards */}
+          <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-6 mb-8">
+            <div className="bg-gradient-to-br from-cyan-900 to-cyan-800 p-6 rounded-xl border border-cyan-700/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-cyan-200 text-sm uppercase tracking-wide">Total Signups</h3>
+                  <p className="text-3xl font-bold text-white mt-2">{stats.total}</p>
+                </div>
+                <div className="text-cyan-300 text-2xl">👥</div>
+              </div>
             </div>
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-gray-400 text-sm uppercase tracking-wide">Today</h3>
-              <p className="text-3xl font-bold text-green-400 mt-2">{stats.today}</p>
+            
+            <div className="bg-gradient-to-br from-green-900 to-green-800 p-6 rounded-xl border border-green-700/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-green-200 text-sm uppercase tracking-wide">Today</h3>
+                  <p className="text-3xl font-bold text-white mt-2">{stats.today}</p>
+                </div>
+                <div className="text-green-300 text-2xl">📈</div>
+              </div>
             </div>
-            <div className="bg-gray-800 p-6 rounded-lg">
-              <h3 className="text-gray-400 text-sm uppercase tracking-wide">This Week</h3>
-              <p className="text-3xl font-bold text-purple-400 mt-2">{stats.thisWeek}</p>
+            
+            <div className="bg-gradient-to-br from-purple-900 to-purple-800 p-6 rounded-xl border border-purple-700/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-purple-200 text-sm uppercase tracking-wide">This Week</h3>
+                  <p className="text-3xl font-bold text-white mt-2">{stats.thisWeek}</p>
+                  {stats.growthRate !== 0 && (
+                    <p className={`text-sm mt-1 ${stats.growthRate > 0 ? 'text-green-300' : 'text-red-300'}`}>
+                      {stats.growthRate > 0 ? '↗' : '↘'} {Math.abs(stats.growthRate)}% vs last week
+                    </p>
+                  )}
+                </div>
+                <div className="text-purple-300 text-2xl">📊</div>
+              </div>
+            </div>
+            
+            <div className="bg-gradient-to-br from-orange-900 to-orange-800 p-6 rounded-xl border border-orange-700/50">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-orange-200 text-sm uppercase tracking-wide">This Month</h3>
+                  <p className="text-3xl font-bold text-white mt-2">{stats.thisMonth}</p>
+                </div>
+                <div className="text-orange-300 text-2xl">🚀</div>
+              </div>
+            </div>
+          </div>
+
+          {/* Analytics Cards */}
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-6 mb-8">
+            <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
+              <h3 className="text-white text-lg font-semibold mb-4">Top Traffic Sources</h3>
+              <div className="space-y-3">
+                {stats.topSources.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <span className="text-gray-300 capitalize">{item.source}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="bg-cyan-600 h-2 rounded-full" style={{width: `${(item.count / stats.total) * 100}px`}}></div>
+                      <span className="text-cyan-400 font-medium">{item.count}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+            
+            <div className="bg-gray-800 p-6 rounded-xl border border-gray-700">
+              <h3 className="text-white text-lg font-semibold mb-4">Top Countries</h3>
+              <div className="space-y-3">
+                {stats.topCountries.map((item, index) => (
+                  <div key={index} className="flex items-center justify-between">
+                    <span className="text-gray-300">{item.country}</span>
+                    <div className="flex items-center gap-2">
+                      <div className="bg-purple-600 h-2 rounded-full" style={{width: `${(item.count / stats.total) * 100}px`}}></div>
+                      <span className="text-purple-400 font-medium">{item.count}</span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          </div>
+
+          {/* Filters and Search */}
+          <div className="bg-gray-800 p-6 rounded-xl border border-gray-700 mb-6">
+            <div className="flex flex-col md:flex-row gap-4 items-center justify-between">
+              <div className="flex gap-2">
+                <button
+                  onClick={() => setFilter('all')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filter === 'all' ? 'bg-cyan-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  All Time
+                </button>
+                <button
+                  onClick={() => setFilter('today')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filter === 'today' ? 'bg-cyan-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  Today
+                </button>
+                <button
+                  onClick={() => setFilter('week')}
+                  className={`px-4 py-2 rounded-lg text-sm font-medium transition-colors ${
+                    filter === 'week' ? 'bg-cyan-600 text-white' : 'bg-gray-700 text-gray-300 hover:bg-gray-600'
+                  }`}
+                >
+                  This Week
+                </button>
+              </div>
+              
+              <div className="flex gap-4 items-center">
+                <input
+                  type="text"
+                  placeholder="Search emails, countries, sources..."
+                  value={searchTerm}
+                  onChange={(e) => setSearchTerm(e.target.value)}
+                  className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-cyan-500 focus:outline-none"
+                />
+                <select
+                  value={`${sortBy}-${sortOrder}`}
+                  onChange={(e) => {
+                    const [field, order] = e.target.value.split('-')
+                    setSortBy(field)
+                    setSortOrder(order)
+                  }}
+                  className="bg-gray-700 text-white px-4 py-2 rounded-lg border border-gray-600 focus:border-cyan-500 focus:outline-none"
+                >
+                  <option value="created_at-desc">Newest First</option>
+                  <option value="created_at-asc">Oldest First</option>
+                  <option value="email-asc">Email A-Z</option>
+                  <option value="email-desc">Email Z-A</option>
+                </select>
+              </div>
             </div>
           </div>
 
