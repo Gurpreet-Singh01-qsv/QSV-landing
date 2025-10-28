@@ -184,8 +184,18 @@ export default function Home() {
           />
         ))}
 
+        {/* Navigation */}
+        <nav className="relative z-10 flex items-center justify-between px-6 py-6 lg:px-16">
+          <div className="text-2xl font-bold text-cyan-300">QSV</div>
+          <div className="flex gap-6">
+            <a href="/" className="text-cyan-300">Home</a>
+            <a href="/features" className="text-gray-300 hover:text-white transition-colors">Features</a>
+            <a href="/about" className="text-gray-300 hover:text-white transition-colors">About</a>
+          </div>
+        </nav>
+
         {/* HERO SECTION */}
-        <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-24 text-center lg:flex-row lg:text-left lg:px-16 lg:py-32">
+        <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-16 text-center lg:flex-row lg:text-left lg:px-16 lg:py-24">
           {/* LEFT: Text + Logo */}
           <div className="max-w-2xl space-y-8">
             {/* Eyebrow */}
