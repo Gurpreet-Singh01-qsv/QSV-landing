@@ -5,6 +5,9 @@ export default function Admin() {
   const [emails, setEmails] = useState([])
   const [loading, setLoading] = useState(true)
   const [error, setError] = useState('')
+  const [isAuthenticated, setIsAuthenticated] = useState(false)
+  const [password, setPassword] = useState('')
+  const [authError, setAuthError] = useState('')
   const [stats, setStats] = useState({ 
     total: 0, 
     today: 0, 
@@ -20,8 +23,46 @@ export default function Admin() {
   const [sortOrder, setSortOrder] = useState('desc')
 
   useEffect(() => {
-    fetchEmails()
+    // Check if already authenticated
+    const authStatus = localStorage.getItem('qsv-admin-auth')
+    if (authStatus === 'true') {
+      setIsAuthenticated(true)
+      fetchEmails()
+    } else {
+      setLoading(false)
+    }
   }, [])
+
+  const handleLogin = async (e) => {
+    e.preventDefault()
+    setAuthError('')
+    
+    try {
+      const response = await fetch('/api/auth/admin-check', {
+        method: 'POST',
+        headers: { 'Content-Type': 'application/json' },
+        body: JSON.stringify({ password })
+      })
+      
+      const result = await response.json()
+      
+      if (result.success) {
+        setIsAuthenticated(true)
+        localStorage.setItem('qsv-admin-auth', 'true')
+        fetchEmails()
+      } else {
+        setAuthError('Invalid password')
+      }
+    } catch (err) {
+      setAuthError('Authentication failed')
+    }
+  }
+
+  const handleLogout = () => {
+    setIsAuthenticated(false)
+    localStorage.removeItem('qsv-admin-auth')
+    setPassword('')
+  }
 
   const fetchEmails = async () => {
     setLoading(true)
@@ -153,6 +194,47 @@ export default function Admin() {
       return aVal < bVal ? 1 : -1
     })
 
+  // Show login form if not authenticated
+  if (!isAuthenticated) {
+    return (
+      <>
+        <Head>
+          <title>QSV Admin - Login</title>
+        </Head>
+        <div className="min-h-screen bg-gray-900 flex items-center justify-center">
+          <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 w-full max-w-md">
+            <h1 className="text-2xl font-bold text-white mb-6 text-center">QSV Admin Access</h1>
+            <form onSubmit={handleLogin}>
+              <div className="mb-4">
+                <label htmlFor="password" className="block text-gray-300 text-sm font-medium mb-2">
+                  Admin Password
+                </label>
+                <input
+                  type="password"
+                  id="password"
+                  value={password}
+                  onChange={(e) => setPassword(e.target.value)}
+                  className="w-full bg-gray-700 text-white px-4 py-3 rounded-lg border border-gray-600 focus:border-cyan-500 focus:outline-none"
+                  placeholder="Enter admin password"
+                  required
+                />
+              </div>
+              {authError && (
+                <div className="mb-4 text-red-400 text-sm">{authError}</div>
+              )}
+              <button
+                type="submit"
+                className="w-full bg-cyan-600 hover:bg-cyan-700 text-white font-medium py-3 rounded-lg transition-colors"
+              >
+                Access Dashboard
+              </button>
+            </form>
+          </div>
+        </div>
+      </>
+    )
+  }
+
   if (loading) {
     return (
       <div className="min-h-screen bg-gray-900 flex items-center justify-center">
@@ -172,12 +254,20 @@ export default function Admin() {
           {/* Header */}
           <div className="flex justify-between items-center mb-8">
             <h1 className="text-3xl font-bold">QSV Waitlist Dashboard</h1>
-            <button
-              onClick={exportToCSV}
-              className="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg font-medium transition-colors"
-            >
-              Export CSV
-            </button>
+            <div className="flex gap-3">
+              <button
+                onClick={exportToCSV}
+                className="bg-cyan-600 hover:bg-cyan-700 px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Export CSV
+              </button>
+              <button
+                onClick={handleLogout}
+                className="bg-red-600 hover:bg-red-700 px-4 py-2 rounded-lg font-medium transition-colors"
+              >
+                Logout
+              </button>
+            </div>
           </div>
 
           {/* Enhanced Stats Cards */}
