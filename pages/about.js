@@ -180,6 +180,16 @@ export default function About() {
           </div>
         </section>
 
+        {/* Disclaimer Section */}
+        <section className="relative z-10 px-6 py-8 bg-black/30">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-sm text-gray-400 leading-relaxed">
+              QSV is a concept platform currently in early development. The vision and features described represent our development goals and aspirations for the future of VR commerce. 
+              We are actively working to bring this vision to reality.
+            </p>
+          </div>
+        </section>
+
         {/* Footer */}
         <footer className="relative z-10 border-t border-white/10 bg-black/20 py-8 text-center text-xs uppercase tracking-[0.4em] text-slate-300/60">
           © 2025 QSV Multiverse All rights reserved

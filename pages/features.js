@@ -8,15 +8,15 @@ export default function Features() {
   const features = [
     {
       title: "Quantum Cart Technology",
-      subtitle: "2.3s Checkout Pulse",
-      description: "Our proprietary quantum cart system processes purchases at the speed of thought. No more abandoned carts, no more friction—just pure, seamless commerce.",
+      subtitle: "Lightning-Fast Checkout",
+      description: "Our streamlined cart system is designed to reduce checkout friction and create a seamless purchase experience in VR environments.",
       icon: "⚡",
       color: "from-cyan-400 to-blue-500",
       details: [
         "Instant product materialization",
-        "Quantum-encrypted transactions",
+        "Secure transaction processing",
         "Predictive purchase suggestions",
-        "Zero-latency payment processing"
+        "Optimized payment processing"
       ]
     },
     {
@@ -68,7 +68,7 @@ export default function Features() {
         "3D body scanning",
         "Size prediction algorithms",
         "Fit visualization",
-        "Return rate reduction by 90%"
+        "Improved purchase confidence"
       ]
     },
     {
@@ -201,23 +201,24 @@ export default function Features() {
         {/* Stats Section */}
         <section className="relative z-10 px-6 py-16 lg:px-16">
           <div className="max-w-6xl mx-auto">
-            <h2 className="text-4xl font-bold mb-12 text-center text-white">Platform Performance</h2>
+            <h2 className="text-4xl font-bold mb-6 text-center text-white">Platform Goals</h2>
+            <p className="text-center text-gray-400 mb-12 text-sm">Our development targets for the VR shopping experience</p>
             <div className="grid md:grid-cols-4 gap-8">
               <div className="text-center">
-                <div className="text-4xl font-bold text-cyan-400 mb-2">2.3s</div>
-                <div className="text-gray-300">Average Checkout Time</div>
+                <div className="text-3xl font-bold text-cyan-400 mb-2">Streamlined</div>
+                <div className="text-gray-300">Checkout Process</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-violet-400 mb-2">90%</div>
-                <div className="text-gray-300">Return Rate Reduction</div>
+                <div className="text-3xl font-bold text-violet-400 mb-2">Better Fit</div>
+                <div className="text-gray-300">Through VR Try-On</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-green-400 mb-2">5x</div>
-                <div className="text-gray-300">Engagement Increase</div>
+                <div className="text-3xl font-bold text-green-400 mb-2">Engaging</div>
+                <div className="text-gray-300">VR Environments</div>
               </div>
               <div className="text-center">
-                <div className="text-4xl font-bold text-orange-400 mb-2">99.9%</div>
-                <div className="text-gray-300">Uptime Guarantee</div>
+                <div className="text-3xl font-bold text-orange-400 mb-2">Scalable</div>
+                <div className="text-gray-300">Platform Architecture</div>
               </div>
             </div>
           </div>
@@ -237,6 +238,17 @@ export default function Features() {
               Get Early Access
               <span className="ml-2">→</span>
             </Link>
+          </div>
+        </section>
+
+        {/* Disclaimer Section */}
+        <section className="relative z-10 px-6 py-8 bg-black/30">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-sm text-gray-400 leading-relaxed">
+              All features described are planned functionality for the QSV platform currently in development. 
+              Performance characteristics and capabilities are development goals and subject to change. 
+              Actual results may vary based on final implementation and hardware requirements.
+            </p>
           </div>
         </section>
 

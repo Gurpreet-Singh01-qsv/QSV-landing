@@ -308,7 +308,7 @@ export default function Home() {
               style={{ animationDelay: "0.5s" }}
             >
               <span className="px-4 py-2 bg-cyan-500/20 border border-cyan-400/30 rounded-full text-sm text-cyan-300 backdrop-blur-sm">
-                ⚡ 2.3s Checkout
+                ⚡ Streamlined Checkout
               </span>
               <span className="px-4 py-2 bg-violet-500/20 border border-violet-400/30 rounded-full text-sm text-violet-300 backdrop-blur-sm">
                 🤚 Haptic Touch
@@ -414,9 +414,9 @@ export default function Home() {
                   <div className="flex items-center justify-between rounded-2xl border border-white/10 bg-gradient-to-r from-cyan-400/20 via-transparent to-fuchsia-400/20 p-5">
                     <div>
                       <p className="text-[10px] uppercase tracking-[0.4em] text-cyan-200/60">
-                        Checkout Pulse
+                        Checkout Speed
                       </p>
-                      <p className="mt-2 text-lg font-semibold text-white">2.3 s</p>
+                      <p className="mt-2 text-lg font-semibold text-white">Ultra-Fast</p>
                     </div>
                     <span className="rounded-full bg-white/10 px-5 py-2 text-[10px] uppercase tracking-[0.4em] text-white/80">
                       Synced
@@ -454,7 +454,7 @@ export default function Home() {
                   </div>
                   <h3 className="text-2xl font-semibold text-white mb-4">Quantum Cart</h3>
                   <p className="text-gray-300 leading-relaxed mb-4">
-                    2.3-second checkout pulse with quantum-encrypted transactions and zero-latency processing.
+                    Lightning-fast checkout with quantum-encrypted transactions and ultra-low latency processing.
                   </p>
                   <div className="flex items-center text-cyan-300 text-sm font-medium">
                     <span className="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse"></span>
@@ -517,39 +517,40 @@ export default function Home() {
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-white mb-6">Platform Performance</h2>
-              <p className="text-xl text-gray-300">Real metrics from our beta testing phase</p>
+              <p className="text-xl text-gray-300">Key features of our VR shopping platform</p>
+              <p className="text-sm text-gray-400 mt-2">*Platform currently in development - features subject to change</p>
             </div>
             
             <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
               <div className="text-center group">
                 <div className="bg-gradient-to-br from-cyan-900/30 to-cyan-800/20 p-8 rounded-2xl border border-cyan-500/20 backdrop-blur-sm group-hover:border-cyan-400/40 transition-all duration-300">
-                  <div className="text-5xl font-bold text-cyan-400 mb-2 group-hover:scale-110 transition-transform duration-300">2.3s</div>
-                  <div className="text-gray-300 font-medium">Average Checkout</div>
-                  <div className="text-sm text-cyan-300 mt-2">98% faster than traditional</div>
+                  <div className="text-4xl font-bold text-cyan-400 mb-2 group-hover:scale-110 transition-transform duration-300">Streamlined</div>
+                  <div className="text-gray-300 font-medium">Checkout Experience</div>
+                  <div className="text-sm text-cyan-300 mt-2">Designed for efficiency</div>
                 </div>
               </div>
               
               <div className="text-center group">
                 <div className="bg-gradient-to-br from-violet-900/30 to-violet-800/20 p-8 rounded-2xl border border-violet-500/20 backdrop-blur-sm group-hover:border-violet-400/40 transition-all duration-300">
-                  <div className="text-5xl font-bold text-violet-400 mb-2 group-hover:scale-110 transition-transform duration-300">90%</div>
-                  <div className="text-gray-300 font-medium">Return Reduction</div>
-                  <div className="text-sm text-violet-300 mt-2">Perfect fit guarantee</div>
+                  <div className="text-4xl font-bold text-violet-400 mb-2 group-hover:scale-110 transition-transform duration-300">Better Fit</div>
+                  <div className="text-gray-300 font-medium">Technology</div>
+                  <div className="text-sm text-violet-300 mt-2">VR try-before-buy</div>
                 </div>
               </div>
               
               <div className="text-center group">
                 <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 p-8 rounded-2xl border border-green-500/20 backdrop-blur-sm group-hover:border-green-400/40 transition-all duration-300">
-                  <div className="text-5xl font-bold text-green-400 mb-2 group-hover:scale-110 transition-transform duration-300">5x</div>
-                  <div className="text-gray-300 font-medium">Engagement Boost</div>
-                  <div className="text-sm text-green-300 mt-2">Immersive experience</div>
+                  <div className="text-4xl font-bold text-green-400 mb-2 group-hover:scale-110 transition-transform duration-300">Immersive</div>
+                  <div className="text-gray-300 font-medium">Shopping Experience</div>
+                  <div className="text-sm text-green-300 mt-2">VR environments</div>
                 </div>
               </div>
               
               <div className="text-center group">
                 <div className="bg-gradient-to-br from-orange-900/30 to-orange-800/20 p-8 rounded-2xl border border-orange-500/20 backdrop-blur-sm group-hover:border-orange-400/40 transition-all duration-300">
-                  <div className="text-5xl font-bold text-orange-400 mb-2 group-hover:scale-110 transition-transform duration-300">99.9%</div>
-                  <div className="text-gray-300 font-medium">Uptime</div>
-                  <div className="text-sm text-orange-300 mt-2">Enterprise reliability</div>
+                  <div className="text-4xl font-bold text-orange-400 mb-2 group-hover:scale-110 transition-transform duration-300">Reliable</div>
+                  <div className="text-gray-300 font-medium">Platform</div>
+                  <div className="text-sm text-orange-300 mt-2">Built for scale</div>
                 </div>
               </div>
             </div>
@@ -593,6 +594,17 @@ export default function Home() {
                 </div>
               </div>
             </div>
+          </div>
+        </section>
+
+        {/* Disclaimer Section */}
+        <section className="relative z-10 px-6 py-8 bg-black/30">
+          <div className="max-w-4xl mx-auto text-center">
+            <p className="text-sm text-gray-400 leading-relaxed">
+              QSV is currently in development. All features, performance characteristics, and capabilities described are planned functionality and subject to change. 
+              This website represents our vision and development goals, not current product capabilities. 
+              Join our waitlist to be notified when the platform becomes available.
+            </p>
           </div>
         </section>
 
