@@ -10,6 +10,12 @@ export default function About() {
           name="description"
           content="Discover how QSV is revolutionizing e-commerce through immersive VR experiences. Meet the team building the future of shopping in the multiverse."
         />
+        
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/images/qsv-logo-merged.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/images/qsv-logo-merged.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/images/qsv-logo-merged.png" />
       </Head>
 
       <div className="relative min-h-screen bg-gradient-to-br from-[#040824] via-[#120538] to-[#01010f] text-white">

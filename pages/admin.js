@@ -200,6 +200,12 @@ export default function Admin() {
       <>
         <Head>
           <title>QSV Admin - Login</title>
+          
+          {/* Favicon */}
+          <link rel="icon" href="/favicon.ico" />
+          <link rel="icon" type="image/png" sizes="32x32" href="/images/qsv-logo-merged.png" />
+          <link rel="icon" type="image/png" sizes="16x16" href="/images/qsv-logo-merged.png" />
+          <link rel="apple-touch-icon" sizes="180x180" href="/images/qsv-logo-merged.png" />
         </Head>
         <div className="min-h-screen bg-gray-900 flex items-center justify-center">
           <div className="bg-gray-800 p-8 rounded-xl border border-gray-700 w-full max-w-md">
@@ -247,6 +253,12 @@ export default function Admin() {
     <>
       <Head>
         <title>QSV Admin - Waitlist Dashboard</title>
+        
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/images/qsv-logo-merged.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/images/qsv-logo-merged.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/images/qsv-logo-merged.png" />
       </Head>
 
       <div className="min-h-screen bg-gray-900 text-white">

@@ -94,6 +94,12 @@ export default function Features() {
           name="description"
           content="Discover QSV's cutting-edge features: Quantum Cart, Haptic Weave, Multiverse Environments, and Emotional Commerce AI. The future of shopping is here."
         />
+        
+        {/* Favicon */}
+        <link rel="icon" href="/favicon.ico" />
+        <link rel="icon" type="image/png" sizes="32x32" href="/images/qsv-logo-merged.png" />
+        <link rel="icon" type="image/png" sizes="16x16" href="/images/qsv-logo-merged.png" />
+        <link rel="apple-touch-icon" sizes="180x180" href="/images/qsv-logo-merged.png" />
       </Head>
 
       <div className="relative min-h-screen bg-gradient-to-br from-[#040824] via-[#120538] to-[#01010f] text-white">
