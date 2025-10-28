@@ -185,19 +185,23 @@ export default function Home() {
         ))}
 
         {/* Navigation */}
-        <nav className="relative z-10 flex items-center justify-between px-6 py-6 lg:px-16">
-          <div className="text-2xl font-bold text-cyan-300">QSV</div>
-          <div className="flex gap-6">
-            <a href="/" className="text-cyan-300">Home</a>
-            <a href="/features" className="text-gray-300 hover:text-white transition-colors">Features</a>
-            <a href="/about" className="text-gray-300 hover:text-white transition-colors">About</a>
+        <nav className="relative z-10 px-6 py-6 lg:px-16">
+          <div className="max-w-7xl mx-auto flex items-center justify-between">
+            <div className="text-2xl font-bold text-cyan-300">QSV</div>
+            <div className="flex gap-8">
+              <a href="/" className="text-cyan-300 font-medium">Home</a>
+              <a href="/features" className="text-gray-300 hover:text-white transition-colors font-medium">Features</a>
+              <a href="/about" className="text-gray-300 hover:text-white transition-colors font-medium">About</a>
+            </div>
           </div>
         </nav>
 
         {/* HERO SECTION */}
-        <main className="relative z-10 flex min-h-screen flex-col items-center justify-center px-6 py-16 text-center lg:flex-row lg:text-left lg:px-16 lg:py-24">
-          {/* LEFT: Text + Logo */}
-          <div className="max-w-2xl space-y-8">
+        <main className="relative z-10 px-6 py-12 lg:px-16 lg:py-16">
+          <div className="max-w-7xl mx-auto">
+            <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[80vh]">
+            {/* LEFT: Text + Logo */}
+            <div className="space-y-8 text-center lg:text-left">
             {/* Eyebrow */}
             <p
               className={`uppercase tracking-[0.35em] text-[11px] text-cyan-200/60 fade-up ${isMounted ? "fade-up--animate" : ""
@@ -208,8 +212,8 @@ export default function Home() {
             </p>
 
             {/* QSV Logo — mobile-heavier, no disk, responsive tweaks */}
-            <div className="relative mb-8 flex flex-col items-center justify-center fade-up isolate">
-              <div className="relative w-40 h-40 sm:w-52 sm:h-52 rounded-full overflow-hidden">
+            <div className="relative mb-8 flex flex-col items-center lg:items-start justify-center fade-up isolate">
+              <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden">
                 {/* Mobile-only local darkener to add contrast without a visible circle */}
                 <div
                   className="pointer-events-none absolute inset-0 rounded-full md:hidden"
@@ -261,7 +265,7 @@ export default function Home() {
 
             {/* Primary Heading — fallback + gradient overlay */}
             <h1
-              className={`mt-2 relative z-20 text-5xl sm:text-6xl xl:text-7xl
+              className={`mt-2 relative z-20 text-4xl sm:text-5xl lg:text-6xl xl:text-7xl
               font-semibold tracking-tight leading-tight fade-up text-cyan-200
               ${isMounted ? "fade-up--animate" : ""}`}
               style={{ animationDelay: "0.2s" }}
@@ -290,7 +294,7 @@ export default function Home() {
 
             {/* Body copy */}
             <p
-              className={`text-slate-200/80 sm:text-lg leading-relaxed max-w-xl mx-auto lg:mx-0 fade-up ${isMounted ? "fade-up--animate" : ""
+              className={`text-slate-200/80 text-lg lg:text-xl leading-relaxed max-w-2xl mx-auto lg:mx-0 fade-up ${isMounted ? "fade-up--animate" : ""
                 }`}
               style={{ animationDelay: "0.35s" }}
             >
@@ -316,7 +320,7 @@ export default function Home() {
             {/* ==== FORM STARTS HERE ==== */}
             <form
               onSubmit={handleSubmit}
-              className="mt-8 flex w-full max-w-xl flex-col items-center gap-3 sm:flex-row sm:gap-4"
+              className="mt-8 flex w-full max-w-2xl flex-col items-center lg:items-start gap-4 sm:flex-row sm:gap-4"
               aria-describedby="waitlist-desc"
             >
               <label htmlFor="email" className="sr-only">Email address</label>
@@ -360,9 +364,10 @@ export default function Home() {
               {error && <p className="text-sm text-rose-300">{error}</p>}
             </div>
             {/* ==== FORM ENDS HERE ==== */}
-          </div>
-          {/* VR CARD SECTION */}
-          <div className="relative mt-20 flex w-full max-w-sm justify-center lg:mt-0">
+            </div>
+
+            {/* VR CARD SECTION */}
+            <div className="relative flex w-full max-w-lg justify-center lg:justify-end">
             <div
               className="relative w-full rounded-[2.5rem] border border-white/10 bg-white/10 p-[1px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
               style={{ perspective: "1400px" }}
@@ -421,10 +426,11 @@ export default function Home() {
               </div>
             </div>
           </div>
+        </div>
         </main>
 
         {/* Features Preview Section */}
-        <section className="relative z-10 px-6 py-20 lg:px-16">
+        <section className="relative z-10 px-6 py-16 lg:px-16 lg:py-24">
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl lg:text-5xl font-bold mb-6">
@@ -506,7 +512,7 @@ export default function Home() {
         </section>
 
         {/* Stats Section */}
-        <section className="relative z-10 px-6 py-20 lg:px-16">
+        <section className="relative z-10 px-6 py-16 lg:px-16 lg:py-20 bg-gradient-to-br from-black/20 to-transparent">
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-white mb-6">Platform Performance</h2>
@@ -550,7 +556,7 @@ export default function Home() {
         </section>
 
         {/* Social Proof Section */}
-        <section className="relative z-10 px-6 py-20 lg:px-16">
+        <section className="relative z-10 px-6 py-16 lg:px-16 lg:py-20">
           <div className="max-w-4xl mx-auto text-center">
             <h2 className="text-4xl font-bold text-white mb-12">Join the VR Shopping Revolution</h2>
             
