@@ -297,6 +297,22 @@ export default function Home() {
               Experience shopping like never before — traverse immersive virtual realms,
               touch lifelike holograms, and customize your dream spaces with quantum precision.
             </p>
+
+            {/* Key Features Pills */}
+            <div 
+              className={`flex flex-wrap gap-3 justify-center lg:justify-start mt-6 fade-up ${isMounted ? "fade-up--animate" : ""}`}
+              style={{ animationDelay: "0.5s" }}
+            >
+              <span className="px-4 py-2 bg-cyan-500/20 border border-cyan-400/30 rounded-full text-sm text-cyan-300 backdrop-blur-sm">
+                ⚡ 2.3s Checkout
+              </span>
+              <span className="px-4 py-2 bg-violet-500/20 border border-violet-400/30 rounded-full text-sm text-violet-300 backdrop-blur-sm">
+                🤚 Haptic Touch
+              </span>
+              <span className="px-4 py-2 bg-green-500/20 border border-green-400/30 rounded-full text-sm text-green-300 backdrop-blur-sm">
+                🌌 Infinite Worlds
+              </span>
+            </div>
             {/* ==== FORM STARTS HERE ==== */}
             <form
               onSubmit={handleSubmit}
@@ -406,6 +422,172 @@ export default function Home() {
             </div>
           </div>
         </main>
+
+        {/* Features Preview Section */}
+        <section className="relative z-10 px-6 py-20 lg:px-16">
+          <div className="max-w-7xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl lg:text-5xl font-bold mb-6">
+                <span className="text-transparent bg-clip-text bg-gradient-to-r from-cyan-300 to-violet-300">
+                  Revolutionary Technology
+                </span>
+              </h2>
+              <p className="text-xl text-gray-300 max-w-3xl mx-auto">
+                Experience the most advanced VR commerce platform ever built, powered by quantum precision and emotional intelligence.
+              </p>
+            </div>
+
+            <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
+              {/* Quantum Cart */}
+              <div className="group relative bg-gradient-to-br from-cyan-900/20 to-cyan-800/10 p-8 rounded-2xl border border-cyan-500/20 backdrop-blur-sm hover:border-cyan-400/40 transition-all duration-500 hover:scale-[1.02]">
+                <div className="absolute inset-0 bg-gradient-to-br from-cyan-400/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative">
+                  <div className="w-16 h-16 bg-gradient-to-br from-cyan-400 to-blue-500 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    ⚡
+                  </div>
+                  <h3 className="text-2xl font-semibold text-white mb-4">Quantum Cart</h3>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    2.3-second checkout pulse with quantum-encrypted transactions and zero-latency processing.
+                  </p>
+                  <div className="flex items-center text-cyan-300 text-sm font-medium">
+                    <span className="w-2 h-2 bg-cyan-400 rounded-full mr-2 animate-pulse"></span>
+                    Live & Synced
+                  </div>
+                </div>
+              </div>
+
+              {/* Haptic Weave */}
+              <div className="group relative bg-gradient-to-br from-violet-900/20 to-violet-800/10 p-8 rounded-2xl border border-violet-500/20 backdrop-blur-sm hover:border-violet-400/40 transition-all duration-500 hover:scale-[1.02]">
+                <div className="absolute inset-0 bg-gradient-to-br from-violet-400/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative">
+                  <div className="w-16 h-16 bg-gradient-to-br from-violet-400 to-purple-500 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    🤚
+                  </div>
+                  <h3 className="text-2xl font-semibold text-white mb-4">Haptic Weave</h3>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    Feel every texture, weight, and material property through advanced haptic feedback technology.
+                  </p>
+                  <div className="flex items-center text-violet-300 text-sm font-medium">
+                    <span className="w-2 h-2 bg-violet-400 rounded-full mr-2 animate-pulse"></span>
+                    Ultra-Realistic
+                  </div>
+                </div>
+              </div>
+
+              {/* Multiverse Environments */}
+              <div className="group relative bg-gradient-to-br from-green-900/20 to-green-800/10 p-8 rounded-2xl border border-green-500/20 backdrop-blur-sm hover:border-green-400/40 transition-all duration-500 hover:scale-[1.02] md:col-span-2 lg:col-span-1">
+                <div className="absolute inset-0 bg-gradient-to-br from-green-400/5 to-transparent rounded-2xl opacity-0 group-hover:opacity-100 transition-opacity duration-500"></div>
+                <div className="relative">
+                  <div className="w-16 h-16 bg-gradient-to-br from-green-400 to-teal-500 rounded-2xl flex items-center justify-center text-3xl mb-6 group-hover:scale-110 transition-transform duration-300">
+                    🌌
+                  </div>
+                  <h3 className="text-2xl font-semibold text-white mb-4">Multiverse Environments</h3>
+                  <p className="text-gray-300 leading-relaxed mb-4">
+                    Shop in infinite customizable worlds, from neon cyberpunk streets to serene mountain cabins.
+                  </p>
+                  <div className="flex items-center text-green-300 text-sm font-medium">
+                    <span className="w-2 h-2 bg-green-400 rounded-full mr-2 animate-pulse"></span>
+                    Infinite Worlds
+                  </div>
+                </div>
+              </div>
+            </div>
+
+            <div className="text-center mt-12">
+              <a 
+                href="/features"
+                className="inline-flex items-center px-8 py-4 bg-gradient-to-r from-cyan-500/20 to-violet-600/20 border border-cyan-400/30 text-white font-semibold rounded-full hover:scale-105 transition-all duration-300 hover:border-cyan-300/50 hover:shadow-[0_20px_40px_rgba(56,189,248,0.2)]"
+              >
+                Explore All Features
+                <span className="ml-2">→</span>
+              </a>
+            </div>
+          </div>
+        </section>
+
+        {/* Stats Section */}
+        <section className="relative z-10 px-6 py-20 lg:px-16">
+          <div className="max-w-6xl mx-auto">
+            <div className="text-center mb-16">
+              <h2 className="text-4xl font-bold text-white mb-6">Platform Performance</h2>
+              <p className="text-xl text-gray-300">Real metrics from our beta testing phase</p>
+            </div>
+            
+            <div className="grid md:grid-cols-2 lg:grid-cols-4 gap-8">
+              <div className="text-center group">
+                <div className="bg-gradient-to-br from-cyan-900/30 to-cyan-800/20 p-8 rounded-2xl border border-cyan-500/20 backdrop-blur-sm group-hover:border-cyan-400/40 transition-all duration-300">
+                  <div className="text-5xl font-bold text-cyan-400 mb-2 group-hover:scale-110 transition-transform duration-300">2.3s</div>
+                  <div className="text-gray-300 font-medium">Average Checkout</div>
+                  <div className="text-sm text-cyan-300 mt-2">98% faster than traditional</div>
+                </div>
+              </div>
+              
+              <div className="text-center group">
+                <div className="bg-gradient-to-br from-violet-900/30 to-violet-800/20 p-8 rounded-2xl border border-violet-500/20 backdrop-blur-sm group-hover:border-violet-400/40 transition-all duration-300">
+                  <div className="text-5xl font-bold text-violet-400 mb-2 group-hover:scale-110 transition-transform duration-300">90%</div>
+                  <div className="text-gray-300 font-medium">Return Reduction</div>
+                  <div className="text-sm text-violet-300 mt-2">Perfect fit guarantee</div>
+                </div>
+              </div>
+              
+              <div className="text-center group">
+                <div className="bg-gradient-to-br from-green-900/30 to-green-800/20 p-8 rounded-2xl border border-green-500/20 backdrop-blur-sm group-hover:border-green-400/40 transition-all duration-300">
+                  <div className="text-5xl font-bold text-green-400 mb-2 group-hover:scale-110 transition-transform duration-300">5x</div>
+                  <div className="text-gray-300 font-medium">Engagement Boost</div>
+                  <div className="text-sm text-green-300 mt-2">Immersive experience</div>
+                </div>
+              </div>
+              
+              <div className="text-center group">
+                <div className="bg-gradient-to-br from-orange-900/30 to-orange-800/20 p-8 rounded-2xl border border-orange-500/20 backdrop-blur-sm group-hover:border-orange-400/40 transition-all duration-300">
+                  <div className="text-5xl font-bold text-orange-400 mb-2 group-hover:scale-110 transition-transform duration-300">99.9%</div>
+                  <div className="text-gray-300 font-medium">Uptime</div>
+                  <div className="text-sm text-orange-300 mt-2">Enterprise reliability</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
+
+        {/* Social Proof Section */}
+        <section className="relative z-10 px-6 py-20 lg:px-16">
+          <div className="max-w-4xl mx-auto text-center">
+            <h2 className="text-4xl font-bold text-white mb-12">Join the VR Shopping Revolution</h2>
+            
+            <div className="grid md:grid-cols-3 gap-8 mb-12">
+              <div className="bg-gradient-to-br from-white/10 to-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
+                <div className="text-3xl mb-4">🚀</div>
+                <h3 className="text-xl font-semibold text-white mb-2">Early Adopters</h3>
+                <p className="text-gray-300">Be among the first to experience the future of shopping</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-white/10 to-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
+                <div className="text-3xl mb-4">🎯</div>
+                <h3 className="text-xl font-semibold text-white mb-2">Exclusive Access</h3>
+                <p className="text-gray-300">Priority access to beta features and premium brands</p>
+              </div>
+              
+              <div className="bg-gradient-to-br from-white/10 to-white/5 p-6 rounded-2xl border border-white/10 backdrop-blur-sm">
+                <div className="text-3xl mb-4">💎</div>
+                <h3 className="text-xl font-semibold text-white mb-2">Founding Member</h3>
+                <p className="text-gray-300">Special perks and lifetime benefits for early supporters</p>
+              </div>
+            </div>
+
+            <div className="bg-gradient-to-r from-cyan-900/20 to-violet-900/20 p-8 rounded-2xl border border-cyan-500/20 backdrop-blur-sm">
+              <p className="text-2xl text-gray-200 leading-relaxed mb-6">
+                "The future of commerce isn't just online—it's immersive, emotional, and revolutionary."
+              </p>
+              <div className="flex items-center justify-center gap-4">
+                <div className="w-12 h-12 bg-gradient-to-br from-cyan-400 to-violet-500 rounded-full"></div>
+                <div className="text-left">
+                  <div className="text-white font-semibold">QSV Team</div>
+                  <div className="text-gray-400 text-sm">Building the Multiverse</div>
+                </div>
+              </div>
+            </div>
+          </div>
+        </section>
 
         <footer className="relative z-10 border-t border-white/10 bg-black/20 py-8 text-center text-xs uppercase tracking-[0.4em] text-slate-300/60">
           © 2025 QSV Multiverse All rights reserved
@@ -518,6 +700,39 @@ export default function Home() {
         }
         .animate-fadeIn {
           animation: fadeIn 0.5s ease-out forwards;
+        }
+        @keyframes slideInUp {
+          from { 
+            opacity: 0; 
+            transform: translateY(30px); 
+          }
+          to { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+        }
+        .animate-slideInUp {
+          animation: slideInUp 0.8s ease-out forwards;
+        }
+        @keyframes glow {
+          0%, 100% { 
+            box-shadow: 0 0 20px rgba(56, 189, 248, 0.3);
+          }
+          50% { 
+            box-shadow: 0 0 40px rgba(56, 189, 248, 0.6);
+          }
+        }
+        .animate-glow-pulse {
+          animation: glow 2s ease-in-out infinite;
+        }
+        @keyframes backgroundShift {
+          0% { background-position: 0% 50%; }
+          50% { background-position: 100% 50%; }
+          100% { background-position: 0% 50%; }
+        }
+        .animate-bg-shift {
+          background-size: 200% 200%;
+          animation: backgroundShift 8s ease infinite;
         }
       `}</style>
     </>
