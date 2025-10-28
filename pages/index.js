@@ -21,8 +21,26 @@ export default function Home() {
   const [submitted, setSubmitted] = useState(false);
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState("");
+  const [portalAnimationComplete, setPortalAnimationComplete] = useState(false);
+  const [showPortal, setShowPortal] = useState(true);
 
-  useEffect(() => setIsMounted(true), []);
+  useEffect(() => {
+    setIsMounted(true);
+    
+    // Portal animation sequence
+    const portalTimer = setTimeout(() => {
+      setPortalAnimationComplete(true);
+    }, 2000); // Portal animation duration
+    
+    const hidePortalTimer = setTimeout(() => {
+      setShowPortal(false);
+    }, 2500); // Hide portal overlay
+    
+    return () => {
+      clearTimeout(portalTimer);
+      clearTimeout(hidePortalTimer);
+    };
+  }, []);
 
   useEffect(() => {
     const handleScroll = () =>
@@ -166,6 +184,57 @@ export default function Home() {
       </Head>
 
       <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#040824] via-[#120538] to-[#01010f] text-white">
+        {/* Portal Entry Animation */}
+        {showPortal && (
+          <div className={`fixed inset-0 z-50 flex items-center justify-center bg-black transition-opacity duration-1000 ${portalAnimationComplete ? 'opacity-0 pointer-events-none' : 'opacity-100'}`}>
+            <div className="relative">
+              {/* Portal Ring */}
+              <div className="portal-ring w-96 h-96 rounded-full border-4 border-cyan-400/30 animate-portal-expand">
+                <div className="absolute inset-4 rounded-full border-2 border-violet-400/40 animate-portal-expand-delayed">
+                  <div className="absolute inset-4 rounded-full border border-cyan-300/50 animate-portal-expand-delayed-2">
+                    {/* Portal Center Glow */}
+                    <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/20 via-violet-500/30 to-cyan-400/20 animate-portal-pulse"></div>
+                  </div>
+                </div>
+              </div>
+              
+              {/* Portal Logo */}
+              <div className="absolute inset-0 flex items-center justify-center">
+                <div className="relative w-32 h-32 animate-portal-logo-emerge">
+                  <img
+                    src="/images/qsv-logo-merged.png"
+                    alt="QSV Portal"
+                    className="w-full h-full object-contain animate-portal-logo-spin"
+                  />
+                  <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/30 to-violet-500/30 animate-portal-logo-glow"></div>
+                </div>
+              </div>
+              
+              {/* Portal Particles */}
+              <div className="absolute inset-0">
+                {[...Array(12)].map((_, i) => (
+                  <div
+                    key={i}
+                    className="absolute w-2 h-2 bg-cyan-400 rounded-full animate-portal-particles"
+                    style={{
+                      top: `${20 + (i * 5)}%`,
+                      left: `${15 + (i * 6)}%`,
+                      animationDelay: `${i * 0.1}s`,
+                    }}
+                  />
+                ))}
+              </div>
+              
+              {/* Welcome Text */}
+              <div className="absolute -bottom-20 left-1/2 transform -translate-x-1/2 text-center">
+                <p className="text-cyan-300 text-lg font-semibold animate-portal-text">
+                  Entering the Multiverse...
+                </p>
+              </div>
+            </div>
+          </div>
+        )}
+
         {/* Background Effects */}
         <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(68,215,255,0.15),transparent_50%),radial-gradient(circle_at_80%_70%,rgba(155,108,255,0.2),transparent_50%)]" />
 
@@ -185,7 +254,7 @@ export default function Home() {
         ))}
 
         {/* Navigation */}
-        <nav className="relative z-10 px-6 py-6 lg:px-16">
+        <nav className={`relative z-10 px-6 py-6 lg:px-16 transition-all duration-1000 ${portalAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-4'}`}>
           <div className="max-w-7xl mx-auto flex items-center justify-between">
             <div className="text-2xl font-bold text-cyan-300">QSV</div>
             <div className="flex gap-8">
@@ -197,7 +266,7 @@ export default function Home() {
         </nav>
 
         {/* HERO SECTION */}
-        <main className="relative z-10 px-6 py-12 lg:px-16 lg:py-16">
+        <main className={`relative z-10 px-6 py-12 lg:px-16 lg:py-16 transition-all duration-1000 delay-300 ${portalAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[80vh]">
               {/* LEFT: Text + Logo */}
@@ -431,7 +500,7 @@ export default function Home() {
         </main>
 
         {/* Features Preview Section */}
-        <section className="relative z-10 px-6 py-16 lg:px-16 lg:py-24">
+        <section className={`relative z-10 px-6 py-16 lg:px-16 lg:py-24 transition-all duration-1000 delay-500 ${portalAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="max-w-7xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl lg:text-5xl font-bold mb-6">
@@ -513,7 +582,7 @@ export default function Home() {
         </section>
 
         {/* Stats Section */}
-        <section className="relative z-10 px-6 py-16 lg:px-16 lg:py-20 bg-gradient-to-br from-black/20 to-transparent">
+        <section className={`relative z-10 px-6 py-16 lg:px-16 lg:py-20 bg-gradient-to-br from-black/20 to-transparent transition-all duration-1000 delay-700 ${portalAnimationComplete ? 'opacity-100 translate-y-0' : 'opacity-0 translate-y-8'}`}>
           <div className="max-w-6xl mx-auto">
             <div className="text-center mb-16">
               <h2 className="text-4xl font-bold text-white mb-6">Platform Performance</h2>
@@ -752,6 +821,125 @@ export default function Home() {
         .animate-bg-shift {
           background-size: 200% 200%;
           animation: backgroundShift 8s ease infinite;
+        }
+
+        /* Portal Animation Keyframes */
+        @keyframes portalExpand {
+          0% { 
+            transform: scale(0) rotate(0deg); 
+            opacity: 0; 
+          }
+          50% { 
+            transform: scale(1.2) rotate(180deg); 
+            opacity: 0.8; 
+          }
+          100% { 
+            transform: scale(1) rotate(360deg); 
+            opacity: 1; 
+          }
+        }
+        .animate-portal-expand {
+          animation: portalExpand 1.5s ease-out forwards;
+        }
+        .animate-portal-expand-delayed {
+          animation: portalExpand 1.5s ease-out 0.2s forwards;
+          opacity: 0;
+        }
+        .animate-portal-expand-delayed-2 {
+          animation: portalExpand 1.5s ease-out 0.4s forwards;
+          opacity: 0;
+        }
+
+        @keyframes portalPulse {
+          0%, 100% { 
+            opacity: 0.2; 
+            transform: scale(1); 
+          }
+          50% { 
+            opacity: 0.6; 
+            transform: scale(1.1); 
+          }
+        }
+        .animate-portal-pulse {
+          animation: portalPulse 2s ease-in-out infinite;
+        }
+
+        @keyframes portalLogoEmerge {
+          0% { 
+            transform: scale(0) translateZ(0); 
+            opacity: 0; 
+          }
+          60% { 
+            transform: scale(0.8) translateZ(0); 
+            opacity: 0.5; 
+          }
+          100% { 
+            transform: scale(1) translateZ(0); 
+            opacity: 1; 
+          }
+        }
+        .animate-portal-logo-emerge {
+          animation: portalLogoEmerge 1.8s ease-out 0.5s forwards;
+          opacity: 0;
+        }
+
+        @keyframes portalLogoSpin {
+          0% { transform: rotateY(0deg); }
+          100% { transform: rotateY(360deg); }
+        }
+        .animate-portal-logo-spin {
+          animation: portalLogoSpin 2s ease-in-out 0.8s forwards;
+        }
+
+        @keyframes portalLogoGlow {
+          0%, 100% { 
+            opacity: 0.3; 
+            transform: scale(1); 
+          }
+          50% { 
+            opacity: 0.7; 
+            transform: scale(1.2); 
+          }
+        }
+        .animate-portal-logo-glow {
+          animation: portalLogoGlow 1.5s ease-in-out infinite;
+        }
+
+        @keyframes portalParticles {
+          0% { 
+            transform: translateY(0) scale(0); 
+            opacity: 0; 
+          }
+          20% { 
+            transform: translateY(-20px) scale(1); 
+            opacity: 1; 
+          }
+          100% { 
+            transform: translateY(-100px) scale(0); 
+            opacity: 0; 
+          }
+        }
+        .animate-portal-particles {
+          animation: portalParticles 2s ease-out infinite;
+        }
+
+        @keyframes portalText {
+          0% { 
+            opacity: 0; 
+            transform: translateY(20px); 
+          }
+          50% { 
+            opacity: 1; 
+            transform: translateY(0); 
+          }
+          100% { 
+            opacity: 0; 
+            transform: translateY(-10px); 
+          }
+        }
+        .animate-portal-text {
+          animation: portalText 2s ease-in-out 0.5s forwards;
+          opacity: 0;
         }
       `}</style>
     </>
