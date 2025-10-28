@@ -288,20 +288,9 @@ export default function Home() {
               FUTURISTIC VR SHOPPING PLATFORM
             </p>
 
-            {/* QSV Logo — mobile-heavier, no disk, responsive tweaks */}
-            <div className="relative mb-8 flex flex-col items-center lg:items-start justify-center fade-up isolate">
-              <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48 rounded-full overflow-hidden">
-                {/* Mobile-only local darkener to add contrast without a visible circle */}
-                <div
-                  className="pointer-events-none absolute inset-0 rounded-full md:hidden"
-                  style={{
-                    background:
-                      "radial-gradient(closest-side, rgba(0,0,0,0.38) 0%, rgba(0,0,0,0.22) 58%, rgba(0,0,0,0) 82%)",
-                    mixBlendMode: "multiply",
-                  }}
-                />
-
-                {/* Logo (heavier on mobile, relaxed on md+) */}
+            {/* QSV Logo — Simplified and Working */}
+            <div className={`relative mb-8 flex flex-col items-center lg:items-start justify-center fade-up ${isMounted ? "fade-up--animate" : ""}`} style={{ animationDelay: "0.15s" }}>
+              <div className="relative w-32 h-32 sm:w-40 sm:h-40 lg:w-48 lg:h-48">
                 <img
                   src="/images/qsv-logo-merged.png"
                   alt="QSV Logo - Revolutionary VR Shopping Platform"
@@ -309,29 +298,12 @@ export default function Home() {
                   height="208"
                   loading="eager"
                   decoding="async"
-                  className="
-        absolute inset-0 w-full h-full object-contain select-none animate-float
-        /* MOBILE (default) */
-        brightness-[0.82] contrast-[1.26] saturate-[1.12]
-        [mask-image:radial-gradient(closest-side,white_90%,transparent_100%)]
-        [-webkit-mask-image:radial-gradient(closest-side,white_90%,transparent_100%)]
-        drop-shadow-[0_10px_32px_rgba(10,12,28,0.6)]
-        /* DESKTOP overrides */
-        md:brightness-[0.9] md:contrast-[1.18] md:saturate-[1.05]
-        md:[mask-image:radial-gradient(closest-side,white_88%,transparent_100%)]
-        md:[-webkit-mask-image:radial-gradient(closest-side,white_88%,transparent_100%)]
-      "
+                  className="w-full h-full object-contain select-none animate-float filter brightness-110 contrast-125 drop-shadow-2xl"
                   draggable="false"
                 />
-
-                {/* Sheen: off on mobile, on from md+ */}
-                <div className="pointer-events-none absolute inset-0 hidden md:block
-                    [mask-image:radial-gradient(closest-side,white,transparent)]
-                    [-webkit-mask-image:radial-gradient(closest-side,white,transparent)]">
-                  <div className="absolute -left-1/2 top-0 h-full w-[60%]
-                      bg-[linear-gradient(100deg,transparent,rgba(255,255,255,0.06),transparent)]
-                      animate-logo-sheen" />
-                </div>
+                
+                {/* Glowing effect */}
+                <div className="absolute inset-0 w-full h-full bg-gradient-to-r from-cyan-400/20 to-violet-500/20 rounded-full blur-xl animate-pulse"></div>
               </div>
 
               <h2 className="mt-4 text-transparent bg-clip-text bg-gradient-to-r from-cyan-300/85 to-violet-300/85 text-2xl sm:text-3xl font-semibold uppercase tracking-wide">
