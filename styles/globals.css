@@ -14,3 +14,146 @@ html, body {
   box-sizing: border-box;
 }
 
+/* Custom animations */
+@keyframes float {
+  0%, 100% { transform: translateY(0px); }
+  50% { transform: translateY(-10px); }
+}
+
+@keyframes fade-up {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes portal-expand {
+  0% { transform: scale(0.3); opacity: 0; }
+  50% { opacity: 0.8; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes portal-expand-delayed {
+  0% { transform: scale(0.5); opacity: 0; }
+  60% { opacity: 0.6; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes portal-expand-delayed-2 {
+  0% { transform: scale(0.7); opacity: 0; }
+  70% { opacity: 0.4; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes portal-pulse {
+  0%, 100% { opacity: 0.2; }
+  50% { opacity: 0.4; }
+}
+
+@keyframes portal-logo-emerge {
+  0% { transform: scale(0); opacity: 0; }
+  100% { transform: scale(1); opacity: 1; }
+}
+
+@keyframes portal-logo-spin {
+  0% { transform: rotate(0deg); }
+  100% { transform: rotate(360deg); }
+}
+
+@keyframes portal-logo-glow {
+  0%, 100% { opacity: 0.3; }
+  50% { opacity: 0.6; }
+}
+
+@keyframes portal-particles {
+  0% { transform: scale(0) rotate(0deg); opacity: 0; }
+  50% { transform: scale(1) rotate(180deg); opacity: 1; }
+  100% { transform: scale(0) rotate(360deg); opacity: 0; }
+}
+
+@keyframes portal-text {
+  0% { opacity: 0; transform: translateY(10px); }
+  100% { opacity: 1; transform: translateY(0); }
+}
+
+@keyframes logo-sheen {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+@keyframes h1-sheen {
+  0% { transform: translateX(-100%); }
+  100% { transform: translateX(200%); }
+}
+
+/* Animation classes */
+.animate-float {
+  animation: float 3s ease-in-out infinite;
+}
+
+.fade-up {
+  opacity: 0;
+  transform: translateY(20px);
+}
+
+.fade-up--animate {
+  animation: fade-up 0.8s ease-out forwards;
+}
+
+.animate-portal-expand {
+  animation: portal-expand 2s ease-out;
+}
+
+.animate-portal-expand-delayed {
+  animation: portal-expand-delayed 2s ease-out 0.2s both;
+}
+
+.animate-portal-expand-delayed-2 {
+  animation: portal-expand-delayed-2 2s ease-out 0.4s both;
+}
+
+.animate-portal-pulse {
+  animation: portal-pulse 2s ease-in-out infinite;
+}
+
+.animate-portal-logo-emerge {
+  animation: portal-logo-emerge 1.5s ease-out 0.5s both;
+}
+
+.animate-portal-logo-spin {
+  animation: portal-logo-spin 20s linear infinite;
+}
+
+.animate-portal-logo-glow {
+  animation: portal-logo-glow 2s ease-in-out infinite;
+}
+
+.animate-portal-particles {
+  animation: portal-particles 3s ease-in-out infinite;
+}
+
+.animate-portal-text {
+  animation: portal-text 1s ease-out 1.5s both;
+}
+
+.animate-logo-sheen {
+  animation: logo-sheen 3s ease-in-out infinite;
+}
+
+.animate-h1-sheen {
+  animation: h1-sheen 4s ease-in-out infinite;
+}
+
+/* Particle styles */
+.qsv-particle {
+  position: absolute;
+  background: linear-gradient(45deg, #44d7ff, #9b6cff);
+  border-radius: 50%;
+  animation: float 4s ease-in-out infinite;
+  opacity: 0.6;
+}
+
