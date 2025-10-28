@@ -166,8 +166,8 @@ export default function Home() {
       </Head>
 
       <div className="relative min-h-screen overflow-hidden bg-gradient-to-br from-[#040824] via-[#120538] to-[#01010f] text-white">
-        {/* Background Glow */}
-        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_20%,rgba(68,215,255,0.25),transparent_55%),radial-gradient(circle_at_80%_10%,rgba(155,108,255,0.35),transparent_50%),radial-gradient(circle_at_50%_80%,rgba(0,102,255,0.2),transparent_55%)]" />
+        {/* Background Effects */}
+        <div className="pointer-events-none absolute inset-0 bg-[radial-gradient(circle_at_20%_30%,rgba(68,215,255,0.15),transparent_50%),radial-gradient(circle_at_80%_70%,rgba(155,108,255,0.2),transparent_50%)]" />
 
         {/* Floating Particles */}
         {particleConfig.map((p, i) => (
