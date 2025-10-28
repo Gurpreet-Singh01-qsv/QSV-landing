@@ -200,8 +200,8 @@ export default function Home() {
         <main className="relative z-10 px-6 py-12 lg:px-16 lg:py-16">
           <div className="max-w-7xl mx-auto">
             <div className="grid lg:grid-cols-2 gap-12 lg:gap-16 items-center min-h-[80vh]">
-            {/* LEFT: Text + Logo */}
-            <div className="space-y-8 text-center lg:text-left">
+              {/* LEFT: Text + Logo */}
+              <div className="space-y-8 text-center lg:text-left">
             {/* Eyebrow */}
             <p
               className={`uppercase tracking-[0.35em] text-[11px] text-cyan-200/60 fade-up ${isMounted ? "fade-up--animate" : ""
@@ -363,11 +363,11 @@ export default function Home() {
               )}
               {error && <p className="text-sm text-rose-300">{error}</p>}
             </div>
-            {/* ==== FORM ENDS HERE ==== */}
-            </div>
+                {/* ==== FORM ENDS HERE ==== */}
+              </div>
 
-            {/* VR CARD SECTION */}
-            <div className="relative flex w-full max-w-lg justify-center lg:justify-end">
+              {/* VR CARD SECTION */}
+              <div className="relative flex w-full max-w-lg justify-center lg:justify-end">
             <div
               className="relative w-full rounded-[2.5rem] border border-white/10 bg-white/10 p-[1px] shadow-[0_30px_80px_rgba(0,0,0,0.45)]"
               style={{ perspective: "1400px" }}
@@ -424,9 +424,9 @@ export default function Home() {
                   </div>
                 </div>
               </div>
+              </div>
             </div>
           </div>
-        </div>
         </main>
 
         {/* Features Preview Section */}
