@@ -860,11 +860,11 @@ function VisualCueSystem({ children, isInteractive = false, isHovered = false, i
       pulseRef.current.scale.setScalar(pulseScale)
     }
     
-    // Immediate feedback burst effect
-    if (feedbackRef.current && (time - lastInteractionTime) < 0.5) {
+    // Subtle immediate feedback burst effect
+    if (feedbackRef.current && (time - lastInteractionTime) < 0.3) {
       const timeSinceInteraction = time - lastInteractionTime
-      const burstIntensity = Math.max(0, 0.8 - timeSinceInteraction * 1.6)
-      const burstScale = 1 + burstIntensity * 0.3
+      const burstIntensity = Math.max(0, 0.2 - timeSinceInteraction * 0.6) // Much more subtle
+      const burstScale = 1 + burstIntensity * 0.1 // Smaller scale change
       
       feedbackRef.current.material.opacity = burstIntensity
       feedbackRef.current.scale.setScalar(burstScale)
@@ -906,11 +906,11 @@ function VisualCueSystem({ children, isInteractive = false, isHovered = false, i
             />
           </mesh>
           
-          {/* Immediate Feedback Burst */}
+          {/* Immediate Feedback Burst - Subtle */}
           <mesh ref={feedbackRef} position={[0, 0, 0]}>
-            <sphereGeometry args={[2.5]} />
+            <sphereGeometry args={[1.2]} />
             <meshBasicMaterial 
-              color="#ffffff"
+              color="#44d7ff"
               transparent
               opacity={0}
             />
@@ -1181,13 +1181,13 @@ function WowMomentController({ onWowComplete }) {
     }
     
     if (wowPhase === 'reveal' && time > 3.5) {
-      // Portal burst effect
+      // Subtle portal burst effect
       if (portalBurstRef.current) {
         const burstProgress = Math.min((time - 3.5) / 1, 1)
-        const burstIntensity = Math.sin(burstProgress * Math.PI) * 2
+        const burstIntensity = Math.sin(burstProgress * Math.PI) * 0.8 // Reduced intensity
         
-        portalBurstRef.current.scale.setScalar(1 + burstIntensity * 0.5)
-        portalBurstRef.current.material.opacity = burstIntensity * 0.3
+        portalBurstRef.current.scale.setScalar(1 + burstIntensity * 0.2) // Smaller scale
+        portalBurstRef.current.material.opacity = burstIntensity * 0.1 // Much more subtle
       }
       
       if (time > 4.5) {
@@ -1201,9 +1201,9 @@ function WowMomentController({ onWowComplete }) {
     <>
       {wowPhase === 'reveal' && (
         <mesh ref={portalBurstRef} position={[0, 0, 0]}>
-          <sphereGeometry args={[4]} />
+          <sphereGeometry args={[3]} />
           <meshBasicMaterial 
-            color="#ffffff"
+            color="#44d7ff"
             transparent
             opacity={0}
           />
