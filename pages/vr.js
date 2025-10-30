@@ -1,5 +1,5 @@
 import { Canvas, useFrame } from '@react-three/fiber'
-import { OrbitControls, Environment, EffectComposer, Bloom, DepthOfField } from '@react-three/drei'
+import { OrbitControls } from '@react-three/drei'
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import * as THREE from 'three'
@@ -147,13 +147,18 @@ function InteractiveProduct({ position, color, name, description, type }) {
       productRef.current.rotation.y = time * 0.3
     }
     
-    // Info card animation
-    if (infoRef.current && (hovered || clicked)) {
-      infoRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1)
-      infoRef.current.material.opacity = THREE.MathUtils.lerp(infoRef.current.material.opacity, 1, 0.1)
-    } else if (infoRef.current) {
-      infoRef.current.scale.lerp(new THREE.Vector3(0.1, 0.1, 0.1), 0.1)
-      infoRef.current.material.opacity = THREE.MathUtils.lerp(infoRef.current.material.opacity, 0, 0.1)
+    // Info card animation - simplified
+    if (infoRef.current) {
+      const targetScale = (hovered || clicked) ? 1 : 0.1
+      const targetOpacity = (hovered || clicked) ? 1 : 0
+      
+      infoRef.current.scale.x += (targetScale - infoRef.current.scale.x) * 0.1
+      infoRef.current.scale.y += (targetScale - infoRef.current.scale.y) * 0.1
+      infoRef.current.scale.z += (targetScale - infoRef.current.scale.z) * 0.1
+      
+      if (infoRef.current.material) {
+        infoRef.current.material.opacity += (targetOpacity - infoRef.current.material.opacity) * 0.1
+      }
     }
   })
   
@@ -272,26 +277,40 @@ function EnergyParticles() {
   return <group ref={particlesRef}>{particles}</group>
 }
 
-// Ambient Audio Component
+// Ambient Audio Component - Safe Version
 function AmbientAudio() {
   useEffect(() => {
-    // Create ambient spatial audio
-    const audioContext = new (window.AudioContext || window.webkitAudioContext)()
-    const oscillator = audioContext.createOscillator()
-    const gainNode = audioContext.createGain()
+    // Only create audio in browser environment
+    if (typeof window === 'undefined') return
     
-    oscillator.connect(gainNode)
-    gainNode.connect(audioContext.destination)
+    let audioContext = null
+    let oscillator = null
+    let gainNode = null
     
-    oscillator.frequency.setValueAtTime(60, audioContext.currentTime) // Low hum
-    oscillator.type = 'sine'
-    gainNode.gain.setValueAtTime(0.02, audioContext.currentTime) // Very subtle
-    
-    oscillator.start()
+    try {
+      audioContext = new (window.AudioContext || window.webkitAudioContext)()
+      oscillator = audioContext.createOscillator()
+      gainNode = audioContext.createGain()
+      
+      oscillator.connect(gainNode)
+      gainNode.connect(audioContext.destination)
+      
+      oscillator.frequency.setValueAtTime(60, audioContext.currentTime)
+      oscillator.type = 'sine'
+      gainNode.gain.setValueAtTime(0.01, audioContext.currentTime) // Very subtle
+      
+      oscillator.start()
+    } catch (error) {
+      console.log('Audio not supported or blocked')
+    }
     
     return () => {
-      oscillator.stop()
-      audioContext.close()
+      try {
+        if (oscillator) oscillator.stop()
+        if (audioContext) audioContext.close()
+      } catch (error) {
+        // Ignore cleanup errors
+      }
     }
   }, [])
   
@@ -339,8 +358,8 @@ function VRScene() {
         decay={1}
       />
       
-      {/* Environment */}
-      <Environment preset="night" />
+      {/* Simple Environment */}
+      <fog attach="fog" args={['#000011', 8, 20]} />
       
       {/* Central Q Portal */}
       <QPortal />
@@ -447,7 +466,7 @@ export default function VRPage() {
           </button>
         </div>
         
-        {/* Premium 3D Canvas with Post-Processing */}
+        {/* Premium 3D Canvas - Stable Version */}
         <Canvas
           camera={{ position: [0, 3, 8], fov: 60 }}
           style={{ background: 'radial-gradient(circle at center, #0a0a2e 0%, #000000 100%)' }}
@@ -456,7 +475,6 @@ export default function VRPage() {
             alpha: true,
             powerPreference: "high-performance"
           }}
-          shadows
         >
           <Suspense fallback={
             <mesh>
@@ -465,20 +483,6 @@ export default function VRPage() {
             </mesh>
           }>
             <VRScene />
-            
-            {/* Post-Processing Effects */}
-            <EffectComposer>
-              <Bloom 
-                intensity={0.5}
-                luminanceThreshold={0.2}
-                luminanceSmoothing={0.9}
-              />
-              <DepthOfField 
-                focusDistance={0.02}
-                focalLength={0.05}
-                bokehScale={3}
-              />
-            </EffectComposer>
           </Suspense>
         </Canvas>
         
