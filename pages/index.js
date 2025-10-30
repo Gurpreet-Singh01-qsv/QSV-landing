@@ -412,6 +412,22 @@ export default function Home() {
               )}
               {error && <p className="text-sm text-rose-300">{error}</p>}
             </div>
+
+            {/* VR Experience Entry */}
+            <div className={`mt-8 fade-up ${isMounted ? "fade-up--animate" : ""}`} style={{ animationDelay: "0.7s" }}>
+              <a
+                href="/vr"
+                className="group relative inline-flex items-center justify-center overflow-hidden rounded-full px-8 py-4 font-semibold uppercase tracking-wide text-white bg-gradient-to-r from-violet-600 via-purple-600 to-cyan-500 shadow-[0_12px_40px_rgba(139,92,246,0.3)] transition-all duration-300 hover:scale-[1.05] hover:shadow-[0_20px_60px_rgba(139,92,246,0.4)] focus:outline-none focus-visible:ring-2 focus-visible:ring-violet-300"
+              >
+                <span className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-[1000ms] ease-out" />
+                <span className="relative flex items-center gap-2">
+                  🌌 Enter the Multiverse
+                </span>
+              </a>
+              <p className="text-xs text-gray-400 mt-2 text-center lg:text-left">
+                Experience immersive VR shopping • Works on desktop, mobile & Quest
+              </p>
+            </div>
                 {/* ==== FORM ENDS HERE ==== */}
               </div>
 
