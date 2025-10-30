@@ -1,123 +1,390 @@
-import { Canvas } from '@react-three/fiber'
-import { OrbitControls } from '@react-three/drei'
-import { Suspense, useState, useEffect } from 'react'
+import { Canvas, useFrame } from '@react-three/fiber'
+import { OrbitControls, Environment, EffectComposer, Bloom, DepthOfField } from '@react-three/drei'
+import { Suspense, useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
+import * as THREE from 'three'
 
-// Simple Q Portal Component
+// Premium Animated Q Portal
 function QPortal() {
+  const portalRef = useRef()
+  const innerGlowRef = useRef()
+  const energyRingRef = useRef()
+  const distortionRef = useRef()
+  
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    
+    // Pulsing portal animation
+    if (portalRef.current) {
+      portalRef.current.rotation.z = time * 0.2
+      portalRef.current.scale.setScalar(1 + Math.sin(time * 2) * 0.05)
+    }
+    
+    // Inner glow breathing effect
+    if (innerGlowRef.current) {
+      innerGlowRef.current.material.opacity = 0.3 + Math.sin(time * 3) * 0.2
+      innerGlowRef.current.scale.setScalar(1 + Math.sin(time * 1.5) * 0.1)
+    }
+    
+    // Energy ring rotation
+    if (energyRingRef.current) {
+      energyRingRef.current.rotation.z = -time * 0.5
+    }
+    
+    // Distortion ripple
+    if (distortionRef.current) {
+      distortionRef.current.scale.setScalar(1 + Math.sin(time * 4) * 0.03)
+      distortionRef.current.material.opacity = 0.1 + Math.sin(time * 6) * 0.05
+    }
+  })
+  
   return (
     <group position={[0, 0, 0]}>
-      {/* Portal Ring */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <torusGeometry args={[2, 0.1, 16, 100]} />
-        <meshBasicMaterial 
+      {/* Main Portal Ring */}
+      <mesh ref={portalRef} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[2.2, 0.15, 16, 100]} />
+        <meshStandardMaterial 
           color="#44d7ff" 
-          transparent
-          opacity={0.8}
-        />
-      </mesh>
-      
-      {/* Inner Glow */}
-      <mesh rotation={[Math.PI / 2, 0, 0]}>
-        <circleGeometry args={[1.8]} />
-        <meshBasicMaterial 
-          color="#9b6cff" 
-          transparent
-          opacity={0.4}
-        />
-      </mesh>
-      
-      {/* Q Logo - Simple Text */}
-      <mesh position={[0, 0, 0.1]}>
-        <planeGeometry args={[1, 1]} />
-        <meshBasicMaterial 
-          color="#ffffff"
+          emissive="#44d7ff"
+          emissiveIntensity={0.8}
+          metalness={0.9}
+          roughness={0.1}
           transparent
           opacity={0.9}
         />
       </mesh>
+      
+      {/* Energy Ring */}
+      <mesh ref={energyRingRef} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[2.5, 0.05, 8, 64]} />
+        <meshStandardMaterial 
+          color="#9b6cff" 
+          emissive="#9b6cff"
+          emissiveIntensity={1.2}
+          transparent
+          opacity={0.6}
+        />
+      </mesh>
+      
+      {/* Inner Portal Glow */}
+      <mesh ref={innerGlowRef} rotation={[Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[2.0]} />
+        <meshStandardMaterial 
+          color="#00ffff" 
+          emissive="#00ffff"
+          emissiveIntensity={0.5}
+          transparent
+          opacity={0.3}
+        />
+      </mesh>
+      
+      {/* Distortion Ripple */}
+      <mesh ref={distortionRef} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, -0.1]}>
+        <ringGeometry args={[1.5, 2.8, 32]} />
+        <meshBasicMaterial 
+          color="#ffffff" 
+          transparent
+          opacity={0.1}
+          side={THREE.DoubleSide}
+        />
+      </mesh>
+      
+      {/* Q Logo with Glow */}
+      <group position={[0, 0, 0.2]}>
+        <mesh>
+          <planeGeometry args={[1.2, 1.2]} />
+          <meshStandardMaterial 
+            color="#ffffff"
+            emissive="#ffffff"
+            emissiveIntensity={0.3}
+            transparent
+            opacity={0.95}
+          />
+        </mesh>
+        {/* Q Glow Halo */}
+        <mesh position={[0, 0, -0.1]}>
+          <planeGeometry args={[2, 2]} />
+          <meshBasicMaterial 
+            color="#44d7ff"
+            transparent
+            opacity={0.2}
+          />
+        </mesh>
+      </group>
+      
+      {/* God Rays Effect */}
+      {[...Array(8)].map((_, i) => (
+        <mesh 
+          key={i} 
+          rotation={[Math.PI / 2, 0, (i * Math.PI) / 4]} 
+          position={[0, 0, -0.5]}
+        >
+          <planeGeometry args={[0.1, 6]} />
+          <meshBasicMaterial 
+            color="#44d7ff"
+            transparent
+            opacity={0.1}
+          />
+        </mesh>
+      ))}
     </group>
   )
 }
 
-// Simple Interactive Product Component
-function InteractiveProduct({ position, color, name }) {
+// Premium Interactive Product with Floating Info
+function InteractiveProduct({ position, color, name, description, type }) {
   const [hovered, setHovered] = useState(false)
+  const [clicked, setClicked] = useState(false)
+  const productRef = useRef()
+  const infoRef = useRef()
+  
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    
+    // Floating animation
+    if (productRef.current) {
+      productRef.current.position.y = position[1] + Math.sin(time * 2 + position[0]) * 0.1
+      productRef.current.rotation.y = time * 0.3
+    }
+    
+    // Info card animation
+    if (infoRef.current && (hovered || clicked)) {
+      infoRef.current.scale.lerp(new THREE.Vector3(1, 1, 1), 0.1)
+      infoRef.current.material.opacity = THREE.MathUtils.lerp(infoRef.current.material.opacity, 1, 0.1)
+    } else if (infoRef.current) {
+      infoRef.current.scale.lerp(new THREE.Vector3(0.1, 0.1, 0.1), 0.1)
+      infoRef.current.material.opacity = THREE.MathUtils.lerp(infoRef.current.material.opacity, 0, 0.1)
+    }
+  })
+  
+  const handleClick = () => {
+    setClicked(!clicked)
+    console.log(`${clicked ? 'Closed' : 'Opened'} ${name} details`)
+    // Future: Add to waitlist integration
+  }
   
   return (
     <group position={position}>
-      <mesh
-        onPointerOver={() => setHovered(true)}
-        onPointerOut={() => setHovered(false)}
-        onClick={() => {
-          console.log(`Clicked on ${name}`)
-        }}
+      {/* Product Object */}
+      <group ref={productRef}>
+        {/* Main Product Shape */}
+        <mesh
+          onPointerOver={() => setHovered(true)}
+          onPointerOut={() => setHovered(false)}
+          onClick={handleClick}
+        >
+          {type === 'sneaker' && <boxGeometry args={[1.2, 0.6, 0.8]} />}
+          {type === 'watch' && <cylinderGeometry args={[0.4, 0.4, 0.2, 32]} />}
+          {type === 'headset' && <sphereGeometry args={[0.5]} />}
+          
+          <meshStandardMaterial 
+            color={hovered ? "#ffffff" : color}
+            emissive={color}
+            emissiveIntensity={hovered ? 0.3 : 0.1}
+            metalness={0.8}
+            roughness={0.2}
+            transparent
+            opacity={0.9}
+          />
+        </mesh>
+        
+        {/* Product Glow */}
+        <mesh>
+          {type === 'sneaker' && <boxGeometry args={[1.4, 0.8, 1.0]} />}
+          {type === 'watch' && <cylinderGeometry args={[0.5, 0.5, 0.3, 32]} />}
+          {type === 'headset' && <sphereGeometry args={[0.6]} />}
+          
+          <meshBasicMaterial 
+            color={color}
+            transparent
+            opacity={hovered ? 0.2 : 0.1}
+          />
+        </mesh>
+      </group>
+      
+      {/* Floating Info Card */}
+      <mesh 
+        ref={infoRef}
+        position={[0, 1.5, 0]}
+        scale={[0.1, 0.1, 0.1]}
       >
-        <boxGeometry args={[0.8, 0.8, 0.8]} />
-        <meshBasicMaterial 
-          color={hovered ? "#ffffff" : color}
+        <planeGeometry args={[2, 1]} />
+        <meshStandardMaterial 
+          color="#000000"
+          emissive="#44d7ff"
+          emissiveIntensity={0.1}
           transparent
-          opacity={0.9}
+          opacity={0}
+        />
+      </mesh>
+      
+      {/* Product Base Glow */}
+      <mesh position={[0, -0.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <circleGeometry args={[0.8]} />
+        <meshBasicMaterial 
+          color={color}
+          transparent
+          opacity={hovered ? 0.3 : 0.1}
         />
       </mesh>
     </group>
   )
 }
 
-// Simple Particles
-function Particles() {
+// Premium Floating Energy Particles
+function EnergyParticles() {
+  const particlesRef = useRef()
+  
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    
+    if (particlesRef.current) {
+      particlesRef.current.children.forEach((particle, i) => {
+        // Orbital motion around portal
+        const radius = 3 + Math.sin(time + i) * 1
+        const speed = 0.2 + i * 0.05
+        particle.position.x = Math.cos(time * speed + i) * radius
+        particle.position.z = Math.sin(time * speed + i) * radius
+        particle.position.y = Math.sin(time * 2 + i) * 2
+        
+        // Pulsing glow
+        particle.material.opacity = 0.3 + Math.sin(time * 4 + i) * 0.2
+      })
+    }
+  })
+  
   const particles = []
-  for (let i = 0; i < 10; i++) {
+  for (let i = 0; i < 15; i++) {
     particles.push(
-      <mesh
-        key={i}
-        position={[
-          (Math.random() - 0.5) * 10,
-          (Math.random() - 0.5) * 5,
-          (Math.random() - 0.5) * 10
-        ]}
-      >
-        <sphereGeometry args={[0.02]} />
-        <meshBasicMaterial color="#44d7ff" />
+      <mesh key={i}>
+        <sphereGeometry args={[0.03]} />
+        <meshStandardMaterial 
+          color={i % 2 === 0 ? "#44d7ff" : "#9b6cff"}
+          emissive={i % 2 === 0 ? "#44d7ff" : "#9b6cff"}
+          emissiveIntensity={0.8}
+          transparent
+          opacity={0.5}
+        />
       </mesh>
     )
   }
-  return <group>{particles}</group>
+  
+  return <group ref={particlesRef}>{particles}</group>
 }
 
-// Main VR Scene - Simplified
+// Ambient Audio Component
+function AmbientAudio() {
+  useEffect(() => {
+    // Create ambient spatial audio
+    const audioContext = new (window.AudioContext || window.webkitAudioContext)()
+    const oscillator = audioContext.createOscillator()
+    const gainNode = audioContext.createGain()
+    
+    oscillator.connect(gainNode)
+    gainNode.connect(audioContext.destination)
+    
+    oscillator.frequency.setValueAtTime(60, audioContext.currentTime) // Low hum
+    oscillator.type = 'sine'
+    gainNode.gain.setValueAtTime(0.02, audioContext.currentTime) // Very subtle
+    
+    oscillator.start()
+    
+    return () => {
+      oscillator.stop()
+      audioContext.close()
+    }
+  }, [])
+  
+  return null
+}
+
+// Premium Cinematic VR Scene
 function VRScene() {
   return (
     <>
-      {/* Simple Lighting */}
-      <ambientLight intensity={0.5} />
-      <pointLight position={[10, 10, 10]} intensity={0.5} color="#44d7ff" />
+      {/* Cinematic Lighting Setup */}
+      <ambientLight intensity={0.1} color="#0a0a2e" />
+      
+      {/* Key Light - Portal */}
+      <pointLight 
+        position={[0, 2, 2]} 
+        intensity={2} 
+        color="#44d7ff"
+        distance={10}
+        decay={2}
+      />
+      
+      {/* Fill Lights */}
+      <pointLight 
+        position={[-5, 3, -3]} 
+        intensity={0.8} 
+        color="#9b6cff"
+        distance={8}
+        decay={2}
+      />
+      <pointLight 
+        position={[5, 3, -3]} 
+        intensity={0.8} 
+        color="#00ffff"
+        distance={8}
+        decay={2}
+      />
+      
+      {/* Rim Light */}
+      <pointLight 
+        position={[0, -2, -8]} 
+        intensity={1.5} 
+        color="#ffffff"
+        distance={12}
+        decay={1}
+      />
+      
+      {/* Environment */}
+      <Environment preset="night" />
       
       {/* Central Q Portal */}
       <QPortal />
       
-      {/* Interactive Products */}
+      {/* Hero Products */}
       <InteractiveProduct 
-        position={[-3, 0, -2]} 
+        position={[-3.5, 0, -2]} 
         color="#44d7ff" 
-        name="Hyper Sneaker" 
+        name="Luminous Hyper-Sneaker"
+        description="Adaptive fit • Haptic weave • Void black"
+        type="sneaker"
       />
       <InteractiveProduct 
-        position={[3, 0, -2]} 
+        position={[3.5, 0, -2]} 
         color="#9b6cff" 
-        name="Quantum Watch" 
+        name="Quantum Chronometer"
+        description="Time dilation • Neural sync • Holographic display"
+        type="watch"
       />
       <InteractiveProduct 
-        position={[0, 0, -4]} 
+        position={[0, 0, -5]} 
         color="#00ff88" 
-        name="Neural Headset" 
+        name="Neural Interface Headset"
+        description="Mind-link • Spatial computing • Consciousness bridge"
+        type="headset"
       />
       
-      {/* Ambient Particles */}
-      <Particles />
+      {/* Energy Particles */}
+      <EnergyParticles />
       
-      {/* Controls */}
-      <OrbitControls enablePan={true} enableZoom={true} enableRotate={true} />
+      {/* Ambient Audio */}
+      <AmbientAudio />
+      
+      {/* Premium Controls */}
+      <OrbitControls 
+        enablePan={true} 
+        enableZoom={true} 
+        enableRotate={true}
+        minDistance={2}
+        maxDistance={15}
+        maxPolarAngle={Math.PI / 1.8}
+        autoRotate={true}
+        autoRotateSpeed={0.2}
+      />
     </>
   )
 }
@@ -180,13 +447,38 @@ export default function VRPage() {
           </button>
         </div>
         
-        {/* 3D Canvas - Simplified */}
+        {/* Premium 3D Canvas with Post-Processing */}
         <Canvas
-          camera={{ position: [0, 2, 5], fov: 75 }}
-          style={{ background: 'linear-gradient(to bottom, #040824, #01010f)' }}
+          camera={{ position: [0, 3, 8], fov: 60 }}
+          style={{ background: 'radial-gradient(circle at center, #0a0a2e 0%, #000000 100%)' }}
+          gl={{ 
+            antialias: true, 
+            alpha: true,
+            powerPreference: "high-performance"
+          }}
+          shadows
         >
-          <Suspense fallback={null}>
+          <Suspense fallback={
+            <mesh>
+              <sphereGeometry args={[0.5]} />
+              <meshBasicMaterial color="#44d7ff" />
+            </mesh>
+          }>
             <VRScene />
+            
+            {/* Post-Processing Effects */}
+            <EffectComposer>
+              <Bloom 
+                intensity={0.5}
+                luminanceThreshold={0.2}
+                luminanceSmoothing={0.9}
+              />
+              <DepthOfField 
+                focusDistance={0.02}
+                focalLength={0.05}
+                bokehScale={3}
+              />
+            </EffectComposer>
           </Suspense>
         </Canvas>
         
