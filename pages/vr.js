@@ -111,9 +111,9 @@ function QPortal() {
       <mesh ref={coreGlowRef} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.05]}>
         <circleGeometry args={[1.2]} />
         <meshBasicMaterial 
-          color="#ffffff" 
+          color="#00ffff" 
           transparent
-          opacity={0.3}
+          opacity={0.15}
         />
       </mesh>
       
@@ -133,9 +133,9 @@ function QPortal() {
       <mesh ref={distortionRef} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, -0.1]}>
         <ringGeometry args={[1.5, 2.8, 32]} />
         <meshBasicMaterial 
-          color="#ffffff" 
+          color="#44d7ff" 
           transparent
-          opacity={0.1}
+          opacity={0.05}
           side={THREE.DoubleSide}
         />
       </mesh>
@@ -145,11 +145,11 @@ function QPortal() {
         <mesh>
           <planeGeometry args={[1.2, 1.2]} />
           <meshStandardMaterial 
-            color="#ffffff"
-            emissive="#ffffff"
-            emissiveIntensity={0.3}
+            color="#44d7ff"
+            emissive="#44d7ff"
+            emissiveIntensity={0.2}
             transparent
-            opacity={0.95}
+            opacity={0.8}
           />
         </mesh>
         {/* Q Glow Halo */}
@@ -185,7 +185,7 @@ function QPortal() {
 // Premium Material Systems
 function createChromeMaterial(hovered = false) {
   return {
-    color: hovered ? "#ffffff" : "#c0c0c0",
+    color: hovered ? "#e6f3ff" : "#c0c0c0",
     metalness: 0.95,
     roughness: hovered ? 0.05 : 0.1,
     envMapIntensity: 2.0,
@@ -197,7 +197,7 @@ function createChromeMaterial(hovered = false) {
 
 function createGlassMaterial(hovered = false) {
   return {
-    color: hovered ? "#ffffff" : "#e6f3ff",
+    color: hovered ? "#e6f3ff" : "#e6f3ff",
     metalness: 0.0,
     roughness: 0.0,
     transmission: 0.9,
@@ -1252,8 +1252,8 @@ function SurpriseAnimations() {
           ref.scale.setScalar(1 + progress * 2)
           ref.material.opacity = (1 - progress) * 0.6
         } else { // Burst
-          ref.scale.setScalar(progress * 3)
-          ref.material.opacity = (1 - progress) * 0.4
+          ref.scale.setScalar(progress * 1.5) // Smaller burst
+          ref.material.opacity = (1 - progress) * 0.2 // More subtle
         }
         
         if (progress >= 1) {
@@ -1329,9 +1329,9 @@ function EasterEggs() {
         >
           <sphereGeometry args={[0.2]} />
           <meshBasicMaterial 
-            color="#ffffff"
+            color="#44d7ff"
             transparent
-            opacity={discovered.includes(index) ? 0 : 0.1}
+            opacity={discovered.includes(index) ? 0 : 0.05}
           />
         </mesh>
       ))}
@@ -1396,7 +1396,7 @@ export default function VRPage() {
             </mesh>
           }>
             <VRScene 
-              showWowMoment={!wowCompleted} 
+              showWowMoment={false} 
               onWowComplete={() => setWowCompleted(true)}
             />
           </Suspense>
