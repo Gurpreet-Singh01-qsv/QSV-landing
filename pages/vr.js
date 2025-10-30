@@ -220,8 +220,28 @@ function createNeonMaterial(hovered = false, baseColor = "#00ff88") {
   }
 }
 
+// Interactive Product with Integrated Visual Cues
+function InteractiveProductWithCues({ position, color, name, description, type }) {
+  const [hovered, setHovered] = useState(false)
+  const [clicked, setClicked] = useState(false)
+  
+  return (
+    <VisualCueSystem isInteractive={true} isHovered={hovered} isClicked={clicked}>
+      <InteractiveProduct 
+        position={position}
+        color={color}
+        name={name}
+        description={description}
+        type={type}
+        onHoverChange={setHovered}
+        onClickChange={setClicked}
+      />
+    </VisualCueSystem>
+  )
+}
+
 // Premium Interactive Product with Advanced Materials
-function InteractiveProduct({ position, color, name, description, type }) {
+function InteractiveProduct({ position, color, name, description, type, onHoverChange, onClickChange }) {
   const [hovered, setHovered] = useState(false)
   const [clicked, setClicked] = useState(false)
   const productRef = useRef()
@@ -280,9 +300,16 @@ function InteractiveProduct({ position, color, name, description, type }) {
     }
   })
   
+  const handleHover = (isHovered) => {
+    setHovered(isHovered)
+    if (onHoverChange) onHoverChange(isHovered)
+  }
+  
   const handleClick = () => {
-    setClicked(!clicked)
-    console.log(`${clicked ? 'Closed' : 'Opened'} ${name} details`)
+    const newClickedState = !clicked
+    setClicked(newClickedState)
+    if (onClickChange) onClickChange(newClickedState)
+    console.log(`${newClickedState ? 'Opened' : 'Closed'} ${name} details`)
     // Future: Add to waitlist integration
   }
   
@@ -295,8 +322,8 @@ function InteractiveProduct({ position, color, name, description, type }) {
         {/* Premium Sneaker - Multi-part Construction */}
         {type === 'sneaker' && (
           <group
-            onPointerOver={() => setHovered(true)}
-            onPointerOut={() => setHovered(false)}
+            onPointerOver={() => handleHover(true)}
+            onPointerOut={() => handleHover(false)}
             onClick={handleClick}
           >
             {/* Sneaker Sole */}
@@ -322,8 +349,8 @@ function InteractiveProduct({ position, color, name, description, type }) {
         {/* Quantum Chronometer - Layered Construction */}
         {type === 'watch' && (
           <group
-            onPointerOver={() => setHovered(true)}
-            onPointerOut={() => setHovered(false)}
+            onPointerOver={() => handleHover(true)}
+            onPointerOut={() => handleHover(false)}
             onClick={handleClick}
           >
             {/* Watch Base */}
@@ -353,8 +380,8 @@ function InteractiveProduct({ position, color, name, description, type }) {
         {/* Neural Interface Headset - Complex Shape */}
         {type === 'headset' && (
           <group
-            onPointerOver={() => setHovered(true)}
-            onPointerOut={() => setHovered(false)}
+            onPointerOver={() => handleHover(true)}
+            onPointerOut={() => handleHover(false)}
             onClick={handleClick}
           >
             {/* Main Headset Body */}
@@ -754,35 +781,278 @@ function DynamicLightingRig() {
   )
 }
 
-// Premium Cinematic VR Scene
+// Parallax Controller for Depth-Based Movement
+function ParallaxController({ children }) {
+  const groupRef = useRef()
+  const previousCameraPosition = useRef(new THREE.Vector3())
+  
+  useFrame((state) => {
+    const camera = state.camera
+    const currentPosition = camera.position.clone()
+    
+    // Calculate camera movement delta
+    const deltaMovement = currentPosition.clone().sub(previousCameraPosition.current)
+    
+    // Apply parallax offset to background elements
+    if (groupRef.current) {
+      groupRef.current.children.forEach((child, index) => {
+        if (child.userData.parallaxDepth) {
+          const depth = child.userData.parallaxDepth
+          const parallaxFactor = 1 - (depth / 10) // Objects further away move less
+          
+          // Apply inverse movement for parallax effect
+          child.position.x -= deltaMovement.x * parallaxFactor * 0.3
+          child.position.y -= deltaMovement.y * parallaxFactor * 0.3
+          child.position.z -= deltaMovement.z * parallaxFactor * 0.1
+        }
+      })
+    }
+    
+    // Store current position for next frame
+    previousCameraPosition.current.copy(currentPosition)
+  })
+  
+  return <group ref={groupRef}>{children}</group>
+}
+
+// Enhanced Visual Cue System with Immediate Feedback
+function VisualCueSystem({ children, isInteractive = false, isHovered = false, isClicked = false }) {
+  const glowRef = useRef()
+  const pulseRef = useRef()
+  const feedbackRef = useRef()
+  const [lastInteractionTime, setLastInteractionTime] = useState(0)
+  
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    
+    if (glowRef.current && isInteractive) {
+      // Immediate glow response (< 100ms)
+      const targetIntensity = isHovered ? 0.5 : isClicked ? 0.7 : 0.15
+      const currentIntensity = glowRef.current.material.opacity
+      
+      // Fast lerp for immediate response
+      const lerpSpeed = 0.25 // Very fast response
+      glowRef.current.material.opacity += (targetIntensity - currentIntensity) * lerpSpeed
+      
+      // Scale response for immediate feedback
+      const targetScale = isHovered ? 1.15 : isClicked ? 1.25 : 1.0
+      const currentScale = glowRef.current.scale.x
+      glowRef.current.scale.setScalar(currentScale + (targetScale - currentScale) * lerpSpeed)
+      
+      // Color change for state feedback
+      if (isClicked) {
+        glowRef.current.material.color.setHex(0x00ff88) // Green when clicked
+      } else if (isHovered) {
+        glowRef.current.material.color.setHex(0x9b6cff) // Purple when hovered
+      } else {
+        glowRef.current.material.color.setHex(0x44d7ff) // Default cyan
+      }
+    }
+    
+    // Pulse effect for interactive elements
+    if (pulseRef.current && isInteractive) {
+      const pulseIntensity = 0.1 + Math.sin(time * 2) * 0.05
+      pulseRef.current.material.opacity = pulseIntensity
+      
+      // Faster pulse when hovered
+      const pulseSpeed = isHovered ? 4 : 2
+      const pulseScale = 1 + Math.sin(time * pulseSpeed) * 0.03
+      pulseRef.current.scale.setScalar(pulseScale)
+    }
+    
+    // Immediate feedback burst effect
+    if (feedbackRef.current && (time - lastInteractionTime) < 0.5) {
+      const timeSinceInteraction = time - lastInteractionTime
+      const burstIntensity = Math.max(0, 0.8 - timeSinceInteraction * 1.6)
+      const burstScale = 1 + burstIntensity * 0.3
+      
+      feedbackRef.current.material.opacity = burstIntensity
+      feedbackRef.current.scale.setScalar(burstScale)
+    } else if (feedbackRef.current) {
+      feedbackRef.current.material.opacity = 0
+    }
+  })
+  
+  // Trigger immediate feedback on interaction
+  useEffect(() => {
+    if (isHovered || isClicked) {
+      setLastInteractionTime(performance.now() / 1000)
+    }
+  }, [isHovered, isClicked])
+  
+  return (
+    <group>
+      {children}
+      {isInteractive && (
+        <>
+          {/* Main Glow */}
+          <mesh ref={glowRef} position={[0, 0, -0.1]}>
+            <sphereGeometry args={[1.8]} />
+            <meshBasicMaterial 
+              color="#44d7ff"
+              transparent
+              opacity={0.15}
+            />
+          </mesh>
+          
+          {/* Pulse Ring */}
+          <mesh ref={pulseRef} position={[0, 0, -0.05]} rotation={[Math.PI / 2, 0, 0]}>
+            <ringGeometry args={[1.5, 2.0, 32]} />
+            <meshBasicMaterial 
+              color="#ffffff"
+              transparent
+              opacity={0.1}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+          
+          {/* Immediate Feedback Burst */}
+          <mesh ref={feedbackRef} position={[0, 0, 0]}>
+            <sphereGeometry args={[2.5]} />
+            <meshBasicMaterial 
+              color="#ffffff"
+              transparent
+              opacity={0}
+            />
+          </mesh>
+        </>
+      )}
+    </group>
+  )
+}
+
+// Enhanced Camera Controller with Smooth Transitions
+function EnhancedCameraController() {
+  const controlsRef = useRef()
+  
+  useFrame((state) => {
+    if (controlsRef.current) {
+      // Smooth camera transitions with easing
+      const target = controlsRef.current.target
+      const camera = state.camera
+      
+      // Auto-rotation with user override
+      if (!controlsRef.current.autoRotate) {
+        // User is controlling, temporarily disable auto-rotation
+        setTimeout(() => {
+          if (controlsRef.current) {
+            controlsRef.current.autoRotate = true
+          }
+        }, 3000) // Resume after 3 seconds of inactivity
+      }
+    }
+  })
+  
+  return (
+    <OrbitControls 
+      ref={controlsRef}
+      enablePan={true} 
+      enableZoom={true} 
+      enableRotate={true}
+      minDistance={2}
+      maxDistance={15}
+      maxPolarAngle={Math.PI / 1.8}
+      autoRotate={true}
+      autoRotateSpeed={0.15}
+      enableDamping={true}
+      dampingFactor={0.05}
+      rotateSpeed={0.5}
+      zoomSpeed={0.8}
+      panSpeed={0.8}
+      onStart={() => {
+        if (controlsRef.current) {
+          controlsRef.current.autoRotate = false
+        }
+      }}
+    />
+  )
+}
+
+// Background Elements with Parallax Depth
+function ParallaxBackground() {
+  return (
+    <>
+      {/* Far Background Particles */}
+      {[...Array(20)].map((_, i) => (
+        <mesh 
+          key={`bg-${i}`}
+          position={[
+            (Math.random() - 0.5) * 30,
+            (Math.random() - 0.5) * 15,
+            -15 - Math.random() * 10
+          ]}
+          userData={{ parallaxDepth: 8 }}
+        >
+          <sphereGeometry args={[0.01]} />
+          <meshBasicMaterial 
+            color={i % 3 === 0 ? "#44d7ff" : i % 3 === 1 ? "#9b6cff" : "#00ff88"}
+            transparent
+            opacity={0.3}
+          />
+        </mesh>
+      ))}
+      
+      {/* Mid-ground Elements */}
+      {[...Array(8)].map((_, i) => (
+        <mesh 
+          key={`mg-${i}`}
+          position={[
+            (Math.random() - 0.5) * 20,
+            (Math.random() - 0.5) * 8,
+            -8 - Math.random() * 5
+          ]}
+          userData={{ parallaxDepth: 5 }}
+        >
+          <sphereGeometry args={[0.02]} />
+          <meshBasicMaterial 
+            color="#ffffff"
+            transparent
+            opacity={0.15}
+          />
+        </mesh>
+      ))}
+    </>
+  )
+}
+
+// Premium Cinematic VR Scene with Parallax and Visual Cues
 function VRScene() {
   return (
     <>
       {/* Dynamic Lighting System */}
       <DynamicLightingRig />
       
-      {/* Simple Environment */}
-      <fog attach="fog" args={['#000011', 8, 20]} />
+      {/* Enhanced Environment with Fog */}
+      <fog attach="fog" args={['#000011', 8, 25]} />
       
-      {/* Central Q Portal */}
-      <QPortal />
+      {/* Parallax Background Elements */}
+      <ParallaxController>
+        <ParallaxBackground />
+      </ParallaxController>
       
-      {/* Hero Products */}
-      <InteractiveProduct 
+      {/* Central Q Portal with Visual Cues */}
+      <VisualCueSystem isInteractive={true}>
+        <QPortal />
+      </VisualCueSystem>
+      
+      {/* Hero Products with Enhanced Visual Cues */}
+      <InteractiveProductWithCues 
         position={[-3.5, 0, -2]} 
         color="#44d7ff" 
         name="Luminous Hyper-Sneaker"
         description="Adaptive fit • Haptic weave • Void black"
         type="sneaker"
       />
-      <InteractiveProduct 
+      
+      <InteractiveProductWithCues 
         position={[3.5, 0, -2]} 
         color="#9b6cff" 
         name="Quantum Chronometer"
         description="Time dilation • Neural sync • Holographic display"
         type="watch"
       />
-      <InteractiveProduct 
+      
+      <InteractiveProductWithCues 
         position={[0, 0, -5]} 
         color="#00ff88" 
         name="Neural Interface Headset"
@@ -790,23 +1060,16 @@ function VRScene() {
         type="headset"
       />
       
-      {/* Energy Particles */}
-      <EnergyParticles />
+      {/* Energy Particles with Parallax */}
+      <ParallaxController>
+        <EnergyParticles />
+      </ParallaxController>
       
       {/* Ambient Audio */}
       <AmbientAudio />
       
-      {/* Premium Controls */}
-      <OrbitControls 
-        enablePan={true} 
-        enableZoom={true} 
-        enableRotate={true}
-        minDistance={2}
-        maxDistance={15}
-        maxPolarAngle={Math.PI / 1.8}
-        autoRotate={true}
-        autoRotateSpeed={0.2}
-      />
+      {/* Enhanced Camera Controls */}
+      <EnhancedCameraController />
     </>
   )
 }
