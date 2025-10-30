@@ -4,42 +4,83 @@ import { Suspense, useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import * as THREE from 'three'
 
-// Premium Animated Q Portal
+// Enhanced Q Portal with Synchronized Breathing Cycle
 function QPortal() {
   const portalRef = useRef()
   const innerGlowRef = useRef()
   const energyRingRef = useRef()
   const distortionRef = useRef()
+  const outerRingRef = useRef()
+  const coreGlowRef = useRef()
   
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
     
-    // Pulsing portal animation
+    // 4-second breathing cycle synchronized with lighting
+    const breathingCycle = Math.sin(time * Math.PI / 2) * 0.5 + 0.5 // 0 to 1
+    const breathingIntensity = 0.7 + breathingCycle * 0.3 // 0.7 to 1.0
+    
+    // Phase offsets for layered breathing effects
+    const phase1 = Math.sin(time * Math.PI / 2) * 0.5 + 0.5
+    const phase2 = Math.sin(time * Math.PI / 2 + Math.PI / 4) * 0.5 + 0.5
+    const phase3 = Math.sin(time * Math.PI / 2 + Math.PI / 2) * 0.5 + 0.5
+    
+    // Main portal ring - synchronized breathing
     if (portalRef.current) {
-      portalRef.current.rotation.z = time * 0.2
-      portalRef.current.scale.setScalar(1 + Math.sin(time * 2) * 0.05)
+      portalRef.current.rotation.z = time * 0.15
+      portalRef.current.scale.setScalar(1 + breathingCycle * 0.08)
+      portalRef.current.material.emissiveIntensity = 0.6 + breathingIntensity * 0.4
     }
     
-    // Inner glow breathing effect
+    // Outer ring with phase offset
+    if (outerRingRef.current) {
+      outerRingRef.current.rotation.z = -time * 0.1
+      outerRingRef.current.scale.setScalar(1 + phase2 * 0.06)
+      outerRingRef.current.material.emissiveIntensity = 0.8 + phase2 * 0.6
+    }
+    
+    // Inner glow with synchronized breathing
     if (innerGlowRef.current) {
-      innerGlowRef.current.material.opacity = 0.3 + Math.sin(time * 3) * 0.2
-      innerGlowRef.current.scale.setScalar(1 + Math.sin(time * 1.5) * 0.1)
+      innerGlowRef.current.material.opacity = 0.2 + breathingCycle * 0.3
+      innerGlowRef.current.scale.setScalar(1 + breathingCycle * 0.15)
+      innerGlowRef.current.material.emissiveIntensity = 0.3 + breathingIntensity * 0.4
     }
     
-    // Energy ring rotation
+    // Core glow with strongest breathing effect
+    if (coreGlowRef.current) {
+      coreGlowRef.current.material.opacity = 0.1 + breathingCycle * 0.4
+      coreGlowRef.current.scale.setScalar(1 + breathingCycle * 0.2)
+    }
+    
+    // Energy ring with phase offset
     if (energyRingRef.current) {
-      energyRingRef.current.rotation.z = -time * 0.5
+      energyRingRef.current.rotation.z = -time * 0.4
+      energyRingRef.current.material.emissiveIntensity = 1.0 + phase3 * 0.5
     }
     
-    // Distortion ripple
+    // Distortion ripple with breathing sync
     if (distortionRef.current) {
-      distortionRef.current.scale.setScalar(1 + Math.sin(time * 4) * 0.03)
-      distortionRef.current.material.opacity = 0.1 + Math.sin(time * 6) * 0.05
+      distortionRef.current.scale.setScalar(1 + breathingCycle * 0.05)
+      distortionRef.current.material.opacity = 0.08 + breathingCycle * 0.07
     }
   })
   
   return (
     <group position={[0, 0, 0]}>
+      {/* Outer Portal Ring */}
+      <mesh ref={outerRingRef} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[2.8, 0.08, 12, 80]} />
+        <meshStandardMaterial 
+          color="#9b6cff" 
+          emissive="#9b6cff"
+          emissiveIntensity={0.8}
+          metalness={0.7}
+          roughness={0.2}
+          transparent
+          opacity={0.7}
+        />
+      </mesh>
+      
       {/* Main Portal Ring */}
       <mesh ref={portalRef} rotation={[Math.PI / 2, 0, 0]}>
         <torusGeometry args={[2.2, 0.15, 16, 100]} />
@@ -63,6 +104,16 @@ function QPortal() {
           emissiveIntensity={1.2}
           transparent
           opacity={0.6}
+        />
+      </mesh>
+      
+      {/* Core Glow - Innermost */}
+      <mesh ref={coreGlowRef} rotation={[Math.PI / 2, 0, 0]} position={[0, 0, 0.05]}>
+        <circleGeometry args={[1.2]} />
+        <meshBasicMaterial 
+          color="#ffffff" 
+          transparent
+          opacity={0.3}
         />
       </mesh>
       
@@ -333,46 +384,168 @@ function AmbientAudio() {
   return null
 }
 
-// Premium Cinematic VR Scene
-function VRScene() {
+// Dynamic Lighting System with 3-Point Setup and Breathing Cycle
+function DynamicLightingRig() {
+  const keyLightRef = useRef()
+  const fillLight1Ref = useRef()
+  const fillLight2Ref = useRef()
+  const rimLightRef = useRef()
+  const ambientRef = useRef()
+  
+  // Color temperature variations
+  const colorTemperatures = {
+    warm: { r: 1.0, g: 0.8, b: 0.6 },
+    neutral: { r: 0.8, g: 1.0, b: 1.0 },
+    cool: { r: 0.6, g: 0.8, b: 1.0 }
+  }
+  
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    
+    // 4-second breathing cycle for all lights
+    const breathingCycle = Math.sin(time * Math.PI / 2) * 0.5 + 0.5 // 0 to 1
+    const breathingIntensity = 0.7 + breathingCycle * 0.3 // 0.7 to 1.0
+    
+    // Color temperature cycling (warm -> neutral -> cool -> neutral)
+    const tempCycle = (Math.sin(time * 0.3) + 1) / 2 // 0 to 1
+    let currentTemp
+    if (tempCycle < 0.33) {
+      // Warm to Neutral
+      const t = tempCycle / 0.33
+      currentTemp = {
+        r: colorTemperatures.warm.r + (colorTemperatures.neutral.r - colorTemperatures.warm.r) * t,
+        g: colorTemperatures.warm.g + (colorTemperatures.neutral.g - colorTemperatures.warm.g) * t,
+        b: colorTemperatures.warm.b + (colorTemperatures.neutral.b - colorTemperatures.warm.b) * t
+      }
+    } else if (tempCycle < 0.66) {
+      // Neutral to Cool
+      const t = (tempCycle - 0.33) / 0.33
+      currentTemp = {
+        r: colorTemperatures.neutral.r + (colorTemperatures.cool.r - colorTemperatures.neutral.r) * t,
+        g: colorTemperatures.neutral.g + (colorTemperatures.cool.g - colorTemperatures.neutral.g) * t,
+        b: colorTemperatures.neutral.b + (colorTemperatures.cool.b - colorTemperatures.neutral.b) * t
+      }
+    } else {
+      // Cool to Neutral
+      const t = (tempCycle - 0.66) / 0.34
+      currentTemp = {
+        r: colorTemperatures.cool.r + (colorTemperatures.neutral.r - colorTemperatures.cool.r) * t,
+        g: colorTemperatures.cool.g + (colorTemperatures.neutral.g - colorTemperatures.cool.g) * t,
+        b: colorTemperatures.cool.b + (colorTemperatures.neutral.b - colorTemperatures.cool.b) * t
+      }
+    }
+    
+    // Apply breathing and color temperature to key light (portal)
+    if (keyLightRef.current) {
+      keyLightRef.current.intensity = 2.5 * breathingIntensity
+      keyLightRef.current.color.setRGB(
+        0.27 * currentTemp.r, // #44d7ff red component
+        0.84 * currentTemp.g, // #44d7ff green component  
+        1.0 * currentTemp.b   // #44d7ff blue component
+      )
+    }
+    
+    // Apply subtle breathing to fill lights
+    if (fillLight1Ref.current) {
+      fillLight1Ref.current.intensity = 0.9 * (0.8 + breathingCycle * 0.2)
+      fillLight1Ref.current.color.setRGB(
+        0.61 * currentTemp.r, // #9b6cff red component
+        0.42 * currentTemp.g, // #9b6cff green component
+        1.0 * currentTemp.b   // #9b6cff blue component
+      )
+    }
+    
+    if (fillLight2Ref.current) {
+      fillLight2Ref.current.intensity = 0.9 * (0.8 + breathingCycle * 0.2)
+      fillLight2Ref.current.color.setRGB(
+        0.0 * currentTemp.r,  // #00ffff red component
+        1.0 * currentTemp.g,  // #00ffff green component
+        1.0 * currentTemp.b   // #00ffff blue component
+      )
+    }
+    
+    // Rim light with subtle breathing
+    if (rimLightRef.current) {
+      rimLightRef.current.intensity = 1.8 * (0.9 + breathingCycle * 0.1)
+    }
+    
+    // Ambient light breathing
+    if (ambientRef.current) {
+      ambientRef.current.intensity = 0.12 * (0.8 + breathingCycle * 0.2)
+    }
+  })
+  
   return (
     <>
-      {/* Cinematic Lighting Setup */}
-      <ambientLight intensity={0.1} color="#0a0a2e" />
+      {/* Ambient Light with Breathing */}
+      <ambientLight ref={ambientRef} intensity={0.12} color="#0a0a2e" />
       
-      {/* Key Light - Portal */}
+      {/* Key Light - Portal (Main Subject Light) */}
       <pointLight 
-        position={[0, 2, 2]} 
-        intensity={2} 
+        ref={keyLightRef}
+        position={[0, 2.5, 2]} 
+        intensity={2.5} 
         color="#44d7ff"
+        distance={12}
+        decay={1.8}
+        castShadow
+      />
+      
+      {/* Fill Light 1 - Left Side */}
+      <pointLight 
+        ref={fillLight1Ref}
+        position={[-6, 3, -2]} 
+        intensity={0.9} 
+        color="#9b6cff"
         distance={10}
         decay={2}
       />
       
-      {/* Fill Lights */}
+      {/* Fill Light 2 - Right Side */}
       <pointLight 
-        position={[-5, 3, -3]} 
-        intensity={0.8} 
-        color="#9b6cff"
-        distance={8}
-        decay={2}
-      />
-      <pointLight 
-        position={[5, 3, -3]} 
-        intensity={0.8} 
+        ref={fillLight2Ref}
+        position={[6, 3, -2]} 
+        intensity={0.9} 
         color="#00ffff"
-        distance={8}
+        distance={10}
         decay={2}
       />
       
-      {/* Rim Light */}
+      {/* Rim Light - Back Lighting for Depth */}
       <pointLight 
-        position={[0, -2, -8]} 
-        intensity={1.5} 
+        ref={rimLightRef}
+        position={[0, -1, -10]} 
+        intensity={1.8} 
         color="#ffffff"
-        distance={12}
-        decay={1}
+        distance={15}
+        decay={1.2}
       />
+      
+      {/* Additional Accent Lights for Atmosphere */}
+      <pointLight 
+        position={[-8, 1, 4]} 
+        intensity={0.4} 
+        color="#44d7ff"
+        distance={6}
+        decay={3}
+      />
+      <pointLight 
+        position={[8, 1, 4]} 
+        intensity={0.4} 
+        color="#9b6cff"
+        distance={6}
+        decay={3}
+      />
+    </>
+  )
+}
+
+// Premium Cinematic VR Scene
+function VRScene() {
+  return (
+    <>
+      {/* Dynamic Lighting System */}
+      <DynamicLightingRig />
       
       {/* Simple Environment */}
       <fog attach="fog" args={['#000011', 8, 20]} />
