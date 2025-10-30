@@ -182,43 +182,7 @@ function QPortal() {
   )
 }
 
-// Premium Material Systems
-function createChromeMaterial(hovered = false) {
-  return {
-    color: hovered ? "#e6f3ff" : "#c0c0c0",
-    metalness: 0.95,
-    roughness: hovered ? 0.05 : 0.1,
-    envMapIntensity: 2.0,
-    reflectivity: 1.0,
-    transparent: false,
-    opacity: 1.0
-  }
-}
-
-function createGlassMaterial(hovered = false) {
-  return {
-    color: hovered ? "#e6f3ff" : "#e6f3ff",
-    metalness: 0.0,
-    roughness: 0.0,
-    transmission: 0.9,
-    transparent: true,
-    opacity: hovered ? 0.8 : 0.6,
-    ior: 1.5,
-    thickness: 0.5
-  }
-}
-
-function createNeonMaterial(hovered = false, baseColor = "#00ff88") {
-  return {
-    color: baseColor,
-    emissive: baseColor,
-    emissiveIntensity: hovered ? 1.2 : 0.8,
-    metalness: 0.1,
-    roughness: 0.2,
-    transparent: true,
-    opacity: hovered ? 0.95 : 0.85
-  }
-}
+// Material creation functions removed - using inline materials for better compatibility
 
 // Interactive Product with Shopping Integration
 function InteractiveProductWithCues({ position, color, name, description, type, price, onAddToCart }) {
@@ -458,8 +422,8 @@ function InteractiveProduct({ position, color, name, description, type, price, o
               <cylinderGeometry args={[0.5, 0.5, 0.2, 32]} />
               <meshStandardMaterial 
                 color={hovered ? "#e6f3ff" : "#c0c0c0"}
-                metalness={0.95}
-                roughness={0.05}
+                metalness={0.8}
+                roughness={0.2}
               />
             </mesh>
             
