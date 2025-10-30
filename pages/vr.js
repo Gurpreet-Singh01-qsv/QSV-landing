@@ -220,10 +220,22 @@ function createNeonMaterial(hovered = false, baseColor = "#00ff88") {
   }
 }
 
-// Interactive Product with Integrated Visual Cues
-function InteractiveProductWithCues({ position, color, name, description, type }) {
+// Interactive Product with Shopping Integration
+function InteractiveProductWithCues({ position, color, name, description, type, price, onAddToCart }) {
   const [hovered, setHovered] = useState(false)
   const [clicked, setClicked] = useState(false)
+  
+  const handleAddToCart = () => {
+    if (onAddToCart) {
+      onAddToCart({
+        name,
+        description,
+        type,
+        price,
+        color
+      })
+    }
+  }
   
   return (
     <VisualCueSystem isInteractive={true} isHovered={hovered} isClicked={clicked}>
@@ -233,15 +245,17 @@ function InteractiveProductWithCues({ position, color, name, description, type }
         name={name}
         description={description}
         type={type}
+        price={price}
         onHoverChange={setHovered}
         onClickChange={setClicked}
+        onAddToCart={handleAddToCart}
       />
     </VisualCueSystem>
   )
 }
 
-// Premium Interactive Product with Advanced Materials
-function InteractiveProduct({ position, color, name, description, type, onHoverChange, onClickChange }) {
+// Premium Interactive Product with Shopping Features
+function InteractiveProduct({ position, color, name, description, type, price, onHoverChange, onClickChange, onAddToCart }) {
   const [hovered, setHovered] = useState(false)
   const [clicked, setClicked] = useState(false)
   const productRef = useRef()
@@ -309,8 +323,30 @@ function InteractiveProduct({ position, color, name, description, type, onHoverC
     const newClickedState = !clicked
     setClicked(newClickedState)
     if (onClickChange) onClickChange(newClickedState)
-    console.log(`${newClickedState ? 'Opened' : 'Closed'} ${name} details`)
-    // Future: Add to waitlist integration
+    
+    if (newClickedState) {
+      // Open product details and shopping interface
+      console.log(`Opening ${name} - Price: $${getProductPrice(type)} - Add to Cart Available`)
+      // Trigger shopping UI
+    } else {
+      console.log(`Closed ${name} details`)
+    }
+  }
+  
+  const getProductPrice = (productType) => {
+    const prices = {
+      'sneaker': 299,
+      'watch': 899, 
+      'headset': 1299
+    }
+    return prices[productType] || 0
+  }
+  
+  const handleAddToCartClick = () => {
+    if (onAddToCart) {
+      onAddToCart()
+      console.log(`Added ${name} to cart - $${price}`)
+    }
   }
   
   return (
@@ -460,11 +496,11 @@ function InteractiveProduct({ position, color, name, description, type, onHoverC
         </mesh>
       </group>
       
-      {/* Enhanced Floating Info Card */}
+      {/* Shopping Info Card */}
       <group ref={infoRef} position={[0, 1.8, 0]} scale={[0.1, 0.1, 0.1]}>
-        {/* Card Background */}
+        {/* Main Card Background */}
         <mesh>
-          <planeGeometry args={[3, 1.5]} />
+          <planeGeometry args={[4, 2.5]} />
           <meshStandardMaterial 
             color="#000000"
             emissive="#44d7ff"
@@ -474,9 +510,9 @@ function InteractiveProduct({ position, color, name, description, type, onHoverC
           />
         </mesh>
         
-        {/* Card Border Glow */}
+        {/* Card Border */}
         <mesh position={[0, 0, -0.01]}>
-          <planeGeometry args={[3.1, 1.6]} />
+          <planeGeometry args={[4.1, 2.6]} />
           <meshBasicMaterial 
             color="#44d7ff"
             transparent
@@ -484,19 +520,29 @@ function InteractiveProduct({ position, color, name, description, type, onHoverC
           />
         </mesh>
         
-        {/* Product Name Indicator */}
-        <mesh position={[0, 0.4, 0.01]}>
-          <planeGeometry args={[2.5, 0.3]} />
+        {/* Product Name */}
+        <mesh position={[0, 0.8, 0.01]}>
+          <planeGeometry args={[3.5, 0.4]} />
           <meshBasicMaterial 
-            color="#ffffff"
+            color="#44d7ff"
             transparent
             opacity={0}
           />
         </mesh>
         
-        {/* Description Area */}
+        {/* Price Display */}
+        <mesh position={[-1, 0.3, 0.01]}>
+          <planeGeometry args={[1.2, 0.3]} />
+          <meshBasicMaterial 
+            color="#00ff88"
+            transparent
+            opacity={0}
+          />
+        </mesh>
+        
+        {/* Features List */}
         <mesh position={[0, -0.1, 0.01]}>
-          <planeGeometry args={[2.8, 0.4]} />
+          <planeGeometry args={[3.5, 0.6]} />
           <meshBasicMaterial 
             color="#9b6cff"
             transparent
@@ -504,11 +550,24 @@ function InteractiveProduct({ position, color, name, description, type, onHoverC
           />
         </mesh>
         
-        {/* Action Indicator */}
-        <mesh position={[0, -0.5, 0.01]}>
-          <planeGeometry args={[1.5, 0.2]} />
+        {/* Add to Cart Button */}
+        <mesh 
+          position={[0, -0.7, 0.01]}
+          onClick={handleAddToCartClick}
+        >
+          <planeGeometry args={[2, 0.4]} />
           <meshBasicMaterial 
             color="#00ff88"
+            transparent
+            opacity={0}
+          />
+        </mesh>
+        
+        {/* View Details Button */}
+        <mesh position={[0, -1.1, 0.01]}>
+          <planeGeometry args={[1.8, 0.3]} />
+          <meshBasicMaterial 
+            color="#44d7ff"
             transparent
             opacity={0}
           />
@@ -1015,8 +1074,8 @@ function ParallaxBackground() {
   )
 }
 
-// Premium Cinematic VR Scene with Emotional Engagement
-function VRScene({ showWowMoment = false, onWowComplete }) {
+// Premium Cinematic VR Scene with Shopping Integration
+function VRScene({ showWowMoment = false, onWowComplete, onAddToCart }) {
   return (
     <>
       {/* Emotional Engagement Features */}
@@ -1040,13 +1099,15 @@ function VRScene({ showWowMoment = false, onWowComplete }) {
         <QPortal />
       </VisualCueSystem>
       
-      {/* Hero Products with Enhanced Visual Cues */}
+      {/* Shoppable Products */}
       <InteractiveProductWithCues 
         position={[-3.5, 0, -2]} 
         color="#44d7ff" 
         name="Luminous Hyper-Sneaker"
         description="Adaptive fit • Haptic weave • Void black"
         type="sneaker"
+        price={299}
+        onAddToCart={onAddToCart}
       />
       
       <InteractiveProductWithCues 
@@ -1055,6 +1116,8 @@ function VRScene({ showWowMoment = false, onWowComplete }) {
         name="Quantum Chronometer"
         description="Time dilation • Neural sync • Holographic display"
         type="watch"
+        price={899}
+        onAddToCart={onAddToCart}
       />
       
       <InteractiveProductWithCues 
@@ -1063,6 +1126,8 @@ function VRScene({ showWowMoment = false, onWowComplete }) {
         name="Neural Interface Headset"
         description="Mind-link • Spatial computing • Consciousness bridge"
         type="headset"
+        price={1299}
+        onAddToCart={onAddToCart}
       />
       
       {/* Energy Particles with Parallax */}
@@ -1339,16 +1404,127 @@ function EasterEggs() {
   )
 }
 
+// Shopping Cart System
+function ShoppingCart({ items, onRemoveItem, onCheckout }) {
+  const [isOpen, setIsOpen] = useState(false)
+  
+  const totalPrice = items.reduce((sum, item) => sum + item.price, 0)
+  
+  if (!isOpen && items.length === 0) return null
+  
+  return (
+    <div className="fixed top-4 right-20 z-20 max-w-sm">
+      {/* Cart Toggle Button */}
+      <button
+        onClick={() => setIsOpen(!isOpen)}
+        className="bg-gradient-to-r from-cyan-500 to-violet-600 text-white px-4 py-2 rounded-lg shadow-lg flex items-center gap-2 mb-2"
+      >
+        🛒 Cart ({items.length}) - ${totalPrice}
+      </button>
+      
+      {/* Cart Contents */}
+      {isOpen && (
+        <div className="bg-black/80 backdrop-blur-sm border border-cyan-400/30 rounded-lg p-4 shadow-xl">
+          <h3 className="text-cyan-300 font-semibold mb-3">Shopping Cart</h3>
+          
+          {items.length === 0 ? (
+            <p className="text-gray-400 text-sm">Your cart is empty</p>
+          ) : (
+            <>
+              {items.map((item, index) => (
+                <div key={index} className="flex justify-between items-center py-2 border-b border-gray-600">
+                  <div>
+                    <p className="text-white text-sm font-medium">{item.name}</p>
+                    <p className="text-gray-400 text-xs">{item.description}</p>
+                  </div>
+                  <div className="flex items-center gap-2">
+                    <span className="text-cyan-300 font-semibold">${item.price}</span>
+                    <button
+                      onClick={() => onRemoveItem(index)}
+                      className="text-red-400 hover:text-red-300 text-xs"
+                    >
+                      ✕
+                    </button>
+                  </div>
+                </div>
+              ))}
+              
+              <div className="mt-4 pt-3 border-t border-gray-600">
+                <div className="flex justify-between items-center mb-3">
+                  <span className="text-white font-semibold">Total:</span>
+                  <span className="text-cyan-300 font-bold text-lg">${totalPrice}</span>
+                </div>
+                
+                <button
+                  onClick={onCheckout}
+                  className="w-full bg-gradient-to-r from-green-500 to-cyan-500 text-white py-2 rounded-lg font-semibold hover:scale-105 transition-transform"
+                >
+                  Checkout in VR
+                </button>
+              </div>
+            </>
+          )}
+        </div>
+      )}
+    </div>
+  )
+}
+
+// Product Showcase with Real Shopping Data
+function ProductShowcase() {
+  return (
+    <div className="fixed bottom-20 left-4 right-4 z-10">
+      <div className="bg-black/60 backdrop-blur-sm border border-cyan-400/30 rounded-lg p-4">
+        <h3 className="text-cyan-300 font-semibold mb-2">Featured Products</h3>
+        <div className="grid grid-cols-3 gap-4 text-xs">
+          <div className="text-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-cyan-400 to-blue-500 rounded-lg mx-auto mb-2"></div>
+            <p className="text-white font-medium">Hyper-Sneaker</p>
+            <p className="text-cyan-300">$299</p>
+          </div>
+          <div className="text-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-violet-400 to-purple-500 rounded-lg mx-auto mb-2"></div>
+            <p className="text-white font-medium">Quantum Watch</p>
+            <p className="text-violet-300">$899</p>
+          </div>
+          <div className="text-center">
+            <div className="w-12 h-12 bg-gradient-to-r from-green-400 to-teal-500 rounded-lg mx-auto mb-2"></div>
+            <p className="text-white font-medium">Neural Headset</p>
+            <p className="text-green-300">$1,299</p>
+          </div>
+        </div>
+      </div>
+    </div>
+  )
+}
+
 export default function VRPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isClient, setIsClient] = useState(false)
   const [wowCompleted, setWowCompleted] = useState(false)
+  const [cartItems, setCartItems] = useState([])
+  const [showCheckout, setShowCheckout] = useState(false)
   
   useEffect(() => {
     setIsClient(true)
     const timer = setTimeout(() => setIsLoading(false), 2000)
     return () => clearTimeout(timer)
   }, [])
+  
+  const addToCart = (product) => {
+    setCartItems(prev => [...prev, product])
+    console.log(`Added ${product.name} to cart!`)
+  }
+  
+  const removeFromCart = (index) => {
+    setCartItems(prev => prev.filter((_, i) => i !== index))
+  }
+  
+  const handleCheckout = () => {
+    setShowCheckout(true)
+    console.log('Starting VR checkout process...')
+    // Future: Integrate with payment system
+  }
 
   // Don't render on server
   if (!isClient) {
@@ -1398,21 +1574,32 @@ export default function VRPage() {
             <VRScene 
               showWowMoment={false} 
               onWowComplete={() => setWowCompleted(true)}
+              onAddToCart={addToCart}
             />
           </Suspense>
         </Canvas>
         
-        {/* Enhanced UI Overlay with QSV Branding */}
+        {/* Shopping Cart */}
+        <ShoppingCart 
+          items={cartItems}
+          onRemoveItem={removeFromCart}
+          onCheckout={handleCheckout}
+        />
+        
+        {/* Product Showcase */}
+        <ProductShowcase />
+        
+        {/* Enhanced UI Overlay with Shopping Instructions */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
           <div className="bg-black/60 backdrop-blur-sm border border-cyan-400/30 rounded-lg px-6 py-3 shadow-lg shadow-cyan-400/20">
             <div className="flex items-center gap-3 mb-2">
               <div className="w-6 h-6 rounded-full bg-gradient-to-r from-cyan-400 to-violet-500 flex items-center justify-center">
                 <span className="text-xs font-bold text-white">Q</span>
               </div>
-              <span className="text-cyan-300 text-sm font-semibold">QSV Multiverse</span>
+              <span className="text-cyan-300 text-sm font-semibold">QSV Shopping Experience</span>
             </div>
             <p className="text-gray-300 text-xs text-center">
-              Use mouse to explore • Click objects to interact • Find hidden easter eggs
+              Click products to view details • Add to cart • Experience VR shopping
             </p>
           </div>
         </div>
