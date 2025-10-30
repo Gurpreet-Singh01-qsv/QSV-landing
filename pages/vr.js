@@ -1015,10 +1015,15 @@ function ParallaxBackground() {
   )
 }
 
-// Premium Cinematic VR Scene with Parallax and Visual Cues
-function VRScene() {
+// Premium Cinematic VR Scene with Emotional Engagement
+function VRScene({ showWowMoment = false, onWowComplete }) {
   return (
     <>
+      {/* Emotional Engagement Features */}
+      {showWowMoment && <WowMomentController onWowComplete={onWowComplete} />}
+      <SurpriseAnimations />
+      <EasterEggs />
+      
       {/* Dynamic Lighting System */}
       <DynamicLightingRig />
       
@@ -1074,28 +1079,270 @@ function VRScene() {
   )
 }
 
-// Loading Component
+// Enhanced Loading Screen with QSV Branding
 function LoadingScreen() {
+  const [loadingPhase, setLoadingPhase] = useState(0)
+  
+  useEffect(() => {
+    const phases = [
+      "Quantum processors initializing...",
+      "Neural networks synchronizing...", 
+      "Multiverse gateway opening...",
+      "Reality matrix stabilizing...",
+      "Welcome to the QSV Multiverse"
+    ]
+    
+    const interval = setInterval(() => {
+      setLoadingPhase(prev => (prev + 1) % phases.length)
+    }, 400)
+    
+    return () => clearInterval(interval)
+  }, [])
+  
   return (
     <div className="fixed inset-0 bg-gradient-to-br from-[#040824] via-[#120538] to-[#01010f] flex items-center justify-center z-50">
       <div className="text-center">
-        <div className="w-32 h-32 mx-auto mb-8 relative">
-          <div className="absolute inset-0 border-4 border-cyan-400/30 rounded-full animate-spin"></div>
-          <div className="absolute inset-2 border-2 border-violet-400/40 rounded-full animate-spin"></div>
+        {/* Enhanced Portal Loading Animation */}
+        <div className="w-40 h-40 mx-auto mb-8 relative">
+          {/* Outer Ring */}
+          <div className="absolute inset-0 border-4 border-cyan-400/30 rounded-full animate-spin" style={{animationDuration: '3s'}}></div>
+          {/* Middle Ring */}
+          <div className="absolute inset-3 border-3 border-violet-400/40 rounded-full animate-spin" style={{animationDuration: '2s', animationDirection: 'reverse'}}></div>
+          {/* Inner Ring */}
+          <div className="absolute inset-6 border-2 border-cyan-300/50 rounded-full animate-spin" style={{animationDuration: '1.5s'}}></div>
+          
+          {/* QSV Logo */}
           <div className="absolute inset-0 flex items-center justify-center">
-            <span className="text-4xl font-bold text-cyan-300">Q</span>
+            <div className="text-center">
+              <span className="text-5xl font-bold text-cyan-300 drop-shadow-lg">Q</span>
+              <div className="text-xs text-violet-300 font-semibold tracking-wider mt-1">SV</div>
+            </div>
+          </div>
+          
+          {/* Pulsing Glow */}
+          <div className="absolute inset-0 rounded-full bg-gradient-to-r from-cyan-400/20 via-violet-500/30 to-cyan-400/20 animate-pulse"></div>
+        </div>
+        
+        {/* Dynamic Loading Messages */}
+        <div className="h-16 flex items-center justify-center">
+          <p className="text-cyan-300 text-xl font-semibold transition-all duration-300">
+            {loadingPhase === 0 && "Quantum processors initializing..."}
+            {loadingPhase === 1 && "Neural networks synchronizing..."}
+            {loadingPhase === 2 && "Multiverse gateway opening..."}
+            {loadingPhase === 3 && "Reality matrix stabilizing..."}
+            {loadingPhase === 4 && "Welcome to the QSV Multiverse"}
+          </p>
+        </div>
+        
+        {/* QSV Branding */}
+        <div className="mt-4">
+          <p className="text-gray-400 text-sm">Quantum Speed Ventures</p>
+          <p className="text-gray-500 text-xs mt-1">Experience the Future of Shopping</p>
+        </div>
+        
+        {/* Loading Progress Indicator */}
+        <div className="mt-6 w-64 mx-auto">
+          <div className="h-1 bg-gray-700 rounded-full overflow-hidden">
+            <div className="h-full bg-gradient-to-r from-cyan-400 to-violet-500 rounded-full animate-pulse"></div>
           </div>
         </div>
-        <p className="text-cyan-300 text-xl font-semibold">Initializing Multiverse...</p>
-        <p className="text-gray-400 text-sm mt-2">Loading immersive experience</p>
       </div>
     </div>
+  )
+}
+
+// First Impression Wow Moment System
+function WowMomentController({ onWowComplete }) {
+  const [wowPhase, setWowPhase] = useState('entrance') // entrance -> reveal -> complete
+  const cameraRef = useRef()
+  const portalBurstRef = useRef()
+  
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    
+    if (wowPhase === 'entrance' && time > 1) {
+      // Dramatic camera sweep
+      const sweepProgress = Math.min((time - 1) / 2, 1) // 2-second sweep
+      const easeProgress = 1 - Math.pow(1 - sweepProgress, 3) // Ease out cubic
+      
+      // Camera starts high and sweeps down to reveal the portal
+      const startY = 8
+      const endY = 3
+      const startZ = 15
+      const endZ = 8
+      
+      state.camera.position.y = startY + (endY - startY) * easeProgress
+      state.camera.position.z = startZ + (endZ - startZ) * easeProgress
+      state.camera.lookAt(0, 0, 0)
+      
+      if (sweepProgress >= 1) {
+        setWowPhase('reveal')
+      }
+    }
+    
+    if (wowPhase === 'reveal' && time > 3.5) {
+      // Portal burst effect
+      if (portalBurstRef.current) {
+        const burstProgress = Math.min((time - 3.5) / 1, 1)
+        const burstIntensity = Math.sin(burstProgress * Math.PI) * 2
+        
+        portalBurstRef.current.scale.setScalar(1 + burstIntensity * 0.5)
+        portalBurstRef.current.material.opacity = burstIntensity * 0.3
+      }
+      
+      if (time > 4.5) {
+        setWowPhase('complete')
+        if (onWowComplete) onWowComplete()
+      }
+    }
+  })
+  
+  return (
+    <>
+      {wowPhase === 'reveal' && (
+        <mesh ref={portalBurstRef} position={[0, 0, 0]}>
+          <sphereGeometry args={[4]} />
+          <meshBasicMaterial 
+            color="#ffffff"
+            transparent
+            opacity={0}
+          />
+        </mesh>
+      )}
+    </>
+  )
+}
+
+// Surprise Animation System
+function SurpriseAnimations() {
+  const [surprises, setSurprises] = useState([])
+  const surpriseRefs = useRef([])
+  
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    
+    // Trigger random surprise animations
+    if (Math.random() < 0.002 && surprises.length < 3) { // ~2% chance per frame
+      const newSurprise = {
+        id: Date.now(),
+        position: [
+          (Math.random() - 0.5) * 10,
+          Math.random() * 3 + 1,
+          (Math.random() - 0.5) * 8
+        ],
+        startTime: time,
+        type: Math.floor(Math.random() * 3) // 0: sparkle, 1: ring, 2: burst
+      }
+      setSurprises(prev => [...prev, newSurprise])
+    }
+    
+    // Animate existing surprises
+    surpriseRefs.current.forEach((ref, index) => {
+      if (ref && surprises[index]) {
+        const surprise = surprises[index]
+        const age = time - surprise.startTime
+        const progress = Math.min(age / 2, 1) // 2-second animation
+        
+        if (surprise.type === 0) { // Sparkle
+          ref.rotation.y = age * 4
+          ref.scale.setScalar(Math.sin(progress * Math.PI) * 0.5)
+          ref.material.opacity = Math.sin(progress * Math.PI) * 0.8
+        } else if (surprise.type === 1) { // Ring
+          ref.rotation.z = age * 2
+          ref.scale.setScalar(1 + progress * 2)
+          ref.material.opacity = (1 - progress) * 0.6
+        } else { // Burst
+          ref.scale.setScalar(progress * 3)
+          ref.material.opacity = (1 - progress) * 0.4
+        }
+        
+        if (progress >= 1) {
+          // Remove completed surprise
+          setSurprises(prev => prev.filter(s => s.id !== surprise.id))
+        }
+      }
+    })
+  })
+  
+  return (
+    <>
+      {surprises.map((surprise, index) => (
+        <mesh 
+          key={surprise.id}
+          ref={el => surpriseRefs.current[index] = el}
+          position={surprise.position}
+        >
+          {surprise.type === 0 && <sphereGeometry args={[0.1]} />}
+          {surprise.type === 1 && <torusGeometry args={[0.5, 0.05, 8, 16]} />}
+          {surprise.type === 2 && <sphereGeometry args={[0.3]} />}
+          <meshBasicMaterial 
+            color={surprise.type === 0 ? "#44d7ff" : surprise.type === 1 ? "#9b6cff" : "#00ff88"}
+            transparent
+            opacity={0}
+          />
+        </mesh>
+      ))}
+    </>
+  )
+}
+
+// Easter Egg Discovery System
+function EasterEggs() {
+  const [discovered, setDiscovered] = useState([])
+  const eggRefs = useRef([])
+  
+  const easterEggs = [
+    { position: [-8, 2, -3], message: "QSV Secret: Quantum entanglement enabled!" },
+    { position: [8, -1, -6], message: "Hidden feature: Time dilation mode unlocked!" },
+    { position: [0, 5, -10], message: "Easter egg: Neural link established!" }
+  ]
+  
+  useFrame((state) => {
+    const time = state.clock.getElapsedTime()
+    
+    eggRefs.current.forEach((ref, index) => {
+      if (ref && !discovered.includes(index)) {
+        // Subtle pulsing to hint at discovery
+        const pulse = Math.sin(time * 2 + index) * 0.5 + 0.5
+        ref.material.opacity = 0.1 + pulse * 0.1
+        ref.scale.setScalar(0.8 + pulse * 0.2)
+      }
+    })
+  })
+  
+  const handleEggClick = (index) => {
+    if (!discovered.includes(index)) {
+      setDiscovered(prev => [...prev, index])
+      console.log(easterEggs[index].message)
+      // Future: Show UI notification
+    }
+  }
+  
+  return (
+    <>
+      {easterEggs.map((egg, index) => (
+        <mesh 
+          key={index}
+          ref={el => eggRefs.current[index] = el}
+          position={egg.position}
+          onClick={() => handleEggClick(index)}
+        >
+          <sphereGeometry args={[0.2]} />
+          <meshBasicMaterial 
+            color="#ffffff"
+            transparent
+            opacity={discovered.includes(index) ? 0 : 0.1}
+          />
+        </mesh>
+      ))}
+    </>
   )
 }
 
 export default function VRPage() {
   const [isLoading, setIsLoading] = useState(true)
   const [isClient, setIsClient] = useState(false)
+  const [wowCompleted, setWowCompleted] = useState(false)
   
   useEffect(() => {
     setIsClient(true)
@@ -1134,7 +1381,7 @@ export default function VRPage() {
         
         {/* Premium 3D Canvas - Stable Version */}
         <Canvas
-          camera={{ position: [0, 3, 8], fov: 60 }}
+          camera={{ position: [0, 8, 15], fov: 60 }} // Start high for wow moment
           style={{ background: 'radial-gradient(circle at center, #0a0a2e 0%, #000000 100%)' }}
           gl={{ 
             antialias: true, 
@@ -1148,16 +1395,35 @@ export default function VRPage() {
               <meshBasicMaterial color="#44d7ff" />
             </mesh>
           }>
-            <VRScene />
+            <VRScene 
+              showWowMoment={!wowCompleted} 
+              onWowComplete={() => setWowCompleted(true)}
+            />
           </Suspense>
         </Canvas>
         
-        {/* UI Overlay */}
+        {/* Enhanced UI Overlay with QSV Branding */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
-          <div className="bg-black/50 backdrop-blur-sm border border-cyan-400/30 rounded-lg px-6 py-3">
-            <p className="text-cyan-300 text-sm text-center">
-              Use mouse to look around • Click objects to interact • Desktop & mobile compatible
+          <div className="bg-black/60 backdrop-blur-sm border border-cyan-400/30 rounded-lg px-6 py-3 shadow-lg shadow-cyan-400/20">
+            <div className="flex items-center gap-3 mb-2">
+              <div className="w-6 h-6 rounded-full bg-gradient-to-r from-cyan-400 to-violet-500 flex items-center justify-center">
+                <span className="text-xs font-bold text-white">Q</span>
+              </div>
+              <span className="text-cyan-300 text-sm font-semibold">QSV Multiverse</span>
+            </div>
+            <p className="text-gray-300 text-xs text-center">
+              Use mouse to explore • Click objects to interact • Find hidden easter eggs
             </p>
+          </div>
+        </div>
+        
+        {/* Subtle QSV Watermark */}
+        <div className="absolute top-4 left-4 z-10">
+          <div className="bg-black/40 backdrop-blur-sm border border-cyan-400/20 rounded-lg px-3 py-2">
+            <div className="flex items-center gap-2">
+              <div className="w-4 h-4 rounded-full bg-gradient-to-r from-cyan-400 to-violet-500"></div>
+              <span className="text-cyan-300 text-xs font-medium">QSV</span>
+            </div>
           </div>
         </div>
       </div>
