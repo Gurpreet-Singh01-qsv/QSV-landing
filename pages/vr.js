@@ -277,34 +277,50 @@ function EnergyParticles() {
   return <group ref={particlesRef}>{particles}</group>
 }
 
-// Ambient Audio Component - Safe Version
+// Ambient Audio Component - User Interaction Based
 function AmbientAudio() {
+  const [audioStarted, setAudioStarted] = useState(false)
+  
   useEffect(() => {
-    // Only create audio in browser environment
-    if (typeof window === 'undefined') return
+    if (typeof window === 'undefined' || audioStarted) return
     
     let audioContext = null
     let oscillator = null
     let gainNode = null
     
-    try {
-      audioContext = new (window.AudioContext || window.webkitAudioContext)()
-      oscillator = audioContext.createOscillator()
-      gainNode = audioContext.createGain()
-      
-      oscillator.connect(gainNode)
-      gainNode.connect(audioContext.destination)
-      
-      oscillator.frequency.setValueAtTime(60, audioContext.currentTime)
-      oscillator.type = 'sine'
-      gainNode.gain.setValueAtTime(0.01, audioContext.currentTime) // Very subtle
-      
-      oscillator.start()
-    } catch (error) {
-      console.log('Audio not supported or blocked')
+    const startAudio = () => {
+      try {
+        audioContext = new (window.AudioContext || window.webkitAudioContext)()
+        oscillator = audioContext.createOscillator()
+        gainNode = audioContext.createGain()
+        
+        oscillator.connect(gainNode)
+        gainNode.connect(audioContext.destination)
+        
+        oscillator.frequency.setValueAtTime(60, audioContext.currentTime)
+        oscillator.type = 'sine'
+        gainNode.gain.setValueAtTime(0.01, audioContext.currentTime)
+        
+        oscillator.start()
+        setAudioStarted(true)
+      } catch (error) {
+        console.log('Audio not supported')
+      }
     }
     
+    // Start audio on first user interaction
+    const handleInteraction = () => {
+      startAudio()
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('touchstart', handleInteraction)
+    }
+    
+    document.addEventListener('click', handleInteraction)
+    document.addEventListener('touchstart', handleInteraction)
+    
     return () => {
+      document.removeEventListener('click', handleInteraction)
+      document.removeEventListener('touchstart', handleInteraction)
       try {
         if (oscillator) oscillator.stop()
         if (audioContext) audioContext.close()
@@ -312,7 +328,7 @@ function AmbientAudio() {
         // Ignore cleanup errors
       }
     }
-  }, [])
+  }, [audioStarted])
   
   return null
 }
