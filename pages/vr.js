@@ -1,7 +1,7 @@
 import { Canvas } from '@react-three/fiber'
 import { VRButton, ARButton, XR, Controllers, Hands } from '@react-three/xr'
 import { Environment, OrbitControls, Text, Sphere, Box } from '@react-three/drei'
-import { Suspense, useState } from 'react'
+import { Suspense, useState, useEffect } from 'react'
 import Head from 'next/head'
 
 // Q Portal Component
@@ -39,7 +39,6 @@ function QPortal() {
         color="#ffffff"
         anchorX="center"
         anchorY="middle"
-        font="/fonts/inter-bold.woff"
       >
         Q
       </Text>
@@ -101,26 +100,24 @@ function InteractiveProduct({ position, color, name }) {
 // Ambient Particles
 function Particles() {
   const particles = []
-  for (let i = 0; i < 50; i++) {
+  for (let i = 0; i < 20; i++) {
     particles.push(
-      <Sphere
+      <mesh
         key={i}
-        args={[0.02]}
         position={[
-          (Math.random() - 0.5) * 20,
-          (Math.random() - 0.5) * 10,
-          (Math.random() - 0.5) * 20
+          (Math.random() - 0.5) * 15,
+          (Math.random() - 0.5) * 8,
+          (Math.random() - 0.5) * 15
         ]}
       >
-        <meshStandardMaterial 
+        <sphereGeometry args={[0.02]} />
+        <meshBasicMaterial 
           color="#44d7ff"
-          emissive="#44d7ff"
-          emissiveIntensity={0.5}
         />
-      </Sphere>
+      </mesh>
     )
   }
-  return <>{particles}</>
+  return <group>{particles}</group>
 }
 
 // Main VR Scene
@@ -187,9 +184,14 @@ function LoadingScreen() {
 
 export default function VRPage() {
   const [isLoading, setIsLoading] = useState(true)
+  const [isClient, setIsClient] = useState(false)
   
-  // Simulate loading time
-  setTimeout(() => setIsLoading(false), 3000)
+  useEffect(() => {
+    setIsClient(true)
+    // Simulate loading time
+    const timer = setTimeout(() => setIsLoading(false), 3000)
+    return () => clearTimeout(timer)
+  }, [])
   
   return (
     <>
@@ -200,6 +202,11 @@ export default function VRPage() {
       
       {isLoading && <LoadingScreen />}
       
+      {!isClient ? (
+        <div className="w-full h-screen bg-black flex items-center justify-center">
+          <p className="text-white">Loading...</p>
+        </div>
+      ) : (
       <div className="w-full h-screen bg-black">
         {/* VR/AR Entry Buttons */}
         <div className="absolute top-4 left-4 z-10 flex gap-4">
@@ -222,9 +229,17 @@ export default function VRPage() {
           camera={{ position: [0, 2, 5], fov: 75 }}
           gl={{ antialias: true }}
           style={{ background: 'linear-gradient(to bottom, #040824, #01010f)' }}
+          onCreated={({ gl }) => {
+            gl.setClearColor('#040824')
+          }}
         >
           <XR>
-            <Suspense fallback={null}>
+            <Suspense fallback={
+              <mesh>
+                <boxGeometry args={[1, 1, 1]} />
+                <meshBasicMaterial color="#44d7ff" />
+              </mesh>
+            }>
               <VRScene />
             </Suspense>
           </XR>
@@ -239,6 +254,7 @@ export default function VRPage() {
           </div>
         </div>
       </div>
+      )}
     </>
   )
 }
