@@ -182,12 +182,53 @@ function QPortal() {
   )
 }
 
-// Premium Interactive Product with Floating Info
+// Premium Material Systems
+function createChromeMaterial(hovered = false) {
+  return {
+    color: hovered ? "#ffffff" : "#c0c0c0",
+    metalness: 0.95,
+    roughness: hovered ? 0.05 : 0.1,
+    envMapIntensity: 2.0,
+    reflectivity: 1.0,
+    transparent: false,
+    opacity: 1.0
+  }
+}
+
+function createGlassMaterial(hovered = false) {
+  return {
+    color: hovered ? "#ffffff" : "#e6f3ff",
+    metalness: 0.0,
+    roughness: 0.0,
+    transmission: 0.9,
+    transparent: true,
+    opacity: hovered ? 0.8 : 0.6,
+    ior: 1.5,
+    thickness: 0.5
+  }
+}
+
+function createNeonMaterial(hovered = false, baseColor = "#00ff88") {
+  return {
+    color: baseColor,
+    emissive: baseColor,
+    emissiveIntensity: hovered ? 1.2 : 0.8,
+    metalness: 0.1,
+    roughness: 0.2,
+    transparent: true,
+    opacity: hovered ? 0.95 : 0.85
+  }
+}
+
+// Premium Interactive Product with Advanced Materials
 function InteractiveProduct({ position, color, name, description, type }) {
   const [hovered, setHovered] = useState(false)
   const [clicked, setClicked] = useState(false)
   const productRef = useRef()
   const infoRef = useRef()
+  const adaptiveFitRef = useRef()
+  const hologramRef = useRef()
+  const brainwaveRef = useRef()
   
   useFrame((state) => {
     const time = state.clock.getElapsedTime()
@@ -198,18 +239,44 @@ function InteractiveProduct({ position, color, name, description, type }) {
       productRef.current.rotation.y = time * 0.3
     }
     
-    // Info card animation - simplified
+    // Enhanced info card animation with 300ms target
     if (infoRef.current) {
       const targetScale = (hovered || clicked) ? 1 : 0.1
-      const targetOpacity = (hovered || clicked) ? 1 : 0
+      const targetOpacity = (hovered || clicked) ? 0.9 : 0
+      const lerpSpeed = 0.15 // Faster for 300ms feel
       
-      infoRef.current.scale.x += (targetScale - infoRef.current.scale.x) * 0.1
-      infoRef.current.scale.y += (targetScale - infoRef.current.scale.y) * 0.1
-      infoRef.current.scale.z += (targetScale - infoRef.current.scale.z) * 0.1
+      infoRef.current.scale.x += (targetScale - infoRef.current.scale.x) * lerpSpeed
+      infoRef.current.scale.y += (targetScale - infoRef.current.scale.y) * lerpSpeed
+      infoRef.current.scale.z += (targetScale - infoRef.current.scale.z) * lerpSpeed
       
-      if (infoRef.current.material) {
-        infoRef.current.material.opacity += (targetOpacity - infoRef.current.material.opacity) * 0.1
-      }
+      // Animate all child elements
+      infoRef.current.children.forEach((child, index) => {
+        if (child.material) {
+          const delay = index * 0.1 // Staggered animation
+          const adjustedOpacity = Math.max(0, targetOpacity - delay)
+          child.material.opacity += (adjustedOpacity - child.material.opacity) * lerpSpeed
+        }
+      })
+    }
+    
+    // Adaptive fit visualization for sneaker
+    if (adaptiveFitRef.current && type === 'sneaker') {
+      const pulseIntensity = hovered ? 0.3 + Math.sin(time * 4) * 0.2 : 0
+      adaptiveFitRef.current.material.opacity = pulseIntensity
+    }
+    
+    // Holographic display for watch
+    if (hologramRef.current && type === 'watch') {
+      hologramRef.current.rotation.y = time * 2
+      const hologramIntensity = hovered ? 0.4 + Math.sin(time * 3) * 0.2 : 0
+      hologramRef.current.material.opacity = hologramIntensity
+    }
+    
+    // Brainwave pattern for headset
+    if (brainwaveRef.current && type === 'headset') {
+      brainwaveRef.current.rotation.z = time * 1.5
+      const brainwaveIntensity = hovered ? 0.5 + Math.sin(time * 5) * 0.3 : 0
+      brainwaveRef.current.material.emissiveIntensity = brainwaveIntensity
     }
   })
   
@@ -223,56 +290,203 @@ function InteractiveProduct({ position, color, name, description, type }) {
     <group position={position}>
       {/* Product Object */}
       <group ref={productRef}>
-        {/* Main Product Shape */}
-        <mesh
-          onPointerOver={() => setHovered(true)}
-          onPointerOut={() => setHovered(false)}
-          onClick={handleClick}
-        >
-          {type === 'sneaker' && <boxGeometry args={[1.2, 0.6, 0.8]} />}
-          {type === 'watch' && <cylinderGeometry args={[0.4, 0.4, 0.2, 32]} />}
-          {type === 'headset' && <sphereGeometry args={[0.5]} />}
-          
-          <meshStandardMaterial 
-            color={hovered ? "#ffffff" : color}
-            emissive={color}
-            emissiveIntensity={hovered ? 0.3 : 0.1}
-            metalness={0.8}
-            roughness={0.2}
-            transparent
-            opacity={0.9}
-          />
-        </mesh>
+        {/* Detailed Product Geometries */}
         
-        {/* Product Glow */}
-        <mesh>
-          {type === 'sneaker' && <boxGeometry args={[1.4, 0.8, 1.0]} />}
-          {type === 'watch' && <cylinderGeometry args={[0.5, 0.5, 0.3, 32]} />}
-          {type === 'headset' && <sphereGeometry args={[0.6]} />}
-          
+        {/* Premium Sneaker - Multi-part Construction */}
+        {type === 'sneaker' && (
+          <group
+            onPointerOver={() => setHovered(true)}
+            onPointerOut={() => setHovered(false)}
+            onClick={handleClick}
+          >
+            {/* Sneaker Sole */}
+            <mesh position={[0, -0.2, 0]}>
+              <boxGeometry args={[1.3, 0.2, 0.9]} />
+              <meshStandardMaterial {...createChromeMaterial(hovered)} />
+            </mesh>
+            
+            {/* Sneaker Upper */}
+            <mesh position={[0, 0.1, 0]}>
+              <boxGeometry args={[1.1, 0.4, 0.7]} />
+              <meshStandardMaterial {...createChromeMaterial(hovered)} />
+            </mesh>
+            
+            {/* Sneaker Toe Cap */}
+            <mesh position={[0, 0.05, 0.35]}>
+              <sphereGeometry args={[0.25, 16, 8]} />
+              <meshStandardMaterial {...createChromeMaterial(hovered)} />
+            </mesh>
+          </group>
+        )}
+        
+        {/* Quantum Chronometer - Layered Construction */}
+        {type === 'watch' && (
+          <group
+            onPointerOver={() => setHovered(true)}
+            onPointerOut={() => setHovered(false)}
+            onClick={handleClick}
+          >
+            {/* Watch Base */}
+            <mesh>
+              <cylinderGeometry args={[0.45, 0.45, 0.15, 32]} />
+              <meshPhysicalMaterial {...createGlassMaterial(hovered)} />
+            </mesh>
+            
+            {/* Watch Face */}
+            <mesh position={[0, 0.08, 0]}>
+              <cylinderGeometry args={[0.35, 0.35, 0.02, 32]} />
+              <meshStandardMaterial 
+                color="#000000"
+                metalness={0.9}
+                roughness={0.1}
+              />
+            </mesh>
+            
+            {/* Watch Crown */}
+            <mesh position={[0.4, 0, 0]}>
+              <cylinderGeometry args={[0.05, 0.05, 0.1, 8]} />
+              <meshStandardMaterial {...createChromeMaterial(hovered)} />
+            </mesh>
+          </group>
+        )}
+        
+        {/* Neural Interface Headset - Complex Shape */}
+        {type === 'headset' && (
+          <group
+            onPointerOver={() => setHovered(true)}
+            onPointerOut={() => setHovered(false)}
+            onClick={handleClick}
+          >
+            {/* Main Headset Body */}
+            <mesh>
+              <sphereGeometry args={[0.5, 32, 16]} />
+              <meshStandardMaterial {...createNeonMaterial(hovered, color)} />
+            </mesh>
+            
+            {/* Side Connectors */}
+            <mesh position={[-0.4, 0, 0]}>
+              <cylinderGeometry args={[0.08, 0.08, 0.3, 8]} />
+              <meshStandardMaterial {...createNeonMaterial(hovered, "#44d7ff")} />
+            </mesh>
+            <mesh position={[0.4, 0, 0]}>
+              <cylinderGeometry args={[0.08, 0.08, 0.3, 8]} />
+              <meshStandardMaterial {...createNeonMaterial(hovered, "#44d7ff")} />
+            </mesh>
+            
+            {/* Neural Interface Ports */}
+            <mesh position={[0, 0.3, 0]}>
+              <cylinderGeometry args={[0.06, 0.06, 0.1, 6]} />
+              <meshStandardMaterial {...createNeonMaterial(hovered, "#9b6cff")} />
+            </mesh>
+          </group>
+        )}
+
+        
+        {/* Adaptive Fit Visualization for Sneaker */}
+        {type === 'sneaker' && (
+          <mesh ref={adaptiveFitRef}>
+            <boxGeometry args={[1.3, 0.7, 0.9]} />
+            <meshBasicMaterial 
+              color="#44d7ff"
+              transparent
+              opacity={0}
+              wireframe={true}
+            />
+          </mesh>
+        )}
+        
+        {/* Holographic Display for Watch */}
+        {type === 'watch' && (
+          <mesh ref={hologramRef} position={[0, 0.3, 0]}>
+            <planeGeometry args={[0.6, 0.4]} />
+            <meshBasicMaterial 
+              color="#00ffff"
+              transparent
+              opacity={0}
+              side={THREE.DoubleSide}
+            />
+          </mesh>
+        )}
+        
+        {/* Brainwave Pattern for Headset */}
+        {type === 'headset' && (
+          <mesh ref={brainwaveRef} position={[0, 0, 0]}>
+            <torusGeometry args={[0.7, 0.02, 8, 32]} />
+            <meshStandardMaterial 
+              color="#00ff88"
+              emissive="#00ff88"
+              emissiveIntensity={0}
+              transparent
+              opacity={0.8}
+            />
+          </mesh>
+        )}
+        
+        {/* Enhanced Product Base Glow */}
+        <mesh position={[0, -0.4, 0]} rotation={[Math.PI / 2, 0, 0]}>
+          <circleGeometry args={[hovered ? 1.2 : 0.9]} />
           <meshBasicMaterial 
             color={color}
             transparent
-            opacity={hovered ? 0.2 : 0.1}
+            opacity={hovered ? 0.25 : 0.12}
           />
         </mesh>
       </group>
       
-      {/* Floating Info Card */}
-      <mesh 
-        ref={infoRef}
-        position={[0, 1.5, 0]}
-        scale={[0.1, 0.1, 0.1]}
-      >
-        <planeGeometry args={[2, 1]} />
-        <meshStandardMaterial 
-          color="#000000"
-          emissive="#44d7ff"
-          emissiveIntensity={0.1}
-          transparent
-          opacity={0}
-        />
-      </mesh>
+      {/* Enhanced Floating Info Card */}
+      <group ref={infoRef} position={[0, 1.8, 0]} scale={[0.1, 0.1, 0.1]}>
+        {/* Card Background */}
+        <mesh>
+          <planeGeometry args={[3, 1.5]} />
+          <meshStandardMaterial 
+            color="#000000"
+            emissive="#44d7ff"
+            emissiveIntensity={0.1}
+            transparent
+            opacity={0}
+          />
+        </mesh>
+        
+        {/* Card Border Glow */}
+        <mesh position={[0, 0, -0.01]}>
+          <planeGeometry args={[3.1, 1.6]} />
+          <meshBasicMaterial 
+            color="#44d7ff"
+            transparent
+            opacity={0}
+          />
+        </mesh>
+        
+        {/* Product Name Indicator */}
+        <mesh position={[0, 0.4, 0.01]}>
+          <planeGeometry args={[2.5, 0.3]} />
+          <meshBasicMaterial 
+            color="#ffffff"
+            transparent
+            opacity={0}
+          />
+        </mesh>
+        
+        {/* Description Area */}
+        <mesh position={[0, -0.1, 0.01]}>
+          <planeGeometry args={[2.8, 0.4]} />
+          <meshBasicMaterial 
+            color="#9b6cff"
+            transparent
+            opacity={0}
+          />
+        </mesh>
+        
+        {/* Action Indicator */}
+        <mesh position={[0, -0.5, 0.01]}>
+          <planeGeometry args={[1.5, 0.2]} />
+          <meshBasicMaterial 
+            color="#00ff88"
+            transparent
+            opacity={0}
+          />
+        </mesh>
+      </group>
       
       {/* Product Base Glow */}
       <mesh position={[0, -0.5, 0]} rotation={[Math.PI / 2, 0, 0]}>
