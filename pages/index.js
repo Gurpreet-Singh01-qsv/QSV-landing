@@ -421,11 +421,11 @@ export default function Home() {
               >
                 <span className="absolute inset-0 bg-[linear-gradient(90deg,transparent,rgba(255,255,255,0.2),transparent)] translate-x-[-100%] group-hover:translate-x-[100%] transition-transform duration-[1000ms] ease-out" />
                 <span className="relative flex items-center gap-2">
-                  🌌 Enter the Multiverse
+                  🏙️ Explore QSV Street
                 </span>
               </a>
               <p className="text-xs text-gray-400 mt-2 text-center lg:text-left">
-                Experience immersive VR shopping • Works on desktop, mobile & Quest
+                First-person futuristic shopping district • WASD + Mouse • Desktop optimized
               </p>
             </div>
                 {/* ==== FORM ENDS HERE ==== */}
