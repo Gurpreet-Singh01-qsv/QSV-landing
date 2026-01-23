@@ -1,6 +1,6 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { PointerLockControls, Text, Box, Plane } from '@react-three/drei'
-import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing'
+// import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing'
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import * as THREE from 'three'
@@ -755,7 +755,8 @@ export default function QSVStreet() {
         >
           <Suspense fallback={null}>
             <StreetScene />
-            <EffectComposer>
+            {/* Post-processing effects temporarily disabled for compatibility */}
+            {/* <EffectComposer>
               <Bloom
                 intensity={0.5}
                 luminanceThreshold={0.2}
@@ -764,7 +765,7 @@ export default function QSVStreet() {
               <ChromaticAberration
                 offset={[0.001, 0.001]}
               />
-            </EffectComposer>
+            </EffectComposer> */}
           </Suspense>
         </Canvas>
       </div>

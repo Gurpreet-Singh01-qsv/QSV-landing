@@ -1,5 +1,6 @@
 import Head from "next/head";
 import { useEffect, useMemo, useState } from "react";
+import QuantumSneaker from '../components/QuantumSneaker';
 
 const particleConfig = [
   { top: "8%", left: "12%", size: 2, delay: "0s" },
@@ -451,9 +452,9 @@ export default function Home() {
                       Live
                     </span>
                   </div>
-                  <div className="flex items-center gap-4">
-                    <div className="h-16 w-16 rounded-2xl bg-gradient-to-br from-cyan-300 to-violet-500 shadow-lg shadow-cyan-400/30" />
-                    <div className="space-y-1">
+                  <div className="flex flex-col items-center gap-4">
+                    <QuantumSneaker width="120px" height="120px" />
+                    <div className="space-y-1 text-center">
                       <p className="text-sm font-semibold tracking-wide text-white/90">
                         Luminous Hyper-Sneaker
                       </p>
