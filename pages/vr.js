@@ -1,10 +1,11 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { PointerLockControls, Text, Box, Plane } from '@react-three/drei'
 import { XR, Controllers, Hands, XRButton, useXR } from '@react-three/xr'
-// import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing'
+import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import * as THREE from 'three'
+import ProductModel from '../components/products/ProductModel'
 
 // World-space collision check shared by desktop and VR movement
 function checkCollision(position) {
@@ -577,17 +578,21 @@ function ProductDisplay({ position, product, storeColor }) {
   
   return (
     <group position={position}>
-      <mesh ref={productRef}>
-        <boxGeometry args={[0.8, 0.8, 0.8]} />
-        <meshStandardMaterial
-          color={product.color}
-          emissive={product.color}
-          emissiveIntensity={0.2}
-          roughness={0.2}
-          metalness={0.8}
-        />
+      {/* Display pedestal */}
+      <mesh position={[0, -0.55, 0]}>
+        <cylinderGeometry args={[0.35, 0.4, 0.12, 16]} />
+        <meshStandardMaterial color="#0a0a1a" roughness={0.3} metalness={0.8} />
       </mesh>
-      
+      <mesh position={[0, -0.48, 0]} rotation={[Math.PI / 2, 0, 0]}>
+        <torusGeometry args={[0.35, 0.02, 8, 24]} />
+        <meshStandardMaterial color={storeColor} emissive={storeColor} emissiveIntensity={2} />
+      </mesh>
+
+      {/* Rotating product model */}
+      <group ref={productRef}>
+        <ProductModel type={product.model} color={product.color} />
+      </group>
+
       {showInfo && (
         <group position={[0, 1.5, 0]}>
           <Plane args={[3, 1.5]} position={[0, 0, 0.1]}>
@@ -682,9 +687,9 @@ function StreetScene() {
       color: "#44d7ff",
       accentColor: "#00ff88",
       products: [
-        { name: "Neural Interface", price: 2499, color: "#44d7ff" },
-        { name: "Quantum Processor", price: 1899, color: "#00ff88" },
-        { name: "Holo Display", price: 999, color: "#44d7ff" }
+        { name: "Neural Interface", price: 2499, color: "#44d7ff", model: "headset" },
+        { name: "Quantum Processor", price: 1899, color: "#00ff88", model: "chip" },
+        { name: "Holo Display", price: 999, color: "#44d7ff", model: "screen" }
       ]
     },
     {
@@ -693,9 +698,9 @@ function StreetScene() {
       color: "#9b6cff",
       accentColor: "#ff6b9d",
       products: [
-        { name: "Gravity Boots", price: 799, color: "#9b6cff" },
-        { name: "Phase Jacket", price: 1299, color: "#ff6b9d" },
-        { name: "Time Watch", price: 3499, color: "#9b6cff" }
+        { name: "Gravity Boots", price: 799, color: "#9b6cff", model: "sneaker" },
+        { name: "Phase Jacket", price: 1299, color: "#ff6b9d", model: "jacket" },
+        { name: "Time Watch", price: 3499, color: "#9b6cff", model: "watch" }
       ]
     },
     {
@@ -704,9 +709,9 @@ function StreetScene() {
       color: "#00ff88",
       accentColor: "#44d7ff",
       products: [
-        { name: "Energy Drink", price: 29, color: "#00ff88" },
-        { name: "Nano Pills", price: 199, color: "#44d7ff" },
-        { name: "Bio Scanner", price: 899, color: "#00ff88" }
+        { name: "Energy Drink", price: 29, color: "#00ff88", model: "can" },
+        { name: "Nano Pills", price: 199, color: "#44d7ff", model: "can" },
+        { name: "Bio Scanner", price: 899, color: "#00ff88", model: "chip" }
       ]
     },
     {
@@ -715,9 +720,9 @@ function StreetScene() {
       color: "#ff6b9d",
       accentColor: "#9b6cff",
       products: [
-        { name: "Cyber Sneakers", price: 599, color: "#ff6b9d" },
-        { name: "Smart Lens", price: 1499, color: "#9b6cff" },
-        { name: "Voice Mod", price: 399, color: "#ff6b9d" }
+        { name: "Cyber Sneakers", price: 599, color: "#ff6b9d", model: "sneaker" },
+        { name: "Smart Lens", price: 1499, color: "#9b6cff", model: "screen" },
+        { name: "Voice Mod", price: 399, color: "#ff6b9d", model: "headset" }
       ]
     }
   ]
@@ -752,6 +757,23 @@ function StreetScene() {
       <Controllers />
       <Hands />
     </>
+  )
+}
+
+// Post-processing (desktop only — EffectComposer conflicts with the WebXR render loop)
+function Effects() {
+  const isPresenting = useXR((state) => state.isPresenting)
+  if (isPresenting) return null
+
+  return (
+    <EffectComposer>
+      <Bloom
+        intensity={0.6}
+        luminanceThreshold={0.2}
+        luminanceSmoothing={0.9}
+        mipmapBlur
+      />
+    </EffectComposer>
   )
 }
 
@@ -872,17 +894,7 @@ export default function QSVStreet() {
           <XR referenceSpace="local-floor">
             <Suspense fallback={null}>
               <StreetScene />
-              {/* Post-processing effects temporarily disabled for compatibility */}
-              {/* <EffectComposer>
-                <Bloom
-                  intensity={0.5}
-                  luminanceThreshold={0.2}
-                  luminanceSmoothing={0.9}
-                />
-                <ChromaticAberration
-                  offset={[0.001, 0.001]}
-                />
-              </EffectComposer> */}
+              <Effects />
             </Suspense>
           </XR>
         </Canvas>
