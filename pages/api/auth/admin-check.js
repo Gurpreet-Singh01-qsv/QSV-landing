@@ -1,4 +1,5 @@
-// Simple admin authentication check
+import { createAdminToken, safeEqual } from '../../../lib/adminAuth'
+
 export default function handler(req, res) {
   if (req.method !== 'POST') {
     return res.status(405).json({ error: 'Method not allowed' });
@@ -11,8 +12,8 @@ export default function handler(req, res) {
     return res.status(500).json({ error: 'Admin password not configured' });
   }
 
-  if (password === adminPassword) {
-    return res.status(200).json({ success: true });
+  if (password && safeEqual(password, adminPassword)) {
+    return res.status(200).json({ success: true, token: createAdminToken() });
   } else {
     return res.status(401).json({ error: 'Invalid password' });
   }

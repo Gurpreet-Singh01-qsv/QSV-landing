@@ -1,9 +1,35 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
 import { PointerLockControls, Text, Box, Plane } from '@react-three/drei'
+import { XR, Controllers, Hands, XRButton, useXR } from '@react-three/xr'
 // import { EffectComposer, Bloom, ChromaticAberration } from '@react-three/postprocessing'
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import * as THREE from 'three'
+
+// World-space collision check shared by desktop and VR movement
+function checkCollision(position) {
+  // Simple boundary collision
+  if (position.x < -16 || position.x > 16 || position.z < -22 || position.z > 22) {
+    return true
+  }
+
+  // Storefront collision (simple box collision)
+  const storefronts = [
+    { x: -12, z: -8, width: 4, depth: 3 },
+    { x: 12, z: -8, width: 4, depth: 3 },
+    { x: -12, z: 5, width: 4, depth: 3 },
+    { x: 12, z: 5, width: 4, depth: 3 }
+  ]
+
+  for (const store of storefronts) {
+    if (position.x > store.x - store.width && position.x < store.x + store.width &&
+        position.z > store.z - store.depth && position.z < store.z + store.depth) {
+      return true
+    }
+  }
+
+  return false
+}
 
 // Collision Boxes (invisible)
 function CollisionBoxes() {
@@ -24,9 +50,10 @@ function CollisionBoxes() {
   )
 }
 
-// FPS Controls Component with Collision Detection
+// FPS Controls Component with Collision Detection (desktop only)
 function FPSControls() {
   const { camera, gl, scene } = useThree()
+  const isPresenting = useXR((state) => state.isPresenting)
   const controlsRef = useRef()
   const velocity = useRef(new THREE.Vector3())
   const direction = useRef(new THREE.Vector3())
@@ -63,30 +90,6 @@ function FPSControls() {
       document.removeEventListener('keyup', onKeyUp)
     }
   }, [])
-  
-  const checkCollision = (position) => {
-    // Simple boundary collision
-    if (position.x < -16 || position.x > 16 || position.z < -22 || position.z > 22) {
-      return true
-    }
-    
-    // Storefront collision (simple box collision)
-    const storefronts = [
-      { x: -12, z: -8, width: 4, depth: 3 },
-      { x: 12, z: -8, width: 4, depth: 3 },
-      { x: -12, z: 5, width: 4, depth: 3 },
-      { x: 12, z: 5, width: 4, depth: 3 }
-    ]
-    
-    for (const store of storefronts) {
-      if (position.x > store.x - store.width && position.x < store.x + store.width &&
-          position.z > store.z - store.depth && position.z < store.z + store.depth) {
-        return true
-      }
-    }
-    
-    return false
-  }
   
   useFrame((state, delta) => {
     if (!controlsRef.current?.isLocked) return
@@ -126,13 +129,107 @@ function FPSControls() {
     
     camera.position.copy(newPosition)
   })
-  
+
+  // Pointer lock fights the XR session for the camera — unmount it in VR
+  if (isPresenting) return null
+
   return (
-    <PointerLockControls 
+    <PointerLockControls
       ref={controlsRef}
       args={[camera, gl.domElement]}
     />
   )
+}
+
+// VR Locomotion: left thumbstick = smooth move (headset-relative),
+// right thumbstick = 45° snap turn. Shares collision logic with desktop.
+function VRLocomotion() {
+  const { camera } = useThree()
+  const { player, controllers, isPresenting } = useXR()
+  const snapReady = useRef(true)
+  const vec = useRef({
+    forward: new THREE.Vector3(),
+    right: new THREE.Vector3(),
+    move: new THREE.Vector3(),
+    head: new THREE.Vector3()
+  })
+
+  // Spawn the player rig where the desktop camera starts
+  useEffect(() => {
+    if (isPresenting) {
+      player.position.set(0, 0, 10)
+      player.rotation.set(0, 0, 0)
+    }
+  }, [isPresenting, player])
+
+  useFrame((state, delta) => {
+    if (!isPresenting) return
+
+    const { forward, right, move, head } = vec.current
+    const UP = new THREE.Vector3(0, 1, 0)
+    const DEADZONE = 0.15
+    const SPEED = 3.0
+
+    let moveX = 0
+    let moveZ = 0
+    let turnX = 0
+
+    for (const controller of controllers) {
+      const gamepad = controller.inputSource?.gamepad
+      if (!gamepad || gamepad.axes.length < 4) continue
+      // Thumbstick is axes[2]/axes[3] on Quest-style controllers
+      if (controller.inputSource.handedness === 'left') {
+        moveX = gamepad.axes[2]
+        moveZ = gamepad.axes[3]
+      } else if (controller.inputSource.handedness === 'right') {
+        turnX = gamepad.axes[2]
+      }
+    }
+
+    // Smooth locomotion relative to where the headset is looking
+    if (Math.abs(moveX) > DEADZONE || Math.abs(moveZ) > DEADZONE) {
+      camera.getWorldDirection(forward)
+      forward.y = 0
+      forward.normalize()
+      right.crossVectors(forward, UP)
+
+      move
+        .copy(forward)
+        .multiplyScalar(-moveZ)
+        .addScaledVector(right, moveX)
+        .multiplyScalar(SPEED * delta)
+
+      camera.getWorldPosition(head)
+
+      // Axis-separated collision so we can slide along walls
+      const testX = head.clone()
+      testX.x += move.x
+      if (!checkCollision(testX)) player.position.x += move.x
+
+      const testZ = head.clone()
+      testZ.z += move.z
+      if (!checkCollision(testZ)) player.position.z += move.z
+    }
+
+    // Snap turn: one 45° step per stick flick, pivoting around the headset
+    if (Math.abs(turnX) > 0.6) {
+      if (snapReady.current) {
+        snapReady.current = false
+        const angle = (turnX > 0 ? -1 : 1) * Math.PI / 4
+        camera.getWorldPosition(head)
+        player.position.x -= head.x
+        player.position.z -= head.z
+        player.position.applyAxisAngle(UP, angle)
+        player.position.x += head.x
+        player.position.z += head.z
+        player.rotation.y += angle
+      }
+    } else {
+      snapReady.current = true
+    }
+  })
+
+  return null
 }
 
 // Rain Effect
@@ -459,15 +556,17 @@ function ProductDisplay({ position, product, storeColor }) {
   const [showInfo, setShowInfo] = useState(false)
   const productRef = useRef()
   const { camera } = useThree()
-  
+  const headPos = useRef(new THREE.Vector3())
+  const productPos = useRef(new THREE.Vector3())
+
   useFrame(() => {
     if (!productRef.current) return
-    
-    const distance = camera.position.distanceTo(
-      new THREE.Vector3().fromArray(position).add(productRef.current.parent.position)
-    )
-    
-    setShowInfo(distance < 4)
+
+    // World positions so this works both on desktop and inside the XR player rig
+    camera.getWorldPosition(headPos.current)
+    productRef.current.getWorldPosition(productPos.current)
+
+    setShowInfo(headPos.current.distanceTo(productPos.current) < 4)
   })
   
   useFrame((state) => {
@@ -646,9 +745,12 @@ function StreetScene() {
       {storefronts.map((store, index) => (
         <Storefront key={index} {...store} />
       ))}
-      
+
       {/* Controls */}
       <FPSControls />
+      <VRLocomotion />
+      <Controllers />
+      <Hands />
     </>
   )
 }
@@ -685,6 +787,7 @@ function Instructions({ show }) {
         <p><span className="text-cyan-300">WASD</span> to move around</p>
         <p><span className="text-cyan-300">Mouse</span> to look around</p>
         <p><span className="text-cyan-300">ESC</span> to exit first-person mode</p>
+        <p className="mt-2"><span className="text-violet-300">VR headset:</span> click Enter VR, left stick to move, right stick to turn</p>
         <p className="text-cyan-300/60 text-xs mt-2">Walk close to products to see details</p>
       </div>
     </div>
@@ -723,8 +826,21 @@ export default function QSVStreet() {
       <LoadingScreen isLoading={isLoading} />
       
       <div className="w-full h-screen bg-black relative">
-        {/* Exit Button */}
-        <div className="absolute top-4 right-4 z-10">
+        {/* Exit + Enter VR Buttons */}
+        <div className="absolute top-4 right-4 z-10 flex gap-2">
+          <XRButton
+            mode="VR"
+            sessionInit={{ optionalFeatures: ['local-floor', 'hand-tracking'] }}
+            className="px-4 py-2 bg-violet-500/20 border border-violet-400/40 text-violet-300 rounded-lg hover:bg-violet-500/30 transition-colors"
+          >
+            {(status) =>
+              status === 'unsupported'
+                ? 'VR: headset required'
+                : status === 'entered'
+                  ? 'Exit VR'
+                  : 'Enter VR'
+            }
+          </XRButton>
           <button
             onClick={() => window.location.href = '/'}
             className="px-4 py-2 bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 rounded-lg hover:bg-cyan-500/30 transition-colors"
@@ -745,28 +861,30 @@ export default function QSVStreet() {
         </div>
         
         <Canvas
-          camera={{ 
-            position: [0, 1.7, 10], 
+          camera={{
+            position: [0, 1.7, 10],
             fov: 75,
             near: 0.1,
             far: 100
           }}
           style={{ background: 'linear-gradient(to bottom, #000011 0%, #0a0a2e 100%)' }}
         >
-          <Suspense fallback={null}>
-            <StreetScene />
-            {/* Post-processing effects temporarily disabled for compatibility */}
-            {/* <EffectComposer>
-              <Bloom
-                intensity={0.5}
-                luminanceThreshold={0.2}
-                luminanceSmoothing={0.9}
-              />
-              <ChromaticAberration
-                offset={[0.001, 0.001]}
-              />
-            </EffectComposer> */}
-          </Suspense>
+          <XR referenceSpace="local-floor">
+            <Suspense fallback={null}>
+              <StreetScene />
+              {/* Post-processing effects temporarily disabled for compatibility */}
+              {/* <EffectComposer>
+                <Bloom
+                  intensity={0.5}
+                  luminanceThreshold={0.2}
+                  luminanceSmoothing={0.9}
+                />
+                <ChromaticAberration
+                  offset={[0.001, 0.001]}
+                />
+              </EffectComposer> */}
+            </Suspense>
+          </XR>
         </Canvas>
       </div>
     </>

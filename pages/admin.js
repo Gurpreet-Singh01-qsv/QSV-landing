@@ -23,9 +23,9 @@ export default function Admin() {
   const [sortOrder, setSortOrder] = useState('desc')
 
   useEffect(() => {
-    // Check if already authenticated
-    const authStatus = localStorage.getItem('qsv-admin-auth')
-    if (authStatus === 'true') {
+    // Check if already authenticated (token validity is enforced server-side)
+    const token = localStorage.getItem('qsv-admin-token')
+    if (token) {
       setIsAuthenticated(true)
       fetchEmails()
     } else {
@@ -46,9 +46,9 @@ export default function Admin() {
       
       const result = await response.json()
       
-      if (result.success) {
+      if (result.success && result.token) {
         setIsAuthenticated(true)
-        localStorage.setItem('qsv-admin-auth', 'true')
+        localStorage.setItem('qsv-admin-token', result.token)
         fetchEmails()
       } else {
         setAuthError('Invalid password')
@@ -60,16 +60,26 @@ export default function Admin() {
 
   const handleLogout = () => {
     setIsAuthenticated(false)
-    localStorage.removeItem('qsv-admin-auth')
+    localStorage.removeItem('qsv-admin-token')
     setPassword('')
   }
 
   const fetchEmails = async () => {
     setLoading(true)
     try {
-      const response = await fetch('/api/admin/emails')
+      const token = localStorage.getItem('qsv-admin-token')
+      const response = await fetch('/api/admin/emails', {
+        headers: { Authorization: `Bearer ${token}` }
+      })
+
+      if (response.status === 401) {
+        // Token expired or invalid — force re-login
+        handleLogout()
+        return
+      }
+
       const result = await response.json()
-      
+
       if (result.success) {
         setEmails(result.data)
         calculateStats(result.data)
