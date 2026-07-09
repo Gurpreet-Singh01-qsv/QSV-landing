@@ -29,11 +29,16 @@ export default function AssistantChat({ open, onClose }) {
     setInput('')
     setMessages((m) => [...m, { role: 'user', text: q }])
     setThinking(true)
-    // Small artificial delay so the exchange reads naturally in a demo
-    await new Promise((r) => setTimeout(r, 450))
-    const res = await answer(q)
-    setMessages((m) => [...m, { role: 'assistant', text: res.reply, products: res.products || [] }])
-    setThinking(false)
+    try {
+      // Small artificial delay so the exchange reads naturally in a demo
+      await new Promise((r) => setTimeout(r, 450))
+      const res = await answer(q)
+      setMessages((m) => [...m, { role: 'assistant', text: res.reply, products: res.products || [] }])
+    } catch (err) {
+      setMessages((m) => [...m, { role: 'assistant', text: 'Something glitched on my end — ask me that again?', products: [] }])
+    } finally {
+      setThinking(false)
+    }
   }
 
   return (

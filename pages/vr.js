@@ -803,8 +803,18 @@ export default function QSVStreet() {
   const [activeProduct, setActiveProduct] = useState(null)
   const [cartOpen, setCartOpen] = useState(false)
   const [aiOpen, setAiOpen] = useState(false)
+  const [nearProduct, setNearProduct] = useState(null) // product shopper is standing near
+  const [isLocked, setIsLocked] = useState(false) // pointer-lock (walk mode) state
+  const [toast, setToast] = useState('')
   const nearProductId = useRef(null)
+  const toastTimer = useRef(null)
   const { count } = useCart()
+
+  const showToast = (msg) => {
+    setToast(msg)
+    clearTimeout(toastTimer.current)
+    toastTimer.current = setTimeout(() => setToast(''), 2500)
+  }
 
   useEffect(() => {
     setIsClient(true)
@@ -815,31 +825,54 @@ export default function QSVStreet() {
     return () => clearTimeout(timer)
   }, [])
 
-  // Track which product the shopper is standing near, and open it on E
+  // Track which product the shopper is standing near; open it with E or click.
+  // Every path gives visible feedback — nothing fails silently.
   useEffect(() => {
+    const openNearProduct = () => {
+      const product = nearProductId.current && getProduct(nearProductId.current)
+      if (product) {
+        document.exitPointerLock?.()
+        setActiveProduct(product)
+        return true
+      }
+      return false
+    }
+
     const onNear = (e) => {
       const { id, near } = e.detail
-      if (near) nearProductId.current = id
-      else if (nearProductId.current === id) nearProductId.current = null
+      if (near) {
+        nearProductId.current = id
+        setNearProduct(getProduct(id))
+      } else if (nearProductId.current === id) {
+        nearProductId.current = null
+        setNearProduct(null)
+      }
     }
 
     const onKey = (e) => {
       // Ignore keystrokes aimed at form fields (e.g. the AI chat input)
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
-      if (e.code === 'KeyE' && nearProductId.current) {
-        const product = getProduct(nearProductId.current)
-        if (product) {
-          document.exitPointerLock?.()
-          setActiveProduct(product)
-        }
+      if (e.code === 'KeyE' && !openNearProduct()) {
+        showToast('Walk closer to a product to inspect it')
       }
     }
 
+    // Clicking while in walk mode also inspects the nearby product
+    const onMouseDown = () => {
+      if (document.pointerLockElement) openNearProduct()
+    }
+
+    const onLockChange = () => setIsLocked(!!document.pointerLockElement)
+
     window.addEventListener('qsv:near-product', onNear)
     document.addEventListener('keydown', onKey)
+    document.addEventListener('mousedown', onMouseDown)
+    document.addEventListener('pointerlockchange', onLockChange)
     return () => {
       window.removeEventListener('qsv:near-product', onNear)
       document.removeEventListener('keydown', onKey)
+      document.removeEventListener('mousedown', onMouseDown)
+      document.removeEventListener('pointerlockchange', onLockChange)
     }
   }, [])
 
@@ -899,6 +932,34 @@ export default function QSVStreet() {
             </p>
           </div>
         </div>
+
+        {/* Walk-mode overlays: crosshair, ESC hint, product prompt, toast */}
+        {isLocked && (
+          <>
+            <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-1.5 h-1.5 rounded-full bg-cyan-300/90 shadow shadow-cyan-400" />
+            <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-sm border border-cyan-400/20 rounded-lg px-4 py-1.5">
+              <p className="text-cyan-300/80 text-xs">Press <span className="text-white font-semibold">ESC</span> to free your cursor for Cart &amp; QSV AI</p>
+            </div>
+          </>
+        )}
+        {nearProduct && !activeProduct && (
+          <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10 animate-pulse">
+            <div className="bg-black/80 backdrop-blur-sm border border-cyan-400/60 rounded-xl px-6 py-3 text-center">
+              <p className="text-white font-semibold">
+                <span className="inline-block w-6 h-6 mr-2 text-center leading-6 bg-cyan-500/30 border border-cyan-300 rounded text-cyan-200 text-sm">E</span>
+                View {nearProduct.name}
+              </p>
+              <p className="text-cyan-300/60 text-xs mt-0.5">or click</p>
+            </div>
+          </div>
+        )}
+        {toast && (
+          <div className="absolute bottom-24 left-1/2 -translate-x-1/2 z-10">
+            <div className="bg-black/80 backdrop-blur-sm border border-yellow-400/50 rounded-lg px-5 py-2">
+              <p className="text-yellow-200 text-sm">{toast}</p>
+            </div>
+          </div>
+        )}
 
         {/* Shopping HUD: AI assistant (bottom-left) and cart (bottom-right) */}
         <div className="absolute bottom-4 left-4 z-10">
