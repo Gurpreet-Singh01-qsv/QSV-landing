@@ -1,11 +1,11 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { PointerLockControls, Text, Box, Plane } from '@react-three/drei'
+import { PointerLockControls, Text, Box, Plane, Environment } from '@react-three/drei'
 import { XR, Controllers, Hands, XRButton, useXR } from '@react-three/xr'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import * as THREE from 'three'
-import ProductModel from '../components/products/ProductModel'
+import ProductModel, { ScanErrorBoundary } from '../components/products/ProductModel'
 import ProductModal from '../components/shop/ProductModal'
 import CartDrawer from '../components/shop/CartDrawer'
 import AssistantChat from '../components/shop/AssistantChat'
@@ -607,7 +607,14 @@ function ProductDisplay({ position, product, storeColor }) {
 
       {/* Rotating product model */}
       <group ref={productRef}>
-        <ProductModel type={product.model} color={product.color} />
+        <ProductModel
+          type={product.model}
+          color={product.color}
+          modelUrl={product.modelUrl}
+          modelScale={product.modelScale}
+          modelYOffset={product.modelYOffset}
+          modelRotationY={product.modelRotationY}
+        />
       </group>
 
       {showInfo && (
@@ -718,6 +725,12 @@ function StreetScene() {
         castShadow
       />
       <fog attach="fog" args={['#000011', 8, 30]} />
+
+      {/* HDR image-based lighting — makes PBR materials (esp. digitized scans) read as real.
+          Wrapped so a failed HDR fetch degrades to the existing lights, never a crash. */}
+      <ScanErrorBoundary fallback={null}>
+        <Environment files="/hdr/street.hdr" />
+      </ScanErrorBoundary>
       
       {/* Environment */}
       <Street />

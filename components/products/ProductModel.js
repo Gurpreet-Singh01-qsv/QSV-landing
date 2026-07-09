@@ -1,6 +1,39 @@
-// Procedural 3D product models for QSV Street storefronts.
-// All models are built from primitives, sized to fit a ~0.8 unit display slot,
-// and take an accent color to match their store's branding.
+// Product model renderer for QSV Street storefronts.
+//
+// Two sources, one pipeline:
+//  1. Digitized assets — real GLTF/GLB scans (photogrammetry or brand-supplied
+//     3D files) referenced by `modelUrl` in the catalog. This is the QSV
+//     digitization moat: any brand asset drops in and is instantly shoppable.
+//  2. Procedural fallbacks — stylized primitive models used while a scan
+//     loads, or for products that haven't been digitized yet.
+
+import { Component, Suspense, useMemo } from 'react'
+import { useGLTF } from '@react-three/drei'
+
+function DigitizedModel({ url, scale = 1, yOffset = 0, rotationY = 0 }) {
+  const { scene } = useGLTF(url)
+  // Clone so the same cached scan can appear in multiple displays
+  const model = useMemo(() => scene.clone(true), [scene])
+  return <primitive object={model} scale={scale} position={[0, yOffset, 0]} rotation={[0, rotationY, 0]} />
+}
+
+// If a scan fails to load (bad URL, network), fall back to the stylized model
+// instead of crashing the scene.
+export class ScanErrorBoundary extends Component {
+  constructor(props) {
+    super(props)
+    this.state = { failed: false }
+  }
+  static getDerivedStateFromError() {
+    return { failed: true }
+  }
+  componentDidCatch(err) {
+    console.warn('Digitized model failed to load, using fallback:', err.message)
+  }
+  render() {
+    return this.state.failed ? this.props.fallback : this.props.children
+  }
+}
 
 function Sneaker({ color }) {
   return (
@@ -265,7 +298,18 @@ const MODELS = {
   jacket: Jacket
 }
 
-export default function ProductModel({ type, color = '#44d7ff' }) {
-  const Model = MODELS[type] || Chip
-  return <Model color={color} />
+export default function ProductModel({ type, color = '#44d7ff', modelUrl, modelScale, modelYOffset, modelRotationY }) {
+  const Procedural = MODELS[type] || Chip
+
+  if (modelUrl) {
+    return (
+      <ScanErrorBoundary fallback={<Procedural color={color} />}>
+        <Suspense fallback={<Procedural color={color} />}>
+          <DigitizedModel url={modelUrl} scale={modelScale} yOffset={modelYOffset} rotationY={modelRotationY} />
+        </Suspense>
+      </ScanErrorBoundary>
+    )
+  }
+
+  return <Procedural color={color} />
 }

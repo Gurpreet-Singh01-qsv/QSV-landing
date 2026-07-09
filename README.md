@@ -42,3 +42,10 @@ Experience **QSV Street** - a first-person explorable futuristic shopping distri
 
 ## Deployed on
 [Vercel](https://qsv-landing.vercel.app)
+
+## Asset credits
+- `public/models/cyber-sneaker.glb` — "Materials Variants Shoe" by Shopify, from the
+  [Khronos glTF Sample Models](https://github.com/KhronosGroup/glTF-Sample-Models)
+  repository, licensed [CC BY 4.0](https://creativecommons.org/licenses/by/4.0/).
+- `public/hdr/street.hdr` — "Potsdamer Platz" HDRI from [Poly Haven](https://polyhaven.com),
+  licensed CC0.
