@@ -1,11 +1,12 @@
 import "../styles/globals.css";
 import Head from "next/head";
+import { CartProvider } from "../components/cart/CartContext";
 
 export default function App({ Component, pageProps }) {
   return (
-    <>
+    <CartProvider>
       <Head>
-        <title>QSV - Quantum Speed Ventures</title>
+        <title>QSV - Quantum Shopping Verse</title>
         <meta name="viewport" content="width=device-width, initial-scale=1" />
         {/* Global Favicon - QSV Logo */}
         <link rel="icon" href="/images/qsv-logo-merged.png" type="image/png" />
@@ -36,6 +37,6 @@ export default function App({ Component, pageProps }) {
         )}
       </Head>
       <Component {...pageProps} />
-    </>
+    </CartProvider>
   );
 }

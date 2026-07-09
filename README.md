@@ -1,7 +1,11 @@
-# QSV – Shop the Multiverse
+# QSV – Quantum Shopping Verse
 
-🚀 The future of shopping is here.  
-QSV is an immersive VR shopping experience built with Next.js and React Three Fiber.
+🚀 The future of shopping is here.
+QSV is an immersive, AI-assisted shopping platform built with Next.js and React Three Fiber.
+Walk a virtual shopping street, inspect 3D products, compare across retailers, ask the
+built-in AI assistant, and check out — in the browser or a VR headset.
+
+**Investor demo script:** see [DEMO.md](./DEMO.md)
 
 ## ✨ QSV Street Experience
 

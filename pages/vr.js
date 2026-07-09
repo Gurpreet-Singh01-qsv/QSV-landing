@@ -6,6 +6,11 @@ import { Suspense, useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
 import * as THREE from 'three'
 import ProductModel from '../components/products/ProductModel'
+import ProductModal from '../components/shop/ProductModal'
+import CartDrawer from '../components/shop/CartDrawer'
+import AssistantChat from '../components/shop/AssistantChat'
+import { useCart } from '../components/cart/CartContext'
+import { getProduct, getProductsByStore, STORES } from '../lib/products'
 
 // World-space collision check shared by desktop and VR movement
 function checkCollision(position) {
@@ -158,7 +163,7 @@ function VRLocomotion() {
   // Spawn the player rig where the desktop camera starts
   useEffect(() => {
     if (isPresenting) {
-      player.position.set(0, 0, 10)
+      player.position.set(0, 0, 18)
       player.rotation.set(0, 0, 0)
     }
   }, [isPresenting, player])
@@ -569,6 +574,18 @@ function ProductDisplay({ position, product, storeColor }) {
 
     setShowInfo(headPos.current.distanceTo(productPos.current) < 4)
   })
+
+  // Tell the HUD which product the shopper is standing near (for the E-key interaction)
+  useEffect(() => {
+    window.dispatchEvent(
+      new CustomEvent('qsv:near-product', { detail: { id: product.id, near: showInfo } })
+    )
+    return () => {
+      window.dispatchEvent(
+        new CustomEvent('qsv:near-product', { detail: { id: product.id, near: false } })
+      )
+    }
+  }, [showInfo, product.id])
   
   useFrame((state) => {
     if (productRef.current) {
@@ -632,7 +649,7 @@ function ProductDisplay({ position, product, storeColor }) {
             anchorX="center"
             anchorY="middle"
           >
-            Enter Waitlist
+            Press E for details
           </Text>
         </group>
       )}
@@ -680,52 +697,15 @@ function StreetLights() {
 
 // Main Street Scene
 function StreetScene() {
-  const storefronts = [
-    {
-      position: [-12, 0, -8],
-      brand: "NEXUS",
-      color: "#44d7ff",
-      accentColor: "#00ff88",
-      products: [
-        { name: "Neural Interface", price: 2499, color: "#44d7ff", model: "headset" },
-        { name: "Quantum Processor", price: 1899, color: "#00ff88", model: "chip" },
-        { name: "Holo Display", price: 999, color: "#44d7ff", model: "screen" }
-      ]
-    },
-    {
-      position: [12, 0, -8],
-      brand: "VORTEX",
-      color: "#9b6cff",
-      accentColor: "#ff6b9d",
-      products: [
-        { name: "Gravity Boots", price: 799, color: "#9b6cff", model: "sneaker" },
-        { name: "Phase Jacket", price: 1299, color: "#ff6b9d", model: "jacket" },
-        { name: "Time Watch", price: 3499, color: "#9b6cff", model: "watch" }
-      ]
-    },
-    {
-      position: [-12, 0, 5],
-      brand: "FLUX",
-      color: "#00ff88",
-      accentColor: "#44d7ff",
-      products: [
-        { name: "Energy Drink", price: 29, color: "#00ff88", model: "can" },
-        { name: "Nano Pills", price: 199, color: "#44d7ff", model: "can" },
-        { name: "Bio Scanner", price: 899, color: "#00ff88", model: "chip" }
-      ]
-    },
-    {
-      position: [12, 0, 5],
-      brand: "APEX",
-      color: "#ff6b9d",
-      accentColor: "#9b6cff",
-      products: [
-        { name: "Cyber Sneakers", price: 599, color: "#ff6b9d", model: "sneaker" },
-        { name: "Smart Lens", price: 1499, color: "#9b6cff", model: "screen" },
-        { name: "Voice Mod", price: 399, color: "#ff6b9d", model: "headset" }
-      ]
-    }
-  ]
+  // Store positions in the street; products come from the unified catalog
+  const storePositions = { NEXUS: [-12, 0, -8], VORTEX: [12, 0, -8], FLUX: [-12, 0, 5], APEX: [12, 0, 5] }
+  const storefronts = Object.entries(storePositions).map(([brand, position]) => ({
+    position,
+    brand,
+    color: STORES[brand].color,
+    accentColor: STORES[brand].accentColor,
+    products: getProductsByStore(brand)
+  }))
   
   return (
     <>
@@ -768,8 +748,8 @@ function Effects() {
   return (
     <EffectComposer>
       <Bloom
-        intensity={0.6}
-        luminanceThreshold={0.2}
+        intensity={0.45}
+        luminanceThreshold={0.4}
         luminanceSmoothing={0.9}
         mipmapBlur
       />
@@ -820,7 +800,12 @@ export default function QSVStreet() {
   const [isLoading, setIsLoading] = useState(true)
   const [isClient, setIsClient] = useState(false)
   const [showInstructions, setShowInstructions] = useState(true)
-  
+  const [activeProduct, setActiveProduct] = useState(null)
+  const [cartOpen, setCartOpen] = useState(false)
+  const [aiOpen, setAiOpen] = useState(false)
+  const nearProductId = useRef(null)
+  const { count } = useCart()
+
   useEffect(() => {
     setIsClient(true)
     const timer = setTimeout(() => {
@@ -829,6 +814,39 @@ export default function QSVStreet() {
     }, 3000)
     return () => clearTimeout(timer)
   }, [])
+
+  // Track which product the shopper is standing near, and open it on E
+  useEffect(() => {
+    const onNear = (e) => {
+      const { id, near } = e.detail
+      if (near) nearProductId.current = id
+      else if (nearProductId.current === id) nearProductId.current = null
+    }
+
+    const onKey = (e) => {
+      // Ignore keystrokes aimed at form fields (e.g. the AI chat input)
+      if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
+      if (e.code === 'KeyE' && nearProductId.current) {
+        const product = getProduct(nearProductId.current)
+        if (product) {
+          document.exitPointerLock?.()
+          setActiveProduct(product)
+        }
+      }
+    }
+
+    window.addEventListener('qsv:near-product', onNear)
+    document.addEventListener('keydown', onKey)
+    return () => {
+      window.removeEventListener('qsv:near-product', onNear)
+      document.removeEventListener('keydown', onKey)
+    }
+  }, [])
+
+  const openOverlay = (setter) => {
+    document.exitPointerLock?.()
+    setter(true)
+  }
   
   if (!isClient) {
     return (
@@ -872,19 +890,48 @@ export default function QSVStreet() {
         </div>
         
         <Instructions show={showInstructions} />
-        
+
         {/* Street Info */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
           <div className="bg-black/60 backdrop-blur-sm border border-cyan-400/30 rounded-lg px-6 py-3">
             <p className="text-cyan-300 text-sm text-center">
-              QSV Street • Futuristic Shopping District • Walk close to products for details
+              QSV Street • Walk up to a product and press <span className="text-white font-semibold">E</span> to shop
             </p>
           </div>
         </div>
-        
+
+        {/* Shopping HUD: AI assistant (bottom-left) and cart (bottom-right) */}
+        <div className="absolute bottom-4 left-4 z-10">
+          <button
+            onClick={() => openOverlay(setAiOpen)}
+            className="flex items-center gap-2 px-4 py-3 bg-violet-500/20 backdrop-blur-sm border border-violet-400/40 text-violet-200 rounded-xl hover:bg-violet-500/35 transition-colors"
+          >
+            <span className="w-2 h-2 rounded-full bg-violet-400 animate-pulse" />
+            <span className="font-semibold text-sm">QSV AI</span>
+          </button>
+        </div>
+        <div className="absolute bottom-4 right-4 z-10">
+          <button
+            onClick={() => openOverlay(setCartOpen)}
+            className="relative flex items-center gap-2 px-4 py-3 bg-cyan-500/20 backdrop-blur-sm border border-cyan-400/40 text-cyan-200 rounded-xl hover:bg-cyan-500/35 transition-colors"
+          >
+            <span className="font-semibold text-sm">🛒 Cart</span>
+            {count > 0 && (
+              <span className="absolute -top-2 -right-2 w-6 h-6 flex items-center justify-center text-xs font-bold text-white bg-gradient-to-r from-cyan-500 to-violet-500 rounded-full">
+                {count}
+              </span>
+            )}
+          </button>
+        </div>
+
+        {/* Shopping overlays */}
+        <ProductModal product={activeProduct} onClose={() => setActiveProduct(null)} />
+        <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
+        <AssistantChat open={aiOpen} onClose={() => setAiOpen(false)} />
+
         <Canvas
           camera={{
-            position: [0, 1.7, 10],
+            position: [0, 1.7, 18],
             fov: 75,
             near: 0.1,
             far: 100
