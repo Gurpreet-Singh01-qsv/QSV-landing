@@ -62,8 +62,8 @@ Add the rival product too. Close the panel.
 
 ### 4. AI assistant (45s)
 
-Click **QSV AI** (bottom-left). Click the **"Gift ideas under $500"** chip,
-or type a question live.
+Press **Q** (or click **QSV AI** bottom-left). Click the **"Gift ideas under
+$500"** chip, or type a question live.
 
 > "Every shopper gets a personal AI that knows the entire catalog across all
 > retailers. It recommends, compares, and adds to cart — this becomes the

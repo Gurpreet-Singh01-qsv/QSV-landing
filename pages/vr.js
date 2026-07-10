@@ -1,8 +1,8 @@
 import { Canvas, useFrame, useThree } from '@react-three/fiber'
-import { PointerLockControls, Text, Box, Plane, Environment } from '@react-three/drei'
+import { PointerLockControls, Text, Box, Plane, Environment, PerformanceMonitor } from '@react-three/drei'
 import { XR, Controllers, Hands, XRButton, useXR } from '@react-three/xr'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
-import { Suspense, useState, useEffect, useRef } from 'react'
+import { Suspense, useState, useEffect, useRef, useMemo } from 'react'
 import Head from 'next/head'
 import { useRouter } from 'next/router'
 import * as THREE from 'three'
@@ -240,13 +240,13 @@ function VRLocomotion() {
 }
 
 // Rain Effect
-function RainEffect() {
+function RainEffect({ count = 600 }) {
   const rainRef = useRef()
   const raindrops = useRef([])
-  
+
   useEffect(() => {
     const drops = []
-    for (let i = 0; i < 800; i++) {
+    for (let i = 0; i < count; i++) {
       drops.push({
         x: (Math.random() - 0.5) * 60,
         y: Math.random() * 25 + 15,
@@ -257,14 +257,15 @@ function RainEffect() {
       })
     }
     raindrops.current = drops
-  }, [])
-  
+  }, [count])
+
   useFrame((state) => {
     if (!rainRef.current) return
     
     const time = state.clock.getElapsedTime()
     
     raindrops.current.forEach((drop, i) => {
+      if (i >= count) return
       drop.y -= drop.speed
       // Add slight wind effect
       drop.x = drop.originalX + Math.sin(time * 0.5 + i * 0.01) * 0.5
@@ -287,19 +288,20 @@ function RainEffect() {
     rainRef.current.geometry.attributes.position.needsUpdate = true
   })
   
-  const positions = new Float32Array(800 * 3)
+  const positions = new Float32Array(count * 3)
   raindrops.current.forEach((drop, i) => {
+    if (i >= count) return
     positions[i * 3] = drop.x
     positions[i * 3 + 1] = drop.y
     positions[i * 3 + 2] = drop.z
   })
-  
+
   return (
-    <points ref={rainRef}>
+    <points ref={rainRef} key={count}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={800}
+          count={count}
           array={positions}
           itemSize={3}
         />
@@ -316,13 +318,13 @@ function RainEffect() {
 }
 
 // Atmospheric Particles (dust, mist)
-function AtmosphericParticles() {
+function AtmosphericParticles({ count = 150 }) {
   const particlesRef = useRef()
   const particles = useRef([])
-  
+
   useEffect(() => {
     const particleArray = []
-    for (let i = 0; i < 200; i++) {
+    for (let i = 0; i < count; i++) {
       particleArray.push({
         x: (Math.random() - 0.5) * 40,
         y: Math.random() * 8 + 1,
@@ -334,14 +336,15 @@ function AtmosphericParticles() {
       })
     }
     particles.current = particleArray
-  }, [])
-  
+  }, [count])
+
   useFrame((state) => {
     if (!particlesRef.current) return
-    
+
     const time = state.clock.getElapsedTime()
-    
+
     particles.current.forEach((particle, i) => {
+      if (i >= count) return
       particle.x += particle.speedX
       particle.y += particle.speedY
       particle.z += particle.speedZ
@@ -364,19 +367,20 @@ function AtmosphericParticles() {
     particlesRef.current.geometry.attributes.position.needsUpdate = true
   })
   
-  const positions = new Float32Array(200 * 3)
+  const positions = new Float32Array(count * 3)
   particles.current.forEach((particle, i) => {
+    if (i >= count) return
     positions[i * 3] = particle.x
     positions[i * 3 + 1] = particle.y
     positions[i * 3 + 2] = particle.z
   })
-  
+
   return (
-    <points ref={particlesRef}>
+    <points ref={particlesRef} key={count}>
       <bufferGeometry>
         <bufferAttribute
           attach="attributes-position"
-          count={200}
+          count={count}
           array={positions}
           itemSize={3}
         />
@@ -474,16 +478,16 @@ function Storefront({ position, brand, color, accentColor, products }) {
   const [hovered, setHovered] = useState(false)
   const storeRef = useRef()
   
-  useFrame((state) => {
-    if (storeRef.current) {
-      const intensity = hovered ? 1.2 : 0.8
-      storeRef.current.children.forEach(child => {
-        if (child.material && child.material.emissive) {
-          child.material.emissiveIntensity = intensity
-        }
-      })
-    }
-  })
+  // Set emissive intensity once per hover change instead of every frame
+  useEffect(() => {
+    if (!storeRef.current) return
+    const intensity = hovered ? 1.2 : 0.8
+    storeRef.current.children.forEach(child => {
+      if (child.material && child.material.emissive) {
+        child.material.emissiveIntensity = intensity
+      }
+    })
+  }, [hovered])
   
   return (
     <group 
@@ -562,31 +566,14 @@ function Storefront({ position, brand, color, accentColor, products }) {
 function ProductDisplay({ position, product, storeColor }) {
   const [showInfo, setShowInfo] = useState(false)
   const productRef = useRef()
-  const { camera } = useThree()
-  const headPos = useRef(new THREE.Vector3())
-  const productPos = useRef(new THREE.Vector3())
 
-  useFrame(() => {
-    if (!productRef.current) return
-
-    // World positions so this works both on desktop and inside the XR player rig
-    camera.getWorldPosition(headPos.current)
-    productRef.current.getWorldPosition(productPos.current)
-
-    setShowInfo(headPos.current.distanceTo(productPos.current) < 4)
-  })
-
-  // Tell the HUD which product the shopper is standing near (for the E-key interaction)
+  // The ProximityTracker broadcasts the single nearest product; this display
+  // lights up only when it's the one.
   useEffect(() => {
-    window.dispatchEvent(
-      new CustomEvent('qsv:near-product', { detail: { id: product.id, near: showInfo } })
-    )
-    return () => {
-      window.dispatchEvent(
-        new CustomEvent('qsv:near-product', { detail: { id: product.id, near: false } })
-      )
-    }
-  }, [showInfo, product.id])
+    const onNearest = (e) => setShowInfo(e.detail.id === product.id)
+    window.addEventListener('qsv:nearest-product', onNearest)
+    return () => window.removeEventListener('qsv:nearest-product', onNearest)
+  }, [product.id])
   
   useFrame((state) => {
     if (productRef.current) {
@@ -670,6 +657,8 @@ function StreetLights() {
   return (
     <group>
       {/* Street Lamps */}
+      {/* Lamp posts on both sides, but only one light per row (alternating sides)
+          — halves the light count, which is the main fragment-shader cost */}
       {[-10, -5, 0, 5, 10].map((z, index) => (
         <group key={index}>
           {/* Left Side */}
@@ -677,30 +666,80 @@ function StreetLights() {
             <Box args={[0.2, 8, 0.2]} position={[0, 4, 0]}>
               <meshStandardMaterial color="#333333" />
             </Box>
-            <pointLight
-              position={[0, 7, 0]}
-              intensity={2}
-              distance={15}
-              color="#44d7ff"
-            />
+            {index % 2 === 0 && (
+              <pointLight
+                position={[0, 7, 0]}
+                intensity={2.5}
+                distance={18}
+                color="#44d7ff"
+              />
+            )}
           </group>
-          
+
           {/* Right Side */}
           <group position={[12, 0, z]}>
             <Box args={[0.2, 8, 0.2]} position={[0, 4, 0]}>
               <meshStandardMaterial color="#333333" />
             </Box>
-            <pointLight
-              position={[0, 7, 0]}
-              intensity={2}
-              distance={15}
-              color="#9b6cff"
-            />
+            {index % 2 === 1 && (
+              <pointLight
+                position={[0, 7, 0]}
+                intensity={2.5}
+                distance={18}
+                color="#9b6cff"
+              />
+            )}
           </group>
         </group>
       ))}
     </group>
   )
+}
+
+// Tracks which product the shopper is closest to (one loop for the whole
+// street — replaces per-product distance checks). Radius 5.5 so products in
+// the near-side stores (FLUX/APEX), which sit ~4.4m behind their collision
+// wall, are reachable.
+function ProximityTracker({ storefronts }) {
+  const { camera } = useThree()
+  const nearestRef = useRef(null)
+  const head = useRef(new THREE.Vector3())
+
+  const productPositions = useMemo(() => {
+    const list = []
+    storefronts.forEach((store) => {
+      store.products.forEach((p, i) => {
+        list.push({
+          id: p.id,
+          pos: new THREE.Vector3(
+            store.position[0] + (i - store.products.length / 2 + 0.5) * 2,
+            1.5,
+            store.position[2] + 1.4
+          )
+        })
+      })
+    })
+    return list
+  }, [storefronts])
+
+  useFrame(() => {
+    camera.getWorldPosition(head.current)
+    let best = null
+    let bestDistance = 5.5
+    for (const { id, pos } of productPositions) {
+      const d = head.current.distanceTo(pos)
+      if (d < bestDistance) {
+        bestDistance = d
+        best = id
+      }
+    }
+    if (best !== nearestRef.current) {
+      nearestRef.current = best
+      window.dispatchEvent(new CustomEvent('qsv:nearest-product', { detail: { id: best } }))
+    }
+  })
+
+  return null
 }
 
 // Glowing beacon above storefronts that stock the active verse's category
@@ -735,25 +774,31 @@ function VerseBeacon({ position, color }) {
 
 // Main Street Scene
 function StreetScene({ verse }) {
+  // Drops effects and particle counts automatically if the device can't hold frame rate
+  const [degraded, setDegraded] = useState(false)
+
   // Store positions in the street; products come from the unified catalog
-  const storePositions = { NEXUS: [-12, 0, -8], VORTEX: [12, 0, -8], FLUX: [-12, 0, 5], APEX: [12, 0, 5] }
-  const storefronts = Object.entries(storePositions).map(([brand, position]) => ({
-    position,
-    brand,
-    color: STORES[brand].color,
-    accentColor: STORES[brand].accentColor,
-    products: getProductsByStore(brand)
-  }))
-  
+  const storefronts = useMemo(() => {
+    const storePositions = { NEXUS: [-12, 0, -8], VORTEX: [12, 0, -8], FLUX: [-12, 0, 5], APEX: [12, 0, 5] }
+    return Object.entries(storePositions).map(([brand, position]) => ({
+      position,
+      brand,
+      color: STORES[brand].color,
+      accentColor: STORES[brand].accentColor,
+      products: getProductsByStore(brand)
+    }))
+  }, [])
+
   return (
     <>
+      <PerformanceMonitor onDecline={() => setDegraded(true)} />
+
       {/* Lighting */}
       <ambientLight intensity={0.15} color="#0a0a2e" />
       <directionalLight
         position={[10, 20, 5]}
         intensity={0.3}
         color="#44d7ff"
-        castShadow
       />
       <fog attach="fog" args={['#000011', 8, 30]} />
 
@@ -762,14 +807,14 @@ function StreetScene({ verse }) {
       <ScanErrorBoundary fallback={null}>
         <Environment files="/hdr/street.hdr" />
       </ScanErrorBoundary>
-      
+
       {/* Environment */}
       <Street />
       <StreetLights />
-      <RainEffect />
-      <AtmosphericParticles />
+      <RainEffect count={degraded ? 250 : 600} />
+      <AtmosphericParticles count={degraded ? 60 : 150} />
       <CollisionBoxes />
-      
+
       {/* Storefronts */}
       {storefronts.map((store, index) => (
         <Storefront key={index} {...store} />
@@ -782,11 +827,15 @@ function StreetScene({ verse }) {
           <VerseBeacon key={`beacon-${store.brand}`} position={store.position} color={store.color} />
         ))}
 
-      {/* Controls */}
+      {/* Controls + interaction */}
+      <ProximityTracker storefronts={storefronts} />
       <FPSControls />
       <VRLocomotion />
       <Controllers />
       <Hands />
+
+      {/* Bloom is the first thing to go on weak GPUs */}
+      {!degraded && <Effects />}
     </>
   )
 }
@@ -839,9 +888,10 @@ function Instructions({ show }) {
         <p><span className="text-cyan-300">Click</span> to enter first-person mode</p>
         <p><span className="text-cyan-300">WASD</span> to move around</p>
         <p><span className="text-cyan-300">Mouse</span> to look around</p>
+        <p><span className="text-cyan-300">E</span> near a product to shop it</p>
+        <p><span className="text-cyan-300">Q</span> for QSV AI · <span className="text-cyan-300">C</span> for cart</p>
         <p><span className="text-cyan-300">ESC</span> to exit first-person mode</p>
         <p className="mt-2"><span className="text-violet-300">VR headset:</span> click Enter VR, left stick to move, right stick to turn</p>
-        <p className="text-cyan-300/60 text-xs mt-2">Walk close to products to see details</p>
       </div>
     </div>
   )
@@ -902,15 +952,10 @@ export default function QSVStreet() {
       return false
     }
 
-    const onNear = (e) => {
-      const { id, near } = e.detail
-      if (near) {
-        nearProductId.current = id
-        setNearProduct(getProduct(id))
-      } else if (nearProductId.current === id) {
-        nearProductId.current = null
-        setNearProduct(null)
-      }
+    const onNearest = (e) => {
+      const { id } = e.detail
+      nearProductId.current = id
+      setNearProduct(id ? getProduct(id) : null)
     }
 
     const onKey = (e) => {
@@ -918,6 +963,15 @@ export default function QSVStreet() {
       if (e.target instanceof HTMLInputElement || e.target instanceof HTMLTextAreaElement) return
       if (e.code === 'KeyE' && !openNearProduct()) {
         showToast('Walk closer to a product to inspect it')
+      }
+      // Q and C work even while the mouse is pointer-locked
+      if (e.code === 'KeyQ') {
+        document.exitPointerLock?.()
+        setAiOpen(true)
+      }
+      if (e.code === 'KeyC') {
+        document.exitPointerLock?.()
+        setCartOpen(true)
       }
     }
 
@@ -928,12 +982,12 @@ export default function QSVStreet() {
 
     const onLockChange = () => setIsLocked(!!document.pointerLockElement)
 
-    window.addEventListener('qsv:near-product', onNear)
+    window.addEventListener('qsv:nearest-product', onNearest)
     document.addEventListener('keydown', onKey)
     document.addEventListener('mousedown', onMouseDown)
     document.addEventListener('pointerlockchange', onLockChange)
     return () => {
-      window.removeEventListener('qsv:near-product', onNear)
+      window.removeEventListener('qsv:nearest-product', onNearest)
       document.removeEventListener('keydown', onKey)
       document.removeEventListener('mousedown', onMouseDown)
       document.removeEventListener('pointerlockchange', onLockChange)
@@ -1013,7 +1067,9 @@ export default function QSVStreet() {
           <>
             <div className="absolute top-1/2 left-1/2 -translate-x-1/2 -translate-y-1/2 z-10 w-1.5 h-1.5 rounded-full bg-cyan-300/90 shadow shadow-cyan-400" />
             <div className="absolute top-4 left-1/2 -translate-x-1/2 z-10 bg-black/60 backdrop-blur-sm border border-cyan-400/20 rounded-lg px-4 py-1.5">
-              <p className="text-cyan-300/80 text-xs">Press <span className="text-white font-semibold">ESC</span> to free your cursor for Cart &amp; QSV AI</p>
+              <p className="text-cyan-300/80 text-xs">
+                <span className="text-white font-semibold">Q</span> QSV AI · <span className="text-white font-semibold">C</span> cart · <span className="text-white font-semibold">E</span> inspect product · <span className="text-white font-semibold">ESC</span> free cursor
+              </p>
             </div>
           </>
         )}
@@ -1076,12 +1132,12 @@ export default function QSVStreet() {
             near: 0.1,
             far: 100
           }}
+          dpr={[1, 1.5]}
           style={{ background: 'linear-gradient(to bottom, #000011 0%, #0a0a2e 100%)' }}
         >
           <XR referenceSpace="local-floor">
             <Suspense fallback={null}>
               <StreetScene verse={verse} />
-              <Effects />
             </Suspense>
           </XR>
         </Canvas>
