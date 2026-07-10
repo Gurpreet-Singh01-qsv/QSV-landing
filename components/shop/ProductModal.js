@@ -1,6 +1,7 @@
 import { useState } from 'react'
 import { useCart } from '../cart/CartContext'
 import { getProductsByCategory, formatPrice, STORES } from '../../lib/products'
+import ProductInspector from './ProductInspector'
 
 // Full-screen product detail overlay used inside QSV Street.
 // Includes an instant cross-retailer comparison tab for the product's category.
@@ -8,8 +9,13 @@ export default function ProductModal({ product, onClose }) {
   const { addItem } = useCart()
   const [tab, setTab] = useState('details')
   const [added, setAdded] = useState(false)
+  const [inspecting, setInspecting] = useState(false)
 
   if (!product) return null
+
+  if (inspecting) {
+    return <ProductInspector product={product} onClose={() => setInspecting(false)} />
+  }
 
   const store = STORES[product.store]
   const rivals = getProductsByCategory(product.category).filter((p) => p.id !== product.id)
@@ -31,6 +37,15 @@ export default function ProductModal({ product, onClose }) {
             </p>
             <h2 className="text-2xl font-bold text-white mt-1">{product.name}</h2>
             <p className="text-cyan-300/70 text-sm mt-1 italic">{product.tagline}</p>
+            {product.modelUrl && (
+              <button
+                onClick={() => setInspecting(true)}
+                className="mt-2 inline-flex items-center gap-1.5 text-[11px] uppercase tracking-wider text-cyan-300 bg-cyan-500/15 border border-cyan-400/40 rounded-full px-3 py-1 hover:bg-cyan-500/30 transition-colors"
+              >
+                <span className="w-1.5 h-1.5 rounded-full bg-cyan-300 animate-pulse" />
+                Digitized by QSV — view in 360°
+              </button>
+            )}
           </div>
           <button
             onClick={onClose}

@@ -10,7 +10,7 @@
 import { Component, Suspense, useMemo } from 'react'
 import { useGLTF } from '@react-three/drei'
 
-function DigitizedModel({ url, scale = 1, yOffset = 0, rotationY = 0 }) {
+export function DigitizedModel({ url, scale = 1, yOffset = 0, rotationY = 0 }) {
   const { scene } = useGLTF(url)
   // Clone so the same cached scan can appear in multiple displays
   const model = useMemo(() => scene.clone(true), [scene])
