@@ -4,7 +4,9 @@ import { useCart } from '../cart/CartContext'
 import { formatPrice, STORES } from '../../lib/products'
 
 // QSV AI — floating shopping assistant panel.
-export default function AssistantChat({ open, onClose }) {
+// `seedQuery` (optional) is asked automatically the first time the panel opens,
+// e.g. when a shopper enters a category verse and wants a guided tour.
+export default function AssistantChat({ open, onClose, seedQuery }) {
   const { addItem } = useCart()
   const [messages, setMessages] = useState([
     {
@@ -16,10 +18,19 @@ export default function AssistantChat({ open, onClose }) {
   const [input, setInput] = useState('')
   const [thinking, setThinking] = useState(false)
   const bottomRef = useRef(null)
+  const seeded = useRef(false)
 
   useEffect(() => {
     bottomRef.current?.scrollIntoView({ behavior: 'smooth' })
   }, [messages, open])
+
+  useEffect(() => {
+    if (open && seedQuery && !seeded.current) {
+      seeded.current = true
+      send(seedQuery)
+    }
+    // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [open, seedQuery])
 
   if (!open) return null
 

@@ -4,13 +4,14 @@ import { XR, Controllers, Hands, XRButton, useXR } from '@react-three/xr'
 import { EffectComposer, Bloom } from '@react-three/postprocessing'
 import { Suspense, useState, useEffect, useRef } from 'react'
 import Head from 'next/head'
+import { useRouter } from 'next/router'
 import * as THREE from 'three'
 import ProductModel, { ScanErrorBoundary } from '../components/products/ProductModel'
 import ProductModal from '../components/shop/ProductModal'
 import CartDrawer from '../components/shop/CartDrawer'
 import AssistantChat from '../components/shop/AssistantChat'
 import { useCart } from '../components/cart/CartContext'
-import { getProduct, getProductsByStore, STORES } from '../lib/products'
+import { getProduct, getProductsByStore, getCategories, STORES } from '../lib/products'
 
 // World-space collision check shared by desktop and VR movement
 function checkCollision(position) {
@@ -702,8 +703,38 @@ function StreetLights() {
   )
 }
 
+// Glowing beacon above storefronts that stock the active verse's category
+function VerseBeacon({ position, color }) {
+  const beaconRef = useRef()
+
+  useFrame((state) => {
+    if (beaconRef.current) {
+      const t = state.clock.getElapsedTime()
+      beaconRef.current.position.y = 7.5 + Math.sin(t * 2) * 0.3
+      beaconRef.current.rotation.y = t * 1.5
+    }
+  })
+
+  return (
+    <group position={position}>
+      <group ref={beaconRef} position={[0, 7.5, 0]}>
+        <mesh>
+          <coneGeometry args={[0.5, 1, 4]} />
+          <meshStandardMaterial color={color} emissive={color} emissiveIntensity={2.5} transparent opacity={0.9} />
+        </mesh>
+      </group>
+      {/* Light pillar */}
+      <mesh position={[0, 10, 0]}>
+        <cylinderGeometry args={[0.08, 0.35, 6, 8, 1, true]} />
+        <meshBasicMaterial color={color} transparent opacity={0.15} side={THREE.DoubleSide} />
+      </mesh>
+      <pointLight position={[0, 7.5, 0]} intensity={1.5} distance={10} color={color} />
+    </group>
+  )
+}
+
 // Main Street Scene
-function StreetScene() {
+function StreetScene({ verse }) {
   // Store positions in the street; products come from the unified catalog
   const storePositions = { NEXUS: [-12, 0, -8], VORTEX: [12, 0, -8], FLUX: [-12, 0, 5], APEX: [12, 0, 5] }
   const storefronts = Object.entries(storePositions).map(([brand, position]) => ({
@@ -743,6 +774,13 @@ function StreetScene() {
       {storefronts.map((store, index) => (
         <Storefront key={index} {...store} />
       ))}
+
+      {/* Verse beacons: guide the shopper to stores stocking the chosen category */}
+      {verse && storefronts
+        .filter((store) => store.products.some((p) => p.category === verse))
+        .map((store) => (
+          <VerseBeacon key={`beacon-${store.brand}`} position={store.position} color={store.color} />
+        ))}
 
       {/* Controls */}
       <FPSControls />
@@ -822,6 +860,19 @@ export default function QSVStreet() {
   const nearProductId = useRef(null)
   const toastTimer = useRef(null)
   const { count } = useCart()
+  const router = useRouter()
+
+  // Category verse mode (?verse=Footwear): beacons + AI-guided tour
+  const verseParam = typeof router.query.verse === 'string' ? router.query.verse : null
+  const verse = verseParam && getCategories().includes(verseParam) ? verseParam : null
+
+  useEffect(() => {
+    if (verse && !isLoading) {
+      // Open the assistant with a guided tour of the chosen verse
+      const timer = setTimeout(() => setAiOpen(true), 1200)
+      return () => clearTimeout(timer)
+    }
+  }, [verse, isLoading])
 
   const showToast = (msg) => {
     setToast(msg)
@@ -937,6 +988,17 @@ export default function QSVStreet() {
         
         <Instructions show={showInstructions} />
 
+        {/* Verse banner */}
+        {verse && (
+          <div className="absolute top-16 left-1/2 -translate-x-1/2 z-10">
+            <div className="bg-black/70 backdrop-blur-sm border border-violet-400/50 rounded-xl px-6 py-2 text-center">
+              <p className="text-[10px] tracking-[0.3em] uppercase text-violet-300/70">Now exploring</p>
+              <p className="text-white font-bold">{verse} Verse</p>
+              <p className="text-cyan-300/60 text-xs">Follow the beacons — QSV AI has your tour ready</p>
+            </div>
+          </div>
+        )}
+
         {/* Street Info */}
         <div className="absolute bottom-4 left-1/2 transform -translate-x-1/2 z-10">
           <div className="bg-black/60 backdrop-blur-sm border border-cyan-400/30 rounded-lg px-6 py-3">
@@ -1001,7 +1063,11 @@ export default function QSVStreet() {
         {/* Shopping overlays */}
         <ProductModal product={activeProduct} onClose={() => setActiveProduct(null)} />
         <CartDrawer open={cartOpen} onClose={() => setCartOpen(false)} />
-        <AssistantChat open={aiOpen} onClose={() => setAiOpen(false)} />
+        <AssistantChat
+          open={aiOpen}
+          onClose={() => setAiOpen(false)}
+          seedQuery={verse ? `compare ${verse.toLowerCase()}` : undefined}
+        />
 
         <Canvas
           camera={{
@@ -1014,7 +1080,7 @@ export default function QSVStreet() {
         >
           <XR referenceSpace="local-floor">
             <Suspense fallback={null}>
-              <StreetScene />
+              <StreetScene verse={verse} />
               <Effects />
             </Suspense>
           </XR>
