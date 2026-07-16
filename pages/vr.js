@@ -13,6 +13,24 @@ import AssistantChat from '../components/shop/AssistantChat'
 import { useCart } from '../components/cart/CartContext'
 import { getProduct, getProductsByStore, getCategories, STORES } from '../lib/products'
 
+const QSV_BUILD = 'perf-diag-1'
+
+// Identify GPUs that can't handle the full scene so we can start light
+// instead of waiting for the frame rate to collapse first.
+function detectWeakGPU() {
+  try {
+    const canvas = document.createElement('canvas')
+    const gl = canvas.getContext('webgl')
+    if (!gl) return { gpu: 'no-webgl', weak: true }
+    const ext = gl.getExtension('WEBGL_debug_renderer_info')
+    const gpu = ext ? String(gl.getParameter(ext.UNMASKED_RENDERER_WEBGL)) : 'masked'
+    const weak = /intel|uhd|hd graphics|iris|vega [1-8]\b|radeon r[2-5]|geforce mx|swiftshader|llvmpipe|mali|adreno|apple gpu/i.test(gpu)
+    return { gpu, weak }
+  } catch (e) {
+    return { gpu: 'error', weak: true }
+  }
+}
+
 // World-space collision check shared by desktop and VR movement
 function checkCollision(position) {
   // Simple boundary collision
@@ -742,6 +760,24 @@ function ProximityTracker({ storefronts }) {
   return null
 }
 
+// Publishes measured FPS to window.__qsvFps (read by the debug overlay)
+function FpsMeter() {
+  const frames = useRef(0)
+  const last = useRef(0)
+
+  useFrame((state) => {
+    frames.current += 1
+    const t = state.clock.getElapsedTime()
+    if (t - last.current >= 0.5) {
+      window.__qsvFps = Math.round(frames.current / (t - last.current))
+      frames.current = 0
+      last.current = t
+    }
+  })
+
+  return null
+}
+
 // Glowing beacon above storefronts that stock the active verse's category
 function VerseBeacon({ position, color }) {
   const beaconRef = useRef()
@@ -773,9 +809,10 @@ function VerseBeacon({ position, color }) {
 }
 
 // Main Street Scene
-function StreetScene({ verse }) {
+function StreetScene({ verse, lowPerf, onAutoDegrade }) {
   // Drops effects and particle counts automatically if the device can't hold frame rate
-  const [degraded, setDegraded] = useState(false)
+  const [declined, setDeclined] = useState(false)
+  const degraded = lowPerf || declined
 
   // Store positions in the street; products come from the unified catalog
   const storefronts = useMemo(() => {
@@ -791,7 +828,13 @@ function StreetScene({ verse }) {
 
   return (
     <>
-      <PerformanceMonitor onDecline={() => setDegraded(true)} />
+      <PerformanceMonitor
+        onDecline={() => {
+          setDeclined(true)
+          onAutoDegrade?.()
+        }}
+      />
+      <FpsMeter />
 
       {/* Lighting */}
       <ambientLight intensity={0.15} color="#0a0a2e" />
@@ -811,8 +854,8 @@ function StreetScene({ verse }) {
       {/* Environment */}
       <Street />
       <StreetLights />
-      <RainEffect count={degraded ? 250 : 600} />
-      <AtmosphericParticles count={degraded ? 60 : 150} />
+      <RainEffect count={degraded ? 150 : 600} />
+      <AtmosphericParticles count={degraded ? 40 : 150} />
       <CollisionBoxes />
 
       {/* Storefronts */}
@@ -916,6 +959,34 @@ export default function QSVStreet() {
   const verseParam = typeof router.query.verse === 'string' ? router.query.verse : null
   const verse = verseParam && getCategories().includes(verseParam) ? verseParam : null
 
+  // Performance mode: saved choice wins, otherwise weak GPUs start light
+  const [perfMode, setPerfMode] = useState(false)
+  const [autoDegraded, setAutoDegraded] = useState(false)
+  const [gpuInfo, setGpuInfo] = useState('')
+  const debug = router.query.debug !== undefined
+  const [fps, setFps] = useState(0)
+
+  useEffect(() => {
+    const saved = localStorage.getItem('qsv-perf-mode')
+    const { gpu, weak } = detectWeakGPU()
+    setGpuInfo(gpu)
+    if (saved !== null) setPerfMode(saved === 'true')
+    else if (weak) setPerfMode(true)
+  }, [])
+
+  const togglePerfMode = () => {
+    const next = !perfMode
+    setPerfMode(next)
+    localStorage.setItem('qsv-perf-mode', String(next))
+  }
+
+  // Debug overlay: sample the FPS published by the in-canvas meter
+  useEffect(() => {
+    if (!debug) return
+    const timer = setInterval(() => setFps(window.__qsvFps || 0), 500)
+    return () => clearInterval(timer)
+  }, [debug])
+
   useEffect(() => {
     if (verse && !isLoading) {
       // Open the assistant with a guided tour of the chosen verse
@@ -982,15 +1053,23 @@ export default function QSVStreet() {
 
     const onLockChange = () => setIsLocked(!!document.pointerLockElement)
 
+    // Some browsers/settings refuse mouse capture — tell the user instead of
+    // silently leaving them unable to walk
+    const onLockError = () => {
+      showToast('Your browser blocked mouse capture — click the scene again, or check browser permissions')
+    }
+
     window.addEventListener('qsv:nearest-product', onNearest)
     document.addEventListener('keydown', onKey)
     document.addEventListener('mousedown', onMouseDown)
     document.addEventListener('pointerlockchange', onLockChange)
+    document.addEventListener('pointerlockerror', onLockError)
     return () => {
       window.removeEventListener('qsv:nearest-product', onNearest)
       document.removeEventListener('keydown', onKey)
       document.removeEventListener('mousedown', onMouseDown)
       document.removeEventListener('pointerlockchange', onLockChange)
+      document.removeEventListener('pointerlockerror', onLockError)
     }
   }, [])
 
@@ -1033,12 +1112,36 @@ export default function QSVStreet() {
             }
           </XRButton>
           <button
+            onClick={togglePerfMode}
+            title="Performance mode reduces effects for smoother movement on laptops"
+            className={`px-4 py-2 border rounded-lg transition-colors ${
+              perfMode
+                ? 'bg-green-500/20 border-green-400/40 text-green-300 hover:bg-green-500/30'
+                : 'bg-gray-500/10 border-gray-400/30 text-gray-300 hover:bg-gray-500/20'
+            }`}
+          >
+            ⚡ {perfMode ? 'Performance: ON' : 'Performance: OFF'}
+          </button>
+          <button
             onClick={() => window.location.href = '/'}
             className="px-4 py-2 bg-cyan-500/20 border border-cyan-400/30 text-cyan-300 rounded-lg hover:bg-cyan-500/30 transition-colors"
           >
             Exit Street
           </button>
         </div>
+
+        {/* Diagnostic overlay: open /vr?debug=1 and read the numbers */}
+        {debug && (
+          <div className="absolute top-20 right-4 z-20 bg-black/85 border border-yellow-400/40 rounded-lg p-3 font-mono text-[11px] text-yellow-100 space-y-0.5 max-w-xs">
+            <p className="text-yellow-300 font-bold">QSV DIAG · {QSV_BUILD}</p>
+            <p>fps: <span className={fps < 25 ? 'text-red-400' : 'text-green-400'}>{fps}</span></p>
+            <p className="break-all">gpu: {gpuInfo || '…'}</p>
+            <p>perf mode: {String(perfMode)} · auto-degraded: {String(autoDegraded)}</p>
+            <p>pointer lock: {String(isLocked)}</p>
+            <p>near product: {nearProduct ? nearProduct.id : 'none'}</p>
+            <p>dpr: {perfMode ? '1' : 'up to 1.5'} · window: {typeof window !== 'undefined' ? `${window.innerWidth}×${window.innerHeight}` : ''}</p>
+          </div>
+        )}
         
         <Instructions show={showInstructions} />
 
@@ -1132,12 +1235,16 @@ export default function QSVStreet() {
             near: 0.1,
             far: 100
           }}
-          dpr={[1, 1.5]}
+          dpr={perfMode ? 1 : [1, 1.5]}
           style={{ background: 'linear-gradient(to bottom, #000011 0%, #0a0a2e 100%)' }}
         >
           <XR referenceSpace="local-floor">
             <Suspense fallback={null}>
-              <StreetScene verse={verse} />
+              <StreetScene
+                verse={verse}
+                lowPerf={perfMode}
+                onAutoDegrade={() => setAutoDegraded(true)}
+              />
             </Suspense>
           </XR>
         </Canvas>
